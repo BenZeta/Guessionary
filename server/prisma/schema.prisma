@@ -47,15 +47,15 @@ model Contribution {
   id             String           @id @default(uuid())
   userId         String
   gameId         String
-  game           Game             @relation(fields: [gameId], references: [id])
   roundId        String
   type           ContributionType
   content        String
   targetUserId   String?
+  originalWordId String?          // Link to the original word/drawing for guesses
   createdAt      DateTime         @default(now())
+  Contribution Contribution[]     @relation("OriginalWord")
+  game           Game             @relation(fields: [gameId], references: [id])
   originalWord   Contribution?    @relation("OriginalWord", fields: [originalWordId], references: [id])
-  originalWordId String?
-  guesses        Contribution[]   @relation("OriginalWord")
   round          Round            @relation(fields: [roundId], references: [id])
   user           User             @relation(fields: [userId], references: [id])
 }
