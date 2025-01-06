@@ -3,19 +3,23 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "postgresql" // Change to your database provider
   url      = env("DATABASE_URL")
 }
 
+
+
 model User {
-  id            String         @id @default(uuid())
-  username      String         @unique
-  avatar        String          @default("https://avatars.dicebear.com/api/bottts/1.svg")
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id            String   @id @default(uuid())
+  username      String   @unique
+  role          String   @default("Admin")
+  avatar        String   @default("https://avatars.dicebear.com/api/bottts/1.svg")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
   contributions Contribution[]
   scores        Score[]
-  games         Game[]         @relation("PlayerGames")
+  game          Game?    @relation(fields: [gameId], references: [id])
+  gameId        String?  @unique // Ensures only one game can be linked to a user
 }
 
 model Game {
@@ -26,7 +30,8 @@ model Game {
   contributions Contribution[]
   rounds        Round[]
   scores        Score[]
-  players       User[]         @relation("PlayerGames")
+  user          User?          
+  userId        String?        @unique // Ensures only one user can be linked to a game
 }
 
 model Round {
@@ -42,14 +47,14 @@ model Contribution {
   id             String           @id @default(uuid())
   userId         String
   gameId         String
+  game           Game             @relation(fields: [gameId], references: [id])
   roundId        String
   type           ContributionType
   content        String
   targetUserId   String?
-  originalWordId String?
   createdAt      DateTime         @default(now())
-  game           Game             @relation(fields: [gameId], references: [id])
   originalWord   Contribution?    @relation("OriginalWord", fields: [originalWordId], references: [id])
+  originalWordId String?
   guesses        Contribution[]   @relation("OriginalWord")
   round          Round            @relation(fields: [roundId], references: [id])
   user           User             @relation(fields: [userId], references: [id])
