@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Change to your database provider
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(uuid())
+  username      String          @unique
+  games         Game[]          @relation("PlayerGames")
+  contributions Contribution[]
+  scores        Score[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+}
+
+model Game {
+  id            String          @id @default(uuid())
+  code          String          @unique
+  players       User[]          @relation("PlayerGames")
+  rounds        Round[]
+  contributions Contribution[]
+  scores        Score[]
+  isActive      Boolean         @default(true)
+  createdAt     DateTime        @default(now())
+}
+
+model Round {
+  id            String          @id @default(uuid())
+  gameId        String
+  game          Game            @relation(fields: [gameId], references: [id])
+  roundNumber   Int
+  contributions Contribution[]
+  createdAt     DateTime        @default(now())
+}
+
+model Contribution {
+  id             String          @id @default(uuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id])
+  gameId         String
+  game           Game            @relation(fields: [gameId], references: [id])
+  roundId        String
+  round          Round           @relation(fields: [roundId], references: [id])
+  type           ContributionType
+  content        String          // Word, drawing (URL), or guessed word
+  targetUserId   String?         // The player who receives the word/drawing
+  originalWordId String?         // References the first-round word
+  originalWord   Contribution?   @relation("OriginalWord", fields: [originalWordId], references: [id])
+  guesses        Contribution[]  @relation("OriginalWord")
+  createdAt      DateTime        @default(now())
+}
+
+model Score {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  gameId    String
+  game      Game      @relation(fields: [gameId], references: [id])
+  points    Int       @default(0)
+  createdAt DateTime  @default(now())
+}
+
+enum ContributionType {
+  WORD
+  DRAWING
+  GUESS
+}

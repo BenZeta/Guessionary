@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*", "types/**/*"], // Ensure types folder is included in compilation
+  "ts-node": {
+    "files": true
+  }
+}
