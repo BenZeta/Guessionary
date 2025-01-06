@@ -1,9 +1,9 @@
-import express from "express";
-import router from "./routers";
-import cors from "cors";
-import dotenv from "dotenv";
+import express from 'express';
+import router from './routers';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
-if (process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
 }
 
@@ -12,7 +12,7 @@ const port = process.env.PORT || 8080;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: '*' }));
 
 app.use(router);
 
