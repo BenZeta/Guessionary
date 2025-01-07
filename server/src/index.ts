@@ -11,7 +11,7 @@ interface ServerToClientEvents {
 
 interface ClientToServerEvents {
   hello: () => void;
-  roomName: (roomName: string) => void;
+  roomName: (roomInfo: { roomName: string; username: string }) => void;
 }
 
 interface InterServerEvents {
@@ -46,9 +46,13 @@ app.use(router);
 io.on('connection', (socket) => {
   socket.emit('welcome', 'Hello World!');
 
-  socket.on('roomName', (roomName: string): void => {
-    socket.join(roomName);
-    console.log(roomName);
+  // console.log(socket.handshake.auth);
+
+  socket.on('roomName', (roomInfo): void => {
+    // console.log(roomName, username);
+    socket.join(roomInfo.roomName);
+
+    console.log(`${roomInfo.username} joined room: ${roomInfo.roomName}`);
   });
 });
 

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { socket } from "../socket/socket";
 import Swal from "sweetalert2";
+import { baseUrl } from "../constants/baseUrl";
+import axios from "axios";
 
 export default function HomePage() {
   const [roomName, setRoomName] = useState<string>("");
@@ -12,6 +14,18 @@ export default function HomePage() {
       text: "Something went wrong!",
       footer: '<a href="#">Why do I have this issue?</a>',
     });
+      
+  const handleRoomNameSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    socket.emit("roomName", { roomName, username: localStorage.username });
+
+    try {
+      const { data } = await axios.post(baseUrl + "/createRoom", { roomName });
+
+      // toastify room has been created
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -20,8 +34,6 @@ export default function HomePage() {
     };
 
     socket.connect();
-
-    socket.emit("roomName", roomName);
 
     return () => {
       //   socket.off("message:update");
@@ -88,6 +100,5 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-    
   );
 }
