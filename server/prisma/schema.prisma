@@ -17,6 +17,19 @@ model User {
   scores        Score[]
   Game          Game?          @relation(fields: [gameId], references: [id])
   Room          Room[]         @relation("RoomToUser")
+  game          Game?          @relation(fields: [gameId], references: [id])
+  Room          Room[]         @relation("RoomToUser")
+}
+
+model Room {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  code      String   @unique
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  gameId    String?  @unique
+  game      Game?    @relation(fields: [gameId], references: [id])
+  users     User[]   @relation("RoomToUser")
 }
 
 model Game {
@@ -29,7 +42,7 @@ model Game {
   Room          Room?
   rounds        Round[]
   scores        Score[]
-  User          User?
+  user          User?
 }
 
 model Round {

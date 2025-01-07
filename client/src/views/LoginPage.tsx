@@ -1,9 +1,11 @@
 import axios from "axios";
 import { useState } from "react";
 import { baseUrl } from "../constants/baseUrl";
+import { useNavigate } from "react-router";
 
 export default function LoginPage() {
   const [username, setUsername] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -12,6 +14,8 @@ export default function LoginPage() {
 
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("username", data.username);
+
+      navigate("/");
     } catch (error) {
       console.log(error);
     }
