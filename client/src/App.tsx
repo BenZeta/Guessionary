@@ -7,9 +7,19 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/game/:roomId" element={<GamePage />} />
+        <Route
+          index
+          path="/"
+          element={<HomePage />}
+        />
+        <Route
+          path="/login"
+          element={<LoginPage />}
+        />
+        <Route
+          path="/game/:roomId"
+          element={<GamePage />}
+        />
       </Routes>
     </BrowserRouter>
   );
