@@ -43,7 +43,7 @@ export default function HomePage() {
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
               Room List
             </h2>
-            <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar">
+            <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
               <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
                 <div>Halo</div>
               </div>
@@ -64,30 +64,39 @@ export default function HomePage() {
         </div>
 
         {/* Right Panel: Profile */}
-        <div className="w-1/2 bg-white/10 p-4 ">
-          <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full p-5">
+        <div className="w-1/2 bg-white/10 p-4">
+          <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
               Your Profile
             </h2>
-            
-              <div className="grid grid-cols-2 gap-5 rounded-lg w-full h-full p-5">
-                <div className="bg-gray-300 rounded-xl">
-                  
-                </div>
-                <div className="bg-gray-300 rounded-xl">
-                  
-                </div>
-                <div className="bg-gray-300 rounded-xl">
-                  
-                </div>
-                <div className="bg-gray-300 rounded-xl">
-                  
-                </div>
+
+            {/* Grid Content */}
+            <div className="grid grid-cols-2 gap-5 rounded-lg w-full overflow-y-auto scrollbar flex-1 p-1">
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
+                {/* Content */}
+              </div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
+                {/* Content */}
+              </div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
+                {/* Content */}
+              </div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
+                {/* Content */}
+              </div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
+                {/* Content */}
+              </div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
+                {/* Content */}
+              </div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
+                {/* Content */}
               </div>
             </div>
           </div>
         </div>
       </div>
-    
+    </div>
   );
 }

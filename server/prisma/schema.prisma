@@ -17,7 +17,7 @@ model User {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   contributions Contribution[]
-  scores        Score[]
+  scores        Score[] 
   game          Game?    @relation(fields: [gameId], references: [id])
   gameId        String?  @unique // Ensures only one game can be linked to a user
 }
