@@ -3,33 +3,31 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // Change to your database provider
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
-  id            String   @id @default(uuid())
-  username      String   @unique
-  role          String   @default("Admin")
-  avatar        String   @default("https://avatars.dicebear.com/api/bottts/1.svg")
+  id            String         @id @default(uuid())
+  username      String         @unique
+  avatar        String         @default("https://avatars.dicebear.com/api/bottts/1.svg")
+  gameId        String?        @unique
+  role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
-  game          Game?    @relation(fields: [gameId], references: [id])
-  gameId        String?  @unique // Ensures only one game can be linked to a user
-  Room          Room[]
+  game          Game?          @relation(fields: [gameId], references: [id])
+  Room          Room[]         @relation("RoomToUser")
 }
 
 model Room {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  code        String   @unique           // Unique room code for easy sharing
-  isActive    Boolean  @default(false)    // To track if the room is currently active
-  createdAt   DateTime @default(now())
-  users       User[]                     // Users associated with this room
-  game        Game?     @relation(fields: [gameId], references: [id])
-  gameId      String?   @unique // Ensures only one game can be linked to a room
+  id        String   @id @default(uuid())
+  name      String   @unique
+  code      String   @unique
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  gameId    String?  @unique
+  game      Game?    @relation(fields: [gameId], references: [id])
+  users     User[]   @relation("RoomToUser")
 }
 
 model Game {
@@ -37,12 +35,12 @@ model Game {
   code          String         @unique
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
+  userId        String?        @unique
   contributions Contribution[]
+  Room          Room?
   rounds        Round[]
   scores        Score[]
-  user          User?          
-  userId        String?        @unique // Ensures only one user can be linked to a game
-  Room          Room?
+  user          User?
 }
 
 model Round {
@@ -62,11 +60,11 @@ model Contribution {
   type           ContributionType
   content        String
   targetUserId   String?
-  originalWordId String?          // Link to the original word/drawing for guesses
+  originalWordId String?
   createdAt      DateTime         @default(now())
-  Contribution Contribution[]     @relation("OriginalWord")
   game           Game             @relation(fields: [gameId], references: [id])
   originalWord   Contribution?    @relation("OriginalWord", fields: [originalWordId], references: [id])
+  Contribution   Contribution[]   @relation("OriginalWord")
   round          Round            @relation(fields: [roundId], references: [id])
   user           User             @relation(fields: [userId], references: [id])
 }
