@@ -10,15 +10,13 @@ datasource db {
 model User {
   id            String         @id @default(uuid())
   username      String         @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime
   avatar        String         @default("https://avatars.dicebear.com/api/bottts/1.svg")
   gameId        String?        @unique
   role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
   Game          Game?          @relation(fields: [gameId], references: [id])
-  Room          Room[]
+  Room          Room[]         @relation("RoomToUser")
 }
 
 model Game {
@@ -71,14 +69,14 @@ model Score {
 }
 
 model Room {
-  id        String   @id
+  id        String   @id  @default(uuid())
   name      String   @unique
   code      String   @unique
   isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
   gameId    String?  @unique
   Game      Game?    @relation(fields: [gameId], references: [id])
-  User      User[]
+  users      User[]   @relation("RoomToUser")
 }
 
 enum ContributionType {
