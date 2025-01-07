@@ -9,8 +9,7 @@ export default function App() {
       <Routes>
         <Route index path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-
-        <Route path="/game" element={<GamePage />} />
+        <Route path="/game/:roomId" element={<GamePage />} />
       </Routes>
     </BrowserRouter>
   );

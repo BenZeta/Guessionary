@@ -3,6 +3,7 @@ import { socket } from "../socket/socket";
 import Swal from "sweetalert2";
 import { baseUrl } from "../constants/baseUrl";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 interface Room {
   id: string;
@@ -18,6 +19,7 @@ export default function HomePage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [targetedRoomId, setTargetedRoomId] = useState<string>("");
   const isFirstRender = useRef(true);
+  const navigate = useNavigate();
 
   const fetchRooms = async () => {
     try {
@@ -52,6 +54,7 @@ export default function HomePage() {
       );
 
       socket.emit("joinRoom", `${targetedRoomId}`);
+      navigate(`/game/${targetedRoomId}`);
     } catch (error) {
       console.log(error);
     }
@@ -75,8 +78,10 @@ export default function HomePage() {
       color: "#edf2f7", // white text color for contrast
       customClass: {
         input: "px-4 py-2 rounded-md bg-teal-700 text-white", // Apply theme styles
-        confirmButton: "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
-        cancelButton: "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        confirmButton:
+          "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        cancelButton:
+          "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
       },
       preConfirm: (inputRoomName) => {
         if (!inputRoomName) {
@@ -90,7 +95,11 @@ export default function HomePage() {
 
         // You can send this room name to your backend or show a toast message here.
         axios
-          .post(baseUrl + "/create-room", { roomName: result.value }, { headers: { Authorization: `Bearer ${localStorage.access_token}` } })
+          .post(
+            baseUrl + "/create-room",
+            { roomName: result.value },
+            { headers: { Authorization: `Bearer ${localStorage.access_token}` } }
+          )
           .then((response) => {
             socket.emit("roomCreated", response.data);
           })
@@ -146,7 +155,8 @@ export default function HomePage() {
                   <button
                     key={room.id}
                     onClick={() => setTargetedRoomId(room.id)}
-                    className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
+                    className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500"
+                  >
                     <div>{room.name}</div>
                   </button>
                 );
@@ -169,12 +179,14 @@ export default function HomePage() {
             <div className="flex justify-center w-full space-x-5">
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleSwal}>
+                onClick={handleSwal}
+              >
                 Create New Room
               </button>
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleJoinRoom}>
+                onClick={handleJoinRoom}
+              >
                 Join Room
               </button>
             </div>
@@ -211,10 +223,10 @@ export default function HomePage() {
               <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
                 {/* Content */}
               </div>
-              </div>
-              </div>  
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
     </div>
   );
 }
