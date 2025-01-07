@@ -1,8 +1,23 @@
 import { useEffect, useState } from "react";
 import { socket } from "../socket/socket";
+import { baseUrl } from "../constants/baseUrl";
+import axios from "axios";
 
 export default function HomePage() {
   const [roomName, setRoomName] = useState<string>("");
+
+  const handleRoomNameSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    socket.emit("roomName", { roomName, username: localStorage.username });
+
+    try {
+      const { data } = await axios.post(baseUrl + "/createRoom", { roomName });
+
+      // toastify room has been created
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     socket.auth = {
@@ -11,8 +26,6 @@ export default function HomePage() {
 
     socket.connect();
 
-    socket.emit("roomName", roomName);
-
     return () => {
       //   socket.off("message:update");
       socket.disconnect();
@@ -20,13 +33,14 @@ export default function HomePage() {
   }, []);
   return (
     <div>
-
       <h1>Home Page</h1>
-      <input
-        onChange={(e) => setRoomName(e.target.value)}
-        type="text"
-      />
-
+      <form onSubmit={handleRoomNameSubmit}>
+        <input
+          onChange={(e) => setRoomName(e.target.value)}
+          type="text"
+          placeholder="Enter room name"
+        />
+      </form>
     </div>
   );
 }
