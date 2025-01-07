@@ -71,8 +71,7 @@ export default class RoomController {
       // Check if the user is already in the room
       const userAlreadyInRoom = room.users.find((user) => user.id === userId);
       if (userAlreadyInRoom) {
-        res.status(200).json({ message: 'User is already in the room' });
-        return;
+        throw { name: 'AlreadyInRoom', message: 'User is already in the room' };
       }
 
       // Add the user to the room
