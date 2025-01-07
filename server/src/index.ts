@@ -6,9 +6,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 
 interface ServerToClientEvents {
-  noArg: () => void;
-  basicEmit: (a: number, b: string, c: Buffer) => void;
-  withAck: (d: string, callback: (e: number) => void) => void;
+  [event: string]: (...args: any[]) => void;
 }
 
 interface ClientToServerEvents {
@@ -34,7 +32,7 @@ const port = process.env.PORT || 8080;
 const httpServer = createServer(app);
 const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
   cors: {
-    origin: 'http://localhost:5173',
+    origin: '*',
   },
 });
 
@@ -45,7 +43,14 @@ app.use(cors());
 app.use(router);
 
 io.on('connection', (socket) => {
-  console.log('a user connected', socket.id);
+  // console.log('a user connected', socket.id);
+  socket.emit('welcome', 'Hello World!');
+});
+
+app.post('/test-socket', (req, res) => {
+  const { eventName, data } = req.body;
+  io.emit(eventName, data); // Emit the event to all connected clients
+  res.send({ success: true, message: `Emitted ${eventName}` });
 });
 
 httpServer.listen(port, () => {
