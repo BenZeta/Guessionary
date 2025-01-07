@@ -3,6 +3,7 @@ import { socket } from "../socket/socket";
 import Swal from "sweetalert2";
 import { baseUrl } from "../constants/baseUrl";
 import axios from "axios";
+import { useNavigate } from "react-router";
 
 interface Room {
   id: string;
@@ -18,6 +19,7 @@ export default function HomePage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [targetedRoomId, setTargetedRoomId] = useState<string>("");
   const isFirstRender = useRef(true);
+  const navigate = useNavigate();
 
   const fetchRooms = async () => {
     try {
