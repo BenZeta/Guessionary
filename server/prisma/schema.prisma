@@ -15,6 +15,8 @@ model User {
   role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
+  Game          Game?          @relation(fields: [gameId], references: [id])
+  Room          Room[]         @relation("RoomToUser")
   game          Game?          @relation(fields: [gameId], references: [id])
   Room          Room[]         @relation("RoomToUser")
 }
@@ -77,6 +79,17 @@ model Score {
   createdAt DateTime @default(now())
   game      Game     @relation(fields: [gameId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Room {
+  id        String   @id  @default(uuid())
+  name      String   @unique
+  code      String   @unique
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  gameId    String?  @unique
+  Game      Game?    @relation(fields: [gameId], references: [id])
+  users      User[]   @relation("RoomToUser")
 }
 
 enum ContributionType {

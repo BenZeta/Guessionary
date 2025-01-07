@@ -7,6 +7,9 @@ const router = Router();
 router.post('/login', AuthController.login);
 
 router.use(authentication);
+
+router.get('/rooms', RoomController.getRooms);
 router.post('/create-room', RoomController.createRoom);
+router.patch('/join-room', RoomController.joinRoom);
 
 export default router;

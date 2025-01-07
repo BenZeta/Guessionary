@@ -17,7 +17,7 @@ export default class AuthController {
       });
 
       const access_token = signToken({
-        id: user.id,
+        userId: user.id,
         username: user.username,
       });
 

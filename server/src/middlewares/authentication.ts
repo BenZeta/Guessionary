@@ -11,13 +11,15 @@ export const authentication = async (req: Request, res: Response, next: NextFunc
 
     const payload = verifyToken(token);
 
-    if (typeof payload === 'object' && 'username' in payload) {
-      req.loginInfo = {
-        username: payload.username,
-        userId: payload.userId,
-      };
-      next();
+    if (typeof payload === 'string') {
+      throw { name: 'Unauthorized' };
     }
+
+    req.loginInfo = {
+      username: payload.username,
+      userId: payload.userId,
+    };
+    next();
   } catch (error) {
     console.log(error);
 
