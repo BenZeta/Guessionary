@@ -15,7 +15,6 @@ interface Room {
 }
 
 export default function HomePage() {
-  const [roomName, setRoomName] = useState<string>("");
   const [rooms, setRooms] = useState<Room[]>([]);
   const [targetedRoomId, setTargetedRoomId] = useState<string>("");
   const isFirstRender = useRef(true);
@@ -52,7 +51,7 @@ export default function HomePage() {
         }
       );
 
-      console.log(data);
+      socket.emit("joinRoom", `${targetedRoomId}`);
     } catch (error) {
       console.log(error);
     }
@@ -82,9 +81,6 @@ export default function HomePage() {
       preConfirm: (inputRoomName) => {
         if (!inputRoomName) {
           Swal.showValidationMessage("Room name is required!");
-        } else {
-          setRoomName(inputRoomName); // Update state with the room name
-          return inputRoomName;
         }
       },
     }).then((result) => {
