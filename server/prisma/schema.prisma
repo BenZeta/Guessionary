@@ -11,10 +11,14 @@ model User {
   id            String         @id @default(uuid())
   username      String         @unique
   createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  updatedAt     DateTime
+  avatar        String         @default("https://avatars.dicebear.com/api/bottts/1.svg")
+  gameId        String?        @unique
+  role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
-  Game          Game[]         @relation("PlayerGames")
+  Game          Game?          @relation(fields: [gameId], references: [id])
+  Room          Room[]
 }
 
 model Game {
@@ -22,10 +26,12 @@ model Game {
   code          String         @unique
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
+  userId        String?        @unique
   contributions Contribution[]
+  Room          Room?
   rounds        Round[]
   scores        Score[]
-  User          User[]         @relation("PlayerGames")
+  User          User?
 }
 
 model Round {
@@ -62,6 +68,17 @@ model Score {
   createdAt DateTime @default(now())
   game      Game     @relation(fields: [gameId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Room {
+  id        String   @id
+  name      String   @unique
+  code      String   @unique
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  gameId    String?  @unique
+  Game      Game?    @relation(fields: [gameId], references: [id])
+  User      User[]
 }
 
 enum ContributionType {
