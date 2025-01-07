@@ -1,4 +1,77 @@
+import axios from "axios";
+import { useEffect, useState, useRef } from "react";
+import { baseUrl } from "../constants/baseUrl";
+import { useParams } from "react-router";
+import { socket } from "../socket/socket";
+
+type User = {
+  id: string;
+  username: string;
+  avatar: string;
+};
+
+type Room = {
+  id: string;
+  code: string;
+  name: string;
+  isActive: boolean;
+  users: User[];
+};
+
 export default function GamePage() {
+  const [room, setRoom] = useState<Room | null>(null);
+  const { roomId } = useParams();
+  const isFirstRender = useRef(true);
+
+  const getUser = async () => {
+    try {
+      const { data } = await axios.get(`${baseUrl}/users/${roomId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      setRoom(data);
+
+      socket.emit("userList", data?.users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false; // Mark the first render as handled
+      getUser(); // Call the function only once
+    }
+  }, []);
+
+  useEffect(() => {
+    // Initialize socket connection
+    socket.auth = {
+      token: localStorage.username,
+    };
+
+    socket.connect();
+
+    socket.on("userList:server", (newUsers) => {
+      setRoom((prev) => {
+        if (!prev) return prev;
+        const updatedUsers = [...newUsers];
+
+        return {
+          ...prev,
+          users: updatedUsers,
+        };
+      });
+    });
+
+    return () => {
+      socket.off("userList:server");
+      socket.disconnect(); // Cleanup on unmount
+    };
+  }, []);
+
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
       {/* Header */}
@@ -15,79 +88,15 @@ export default function GamePage() {
               Player
             </h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://stickershop.line-scdn.net/stickershop/v1/product/11365/LINEStorePC/main.png?v=19"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haloooooooooooooooooo</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              {/* Add more rooms dynamically if needed */}
+              {room?.users.map((user, index) => (
+                <div
+                  key={index}
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
+                >
+                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
+                  <div className="ml-3 text-2xl">{user?.username}</div>
+                </div>
+              ))}
             </div>
 
             {/* Create Room Button */}
@@ -112,7 +121,5 @@ export default function GamePage() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
   );
 }

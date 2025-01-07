@@ -11,10 +11,10 @@ export default function App() {
       <Routes>
         <Route index path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-
-        <Route path="/game/" element={<GamePage />} />
-        <Route path="/game2/" element={<Game2Page />} />
-        <Route path="/game3/" element={<Game3Page />} />
+        <Route
+          path="/game/:roomId"
+          element={<GamePage />}
+        />
       </Routes>
     </BrowserRouter>
   );
