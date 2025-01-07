@@ -24,7 +24,6 @@ interface ClientToServerEvents {
   roomName: (roomInfo: { roomName: string; username: string }) => void;
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
-  joinRoom: (targetedRoomId: string) => void;
 }
 
 interface InterServerEvents {
@@ -57,6 +56,8 @@ app.use(cors({ origin: '*' }));
 app.use(router);
 
 io.on('connection', (socket) => {
+  // console.log('A user connected:', socket.id);
+
   socket.on('roomCreated', (room: Room) => {
     io.emit('roomCreated:server', room);
   });
@@ -66,9 +67,7 @@ io.on('connection', (socket) => {
     io.emit('roomList:server', rooms);
   });
 
-  socket.on('joinRoom', (targetedRoomId: string) => {
-    socket.join(targetedRoomId);
-  });
+  // Handle room creation requests (optional, based on future logic)
 
   // Handle client disconnection
   socket.on('disconnect', () => {
