@@ -40,6 +40,12 @@ export default function HomePage() {
   const handleJoinRoom = async () => {
     try {
       if (!targetedRoomId) {
+        Swal.fire({
+          title: "No Room Selected",
+          text: "Please select a room to join!",
+          icon: "warning",
+          confirmButtonText: "OK",
+        });
         return;
       }
 
@@ -154,8 +160,12 @@ export default function HomePage() {
                 return (
                   <button
                     key={room.id}
-                    onClick={() => setTargetedRoomId(room.id)}
-                    className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500"
+                    onClick={() => {
+                      setTargetedRoomId(room.id);
+                    }}
+                    className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${
+                      targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"
+                    }`}
                   >
                     <div>{room.name}</div>
                   </button>
