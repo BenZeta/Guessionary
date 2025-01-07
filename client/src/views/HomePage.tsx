@@ -1,12 +1,62 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { socket } from "../socket/socket";
 import Swal from "sweetalert2";
 import { baseUrl } from "../constants/baseUrl";
 import axios from "axios";
 
+interface Room {
+  id: string;
+  name: string;
+  code: string;
+  isActive: boolean;
+  createdAt: Date;
+  gameId: string;
+  // Add other properties as needed
+}
+
 export default function HomePage() {
   const [roomName, setRoomName] = useState<string>("");
-  const [rooms, setRooms] = useState<[]>([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [targetedRoomId, setTargetedRoomId] = useState<string>("");
+  const isFirstRender = useRef(true);
+
+  const fetchRooms = async () => {
+    try {
+      const { data } = await axios.get(`${baseUrl}/rooms`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      setRooms(data);
+
+      socket.emit("roomList", data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleJoinRoom = async () => {
+    try {
+      if (!targetedRoomId) {
+        return;
+      }
+
+      const { data } = await axios.patch(
+        baseUrl + "/join-room",
+        { targetedRoomId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleSwal = () => {
     Swal.fire({
@@ -46,7 +96,7 @@ export default function HomePage() {
         axios
           .post(baseUrl + "/create-room", { roomName: result.value }, { headers: { Authorization: `Bearer ${localStorage.access_token}` } })
           .then((response) => {
-            console.log("Room created:", response.data);
+            socket.emit("roomCreated", response.data);
           })
           .catch((error) => {
             console.log("Error creating room:", error);
@@ -56,17 +106,27 @@ export default function HomePage() {
   };
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false; // Mark the first render as handled
+      fetchRooms(); // Call the function only once
+    }
+  }, []);
+
+  useEffect(() => {
     socket.auth = {
       token: localStorage.username,
     };
 
     socket.connect();
 
-    socket.on("roomList", (data) => {
-      console.log(data);
+    socket.on("roomCreated:server", (newRoom: Room) => {
+      setRooms((prev) => {
+        return [...prev, newRoom];
+      });
     });
 
     return () => {
+      socket.off("roomCreated:server");
       socket.disconnect();
     };
   }, []);
@@ -85,25 +145,38 @@ export default function HomePage() {
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Room List</h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar">
-              <button
-                className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500"
-                onClick={() => setRoomName("Halo")}>
+              {rooms.map((room) => {
+                return (
+                  <button
+                    key={room.id}
+                    onClick={() => setTargetedRoomId(room.id)}
+                    className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
+                    <div>{room.name}</div>
+                  </button>
+                );
+              })}
+              {/* <button className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
                 <div>Halo</div>
               </button>
-              <div
-                className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500"
-                onClick={() => setRoomName("Room")}>
+              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
                 <div>Room</div>
-              </div>
+              </div> */}
               {/* Add more rooms dynamically if needed */}
             </div>
 
             {/* Create Room Button */}
-            <button
-              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-              onClick={handleSwal}>
-              Create New Room
-            </button>
+            <div className="flex justify-center w-full space-x-5">
+              <button
+                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+                onClick={handleSwal}>
+                Create New Room
+              </button>
+              <button
+                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+                onClick={handleJoinRoom}>
+                Join Room
+              </button>
+            </div>
           </div>
         </div>
 

@@ -1,4 +1,4 @@
-import e, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -48,28 +48,28 @@ export default class RoomController {
     }
   }
 
-  static async joinRoom(req: Request, res: Response, next: NextFunction) {
+  static async joinRoom(req: Request<unknown, unknown, { targetedRoomId: string }>, res: Response, next: NextFunction) {
     try {
-      const { roomId } = req.body;
+      const { targetedRoomId } = req.body;
+
       const userId = req.loginInfo?.userId; // Ensure `req.loginInfo` is populated correctly
 
       console.log('Joining room with userId:', userId);
 
       // Find the room and include existing users
       const room = await prisma.room.findUnique({
-        where: { id: roomId },
+        where: { id: targetedRoomId },
         include: {
           users: true,
         },
       });
 
       if (!room) {
-        // Throw an error if the room doesn't exist
         throw { name: 'NotFound', message: 'Room not found' };
       }
 
       // Check if the user is already in the room
-      const userAlreadyInRoom = room.users.some((user) => user.id === userId);
+      const userAlreadyInRoom = room.users.find((user) => user.id === userId);
       if (userAlreadyInRoom) {
         res.status(200).json({ message: 'User is already in the room' });
         return;
@@ -77,7 +77,7 @@ export default class RoomController {
 
       // Add the user to the room
       await prisma.room.update({
-        where: { id: roomId },
+        where: { id: targetedRoomId },
         data: {
           users: {
             connect: { id: userId }, // Add user to the room
@@ -87,7 +87,7 @@ export default class RoomController {
 
       res.status(200).json({ message: 'Room joined successfully' });
     } catch (error) {
-      console.log('errotr', error);
+      console.log('error', error);
       next(error);
     }
   }

@@ -8,21 +8,19 @@ datasource db {
 }
 
 model User {
-  id            String         @id @default(uuid())
+  id            String         @id @unique @default(uuid())
   username      String         @unique
   avatar        String         @default("https://avatars.dicebear.com/api/bottts/1.svg")
   gameId        String?        @unique
   role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
-  Game          Game?          @relation(fields: [gameId], references: [id])
-  Room          Room[]         @relation("RoomToUser")
   game          Game?          @relation(fields: [gameId], references: [id])
   Room          Room[]         @relation("RoomToUser")
 }
 
 model Room {
-  id        String   @id @default(uuid())
+  id        String   @id @unique @default(uuid())
   name      String   @unique
   code      String   @unique
   isActive  Boolean  @default(false)
@@ -33,7 +31,7 @@ model Room {
 }
 
 model Game {
-  id            String         @id @default(uuid())
+  id            String         @id @unique @default(uuid())
   code          String         @unique
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
@@ -46,7 +44,7 @@ model Game {
 }
 
 model Round {
-  id            String         @id @default(uuid())
+  id            String         @id @unique @default(uuid())
   gameId        String
   roundNumber   Int
   createdAt     DateTime       @default(now())
@@ -55,7 +53,7 @@ model Round {
 }
 
 model Contribution {
-  id             String           @id @default(uuid())
+  id             String           @id @unique @default(uuid())
   userId         String
   gameId         String
   roundId        String
@@ -72,24 +70,13 @@ model Contribution {
 }
 
 model Score {
-  id        String   @id @default(uuid())
+  id        String   @id @unique @default(uuid())
   userId    String
   gameId    String
   points    Int      @default(0)
   createdAt DateTime @default(now())
   game      Game     @relation(fields: [gameId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
-}
-
-model Room {
-  id        String   @id  @default(uuid())
-  name      String   @unique
-  code      String   @unique
-  isActive  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  gameId    String?  @unique
-  Game      Game?    @relation(fields: [gameId], references: [id])
-  users      User[]   @relation("RoomToUser")
 }
 
 enum ContributionType {
