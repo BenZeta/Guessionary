@@ -24,6 +24,7 @@ interface ClientToServerEvents {
   roomName: (roomInfo: { roomName: string; username: string }) => void;
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
+  joinRoom: (targetedRoomId: string) => void;
 }
 
 interface InterServerEvents {
@@ -68,6 +69,9 @@ io.on('connection', (socket) => {
   });
 
   // Handle room creation requests (optional, based on future logic)
+  socket.on('joinRoom', (targetedRoomId: string) => {
+    socket.join(targetedRoomId);
+  });
 
   // Handle client disconnection
   socket.on('disconnect', () => {
