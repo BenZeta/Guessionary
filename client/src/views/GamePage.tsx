@@ -56,8 +56,11 @@ export default function GamePage() {
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
-              {room?.users.map((user, index) => (
-                <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
+              {room?.users.map((user) => (
+                <div
+                  key={user.id}
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
+                >
                   <img src={user?.avatar} className="w-20 h-20 rounded-full" />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
