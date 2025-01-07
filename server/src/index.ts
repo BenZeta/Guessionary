@@ -11,6 +11,7 @@ interface ServerToClientEvents {
 
 interface ClientToServerEvents {
   hello: () => void;
+  roomName: (roomName: string) => void;
 }
 
 interface InterServerEvents {
@@ -43,14 +44,12 @@ app.use(cors());
 app.use(router);
 
 io.on('connection', (socket) => {
-  // console.log('a user connected', socket.id);
   socket.emit('welcome', 'Hello World!');
-});
 
-app.post('/test-socket', (req, res) => {
-  const { eventName, data } = req.body;
-  io.emit(eventName, data); // Emit the event to all connected clients
-  res.send({ success: true, message: `Emitted ${eventName}` });
+  socket.on('roomName', (roomName: string): void => {
+    socket.join(roomName);
+    console.log(roomName);
+  });
 });
 
 httpServer.listen(port, () => {
