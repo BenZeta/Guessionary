@@ -9,7 +9,7 @@ export default class UserController {
     try {
       const { roomId } = req.params;
 
-      const user = await prisma.room.findMany({
+      const user = await prisma.room.findUnique({
         where: {
           id: roomId,
         },
