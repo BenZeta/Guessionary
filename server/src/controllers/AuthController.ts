@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { PrismaClient } from '@prisma/client';
-
 import { signToken } from '../helpers/jwt';
+
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -17,7 +17,7 @@ export default class AuthController {
       });
 
       const access_token = signToken({
-        id: user.id,
+        userId: user.id,
         username: user.username,
       });
 

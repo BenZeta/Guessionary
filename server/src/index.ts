@@ -9,9 +9,22 @@ interface ServerToClientEvents {
   [event: string]: (...args: any[]) => void;
 }
 
+interface Room {
+  id: string;
+  name: string;
+  code: string;
+  isActive: boolean;
+  createdAt: Date;
+  gameId: string;
+  // Add other properties as needed
+}
+
 interface ClientToServerEvents {
   hello: () => void;
-  roomName: (roomName: string) => void;
+  roomName: (roomInfo: { roomName: string; username: string }) => void;
+  roomList: (rooms: Room[]) => void;
+  roomCreated: (room: Room) => void;
+  joinRoom: (targetedRoomId: string) => void;
 }
 
 interface InterServerEvents {
@@ -39,16 +52,30 @@ const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEve
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 
 app.use(router);
 
 io.on('connection', (socket) => {
-  socket.emit('welcome', 'Hello World!');
+  // console.log('A user connected:', socket.id);
 
-  socket.on('roomName', (roomName: string): void => {
-    socket.join(roomName);
-    console.log(roomName);
+  socket.on('roomCreated', (room: Room) => {
+    io.emit('roomCreated:server', room);
+  });
+
+  // Emit the current room list to the newly connected client
+  socket.on('roomList', (rooms: Room[]) => {
+    io.emit('roomList:server', rooms);
+  });
+
+  // Handle room creation requests (optional, based on future logic)
+  socket.on('joinRoom', (targetedRoomId: string) => {
+    socket.join(targetedRoomId);
+  });
+
+  // Handle client disconnection
+  socket.on('disconnect', () => {
+    console.log('A user disconnected:', socket.id);
   });
 });
 

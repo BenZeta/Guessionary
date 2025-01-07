@@ -6,10 +6,10 @@
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "typeRoots": ["./node_modules/@types", "./types"],
+    "typeRoots": ["./node_modules/@types", "./src/types"], // Adjusted to point to `src/types`
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "types/**/*"], // Ensure types folder is included in compilation
+  "include": ["src/**/*", "src/types/**/*", "src/types/express/index.d.ts"],
   "ts-node": {
     "files": true
   }

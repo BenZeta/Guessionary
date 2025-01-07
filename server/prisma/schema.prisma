@@ -3,39 +3,48 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // Change to your database provider
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
-  id            String   @id @default(uuid())
-  username      String   @unique
-  role          String   @default("Admin")
-  avatar        String   @default("https://avatars.dicebear.com/api/bottts/1.svg")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id            String         @id @unique @default(uuid())
+  username      String         @unique
+  avatar        String         @default("https://avatars.dicebear.com/api/bottts/1.svg")
+  gameId        String?        @unique
+  role          String         @default("Admin")
   contributions Contribution[]
-  scores        Score[] 
-  game          Game?    @relation(fields: [gameId], references: [id])
-  gameId        String?  @unique // Ensures only one game can be linked to a user
+  scores        Score[]
+  Game          Game?          @relation(fields: [gameId], references: [id])
+  Room          Room[]         @relation("RoomToUser")
+}
+
+model Room {
+  id        String   @id @unique @default(uuid())
+  name      String   @unique
+  code      String   @unique
+  isActive  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  gameId    String?  @unique
+  game      Game?    @relation(fields: [gameId], references: [id])
+  users     User[]   @relation("RoomToUser")
 }
 
 model Game {
-  id            String         @id @default(uuid())
+  id            String         @id @unique @default(uuid())
   code          String         @unique
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
+  userId        String?        @unique
   contributions Contribution[]
+  Room          Room?
   rounds        Round[]
   scores        Score[]
-  user          User?          
-  userId        String?        @unique // Ensures only one user can be linked to a game
+  user          User?
 }
 
 model Round {
-  id            String         @id @default(uuid())
+  id            String         @id @unique @default(uuid())
   gameId        String
   roundNumber   Int
   createdAt     DateTime       @default(now())
@@ -44,24 +53,24 @@ model Round {
 }
 
 model Contribution {
-  id             String           @id @default(uuid())
+  id             String           @id @unique @default(uuid())
   userId         String
   gameId         String
   roundId        String
   type           ContributionType
   content        String
   targetUserId   String?
-  originalWordId String?          // Link to the original word/drawing for guesses
+  originalWordId String?
   createdAt      DateTime         @default(now())
-  Contribution Contribution[]     @relation("OriginalWord")
   game           Game             @relation(fields: [gameId], references: [id])
   originalWord   Contribution?    @relation("OriginalWord", fields: [originalWordId], references: [id])
+  Contribution   Contribution[]   @relation("OriginalWord")
   round          Round            @relation(fields: [roundId], references: [id])
   user           User             @relation(fields: [userId], references: [id])
 }
 
 model Score {
-  id        String   @id @default(uuid())
+  id        String   @id @unique @default(uuid())
   userId    String
   gameId    String
   points    Int      @default(0)
