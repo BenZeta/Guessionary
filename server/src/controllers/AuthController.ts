@@ -21,7 +21,7 @@ export default class AuthController {
         username: user.username,
       });
 
-      res.status(200).json({ access_token });
+      res.status(200).json({ access_token, username: user.username });
     } catch (error) {
       console.log(error);
       next(error);
