@@ -15,7 +15,7 @@ model User {
   role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
-  game          Game?          @relation(fields: [gameId], references: [id])
+  Game          Game?          @relation(fields: [gameId], references: [id])
   Room          Room[]         @relation("RoomToUser")
 }
 
