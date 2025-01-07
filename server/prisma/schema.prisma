@@ -27,9 +27,8 @@ model Room {
   id          String   @id @default(uuid())
   name        String   @unique
   code        String   @unique           // Unique room code for easy sharing
-  isActive    Boolean  @default(true)    // To track if the room is currently active
+  isActive    Boolean  @default(false)    // To track if the room is currently active
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
   users       User[]                     // Users associated with this room
   game        Game?     @relation(fields: [gameId], references: [id])
   gameId      String?   @unique // Ensures only one game can be linked to a room
