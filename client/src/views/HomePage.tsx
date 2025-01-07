@@ -20,11 +20,13 @@ export default function HomePage() {
   }, []);
   return (
     <div>
+
       <h1>Home Page</h1>
       <input
         onChange={(e) => setRoomName(e.target.value)}
         type="text"
       />
+
     </div>
   );
 }
