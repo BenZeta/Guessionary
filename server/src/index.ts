@@ -9,6 +9,12 @@ interface ServerToClientEvents {
   [event: string]: (...args: any[]) => void;
 }
 
+type User = {
+  id: string;
+  username: string;
+  avatar: string;
+};
+
 interface Room {
   id: string;
   name: string;
@@ -16,7 +22,6 @@ interface Room {
   isActive: boolean;
   createdAt: Date;
   gameId: string;
-  // Add other properties as needed
 }
 
 interface ClientToServerEvents {
@@ -25,6 +30,7 @@ interface ClientToServerEvents {
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
   joinRoom: (targetedRoomId: string) => void;
+  userList: (user: { users: User[] }) => void;
 }
 
 interface InterServerEvents {
@@ -68,9 +74,13 @@ io.on('connection', (socket) => {
     io.emit('roomList:server', rooms);
   });
 
-  // Handle room creation requests (optional, based on future logic)
   socket.on('joinRoom', (targetedRoomId: string) => {
     socket.join(targetedRoomId);
+  });
+
+  // handle userList
+  socket.on('userList', (users) => {
+    socket.broadcast.emit('userList:server', users);
   });
 
   // Handle client disconnection
