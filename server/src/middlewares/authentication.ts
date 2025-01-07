@@ -9,15 +9,15 @@ export const authentication = async (req: Request, res: Response, next: NextFunc
     const token = authorization.split(' ')[1];
     const payload = verifyToken(token);
 
-    if (typeof payload === 'object' && 'username' in payload) {
-      req.loginInfo = {
-        username: payload.username,
-        userId: payload.userId,
-      };
-      next();
-    } else {
+    if (typeof payload === 'string') {
       throw { name: 'Unauthorized' };
     }
+
+    req.loginInfo = {
+      username: payload.username,
+      userId: payload.userId,
+    };
+    next();
   } catch (error) {
     res.status(401).json({ message: 'Unauthorized' });
   }

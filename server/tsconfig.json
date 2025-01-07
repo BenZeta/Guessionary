@@ -9,7 +9,7 @@
     "typeRoots": ["./node_modules/@types", "./src/types"], // Adjusted to point to `src/types`
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "src/types/**/*", "src/types/express"],
+  "include": ["src/**/*", "src/types/**/*", "src/types/express/index.d.ts"],
   "ts-node": {
     "files": true
   }
