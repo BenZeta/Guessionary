@@ -9,9 +9,21 @@ interface ServerToClientEvents {
   [event: string]: (...args: any[]) => void;
 }
 
+interface Room {
+  id: string;
+  name: string;
+  code: string;
+  isActive: boolean;
+  createdAt: Date;
+  gameId: string;
+  // Add other properties as needed
+}
+
 interface ClientToServerEvents {
   hello: () => void;
   roomName: (roomInfo: { roomName: string; username: string }) => void;
+  roomList: (rooms: Room[]) => void;
+  roomCreated: (room: Room) => void;
 }
 
 interface InterServerEvents {
@@ -44,16 +56,22 @@ app.use(cors({ origin: '*' }));
 app.use(router);
 
 io.on('connection', (socket) => {
-  socket.emit('welcome', 'Hello World!');
+  // console.log('A user connected:', socket.id);
 
-  // console.log(socket.handshake.auth);
+  socket.on('roomCreated', (room: Room) => {
+    io.emit('roomCreated:server', room);
+  });
 
-  socket.on('roomName', (roomInfo): void => {
-    // console.log(roomName, username);
-    socket.join(roomInfo.roomName);
+  // Emit the current room list to the newly connected client
+  socket.on('roomList', (rooms: Room[]) => {
+    io.emit('roomList:server', rooms);
+  });
 
-    console.log(`${roomInfo.username} joined room: ${roomInfo.roomName}`);
-    io.emit('roomList', io.sockets.adapter.rooms);
+  // Handle room creation requests (optional, based on future logic)
+
+  // Handle client disconnection
+  socket.on('disconnect', () => {
+    console.log('A user disconnected:', socket.id);
   });
 });
 
