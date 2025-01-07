@@ -53,6 +53,7 @@ io.on('connection', (socket) => {
     socket.join(roomInfo.roomName);
 
     console.log(`${roomInfo.username} joined room: ${roomInfo.roomName}`);
+    io.emit('roomList', io.sockets.adapter.rooms);
   });
 });
 
