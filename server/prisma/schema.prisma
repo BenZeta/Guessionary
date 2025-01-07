@@ -14,8 +14,6 @@ model User {
   username      String   @unique
   role          String   @default("Admin")
   avatar        String   @default("https://avatars.dicebear.com/api/bottts/1.svg")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
   contributions Contribution[]
   scores        Score[]
   game          Game?    @relation(fields: [gameId], references: [id])
