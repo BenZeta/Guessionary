@@ -129,7 +129,7 @@ export default class RoomController {
         },
       });
 
-      res.status(200).json({ message: 'Room left successfully' });
+      res.status(200).json({ message: 'successfully left the room' });
     } catch (error) {
       console.log('error', error);
       next(error);

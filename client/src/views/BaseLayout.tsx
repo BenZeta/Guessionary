@@ -9,9 +9,8 @@ export default function BaseLayout() {
     if (!localStorage.access_token) {
       Swal.fire({
         title: "please login first",
-        text: "Do you want to continue",
         icon: "error",
-        confirmButtonText: "Cool",
+        confirmButtonText: "yes",
       });
       navigate("/login");
     }

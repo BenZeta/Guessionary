@@ -12,9 +12,8 @@ export default function LoginPage() {
     if (localStorage.access_token) {
       Swal.fire({
         title: "you are already logged in",
-        text: "Do you want to continue",
         icon: "error",
-        confirmButtonText: "Cool",
+        confirmButtonText: "yes",
       });
       navigate("/");
     }
