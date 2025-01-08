@@ -6,7 +6,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 
 interface ServerToClientEvents {
-  [event: string]: (...args: any[]) => void;
+  [event: string]: (...args: unknown[]) => void;
 }
 
 type User = {
