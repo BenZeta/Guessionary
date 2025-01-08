@@ -48,7 +48,7 @@ export default function Game1Page() {
     }
   }, []);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
       const { data } = await axios.post(
@@ -121,9 +121,11 @@ export default function Game1Page() {
               {room?.users.map((user, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
-                >
-                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
+                  <img
+                    src={user?.avatar}
+                    className="w-20 h-20 rounded-full"
+                  />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
               ))}

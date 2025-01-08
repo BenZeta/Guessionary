@@ -54,6 +54,7 @@ export default class GameController {
       const { words } = req.body;
       const userId = req.loginInfo?.userId;
       const { gameId, roomId } = req.params;
+      console.log(gameId, '<<<', roomId);
 
       const game = await prisma.game.findUnique({ where: { id: gameId } });
       if (!game) throw { name: 'NotFound', message: 'Data not found' };
