@@ -15,7 +15,7 @@ model User {
   role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
-  Game          Game?          @relation(fields: [gameId], references: [id])
+  Game          Game?          @relation(fields: [gameId], references: [id]) // One user can belong to one game at a time
   Room          Room[]         @relation("RoomToUser")
 }
 
@@ -23,7 +23,6 @@ model Room {
   id        String   @id @unique @default(uuid())
   name      String   @unique
   code      String   @unique
-  isActive  Boolean  @default(false)
   createdAt DateTime @default(now())
   gameId    String?  @unique
   game      Game?    @relation(fields: [gameId], references: [id])
@@ -32,15 +31,13 @@ model Room {
 
 model Game {
   id            String         @id @unique @default(uuid())
-  code          String         @unique
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
-  userId        String?        @unique
   contributions Contribution[]
   Room          Room?
   rounds        Round[]
   scores        Score[]
-  user          User?
+  users         User[]         
 }
 
 model Round {

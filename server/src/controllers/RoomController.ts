@@ -30,7 +30,6 @@ export default class RoomController {
         data: {
           name: roomName,
           code: randomLetters,
-          isActive: false, // Default value
           users: {
             connect: { id: user.id }, // Associate the user with the room
           },
@@ -53,8 +52,6 @@ export default class RoomController {
       const { targetedRoomId } = req.body;
 
       const userId = req.loginInfo?.userId; // Ensure `req.loginInfo` is populated correctly
-
-      console.log('Joining room with userId:', userId);
 
       // Find the room and include existing users
       const room = await prisma.room.findUnique({
@@ -98,8 +95,6 @@ export default class RoomController {
 
       const userId = req.loginInfo?.userId;
 
-      console.log('Leaving room with userId:', userId);
-
       const room = await prisma.room.findUnique({
         where: { id: targetedRoomId },
         include: {
@@ -112,8 +107,6 @@ export default class RoomController {
       }
 
       const userInRoom = room.users.find((user) => user.id === userId);
-
-      console.log('USER IN ROOM', userInRoom);
 
       if (!userInRoom) {
         res.status(200).json({ message: 'User is not in the room' });
@@ -129,7 +122,14 @@ export default class RoomController {
         },
       });
 
-      res.status(200).json({ message: 'Room left successfully' });
+      const updatedRoom = await prisma.room.findUnique({
+        where: { id: targetedRoomId },
+        include: {
+          users: true,
+        },
+      });
+
+      res.status(200).json(updatedRoom);
     } catch (error) {
       console.log('error', error);
       next(error);
