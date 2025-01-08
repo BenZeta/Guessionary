@@ -27,4 +27,23 @@ export default class AuthController {
       next(error);
     }
   }
+
+  static async deleteUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const username = req.loginInfo?.username;
+
+      await prisma.user.delete({
+        where: {
+          username,
+        },
+      });
+
+      console.log('User deleted successfully');
+
+      res.status(200).json({ message: 'User deleted successfully' });
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }

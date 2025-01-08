@@ -116,6 +116,22 @@ export default function HomePage() {
     });
   };
 
+  async function handleLogout() {
+    try {
+      const { data } = await axios.delete(`${baseUrl}/delete-user`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      console.log(data);
+      localStorage.clear();
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false; // Mark the first render as handled
@@ -147,6 +163,12 @@ export default function HomePage() {
       {/* Header */}
       <div className="flex justify-center items-center p-4 bg-black/20">
         <h1 className="text-2xl text-white font-bold">Welcome to Game Rooms</h1>
+        <button
+          onClick={handleLogout}
+          className="mt-4 bg-red-500 mx-4 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+        >
+          Back to Home
+        </button>
       </div>
 
       {/* Main Content */}
