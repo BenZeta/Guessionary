@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import Navbar from "../components/Navbar";
 
 export default function BaseLayout() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function BaseLayout() {
 
   return (
     <>
+      <Navbar />
       <Outlet />
     </>
   );
