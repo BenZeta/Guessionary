@@ -40,6 +40,22 @@ export default function GamePage() {
     }
   };
 
+  const handleStartGame = async () => {
+    try {
+      const { data } = await axios.get(baseUrl + `/game/start/${roomId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      socket.emit("startGame", data);
+
+      // navigate("/game1");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const leaveRoom = async () => {
     try {
       const { data } = await axios.patch(
@@ -87,8 +103,13 @@ export default function GamePage() {
       });
     });
 
+    socket.on("startGame:server", (data) => {
+      console.log(data);
+    });
+
     return () => {
       socket.off("userList:server");
+      socket.off("startGame:server");
       socket.disconnect(); // Cleanup on unmount
     };
   }, []);
@@ -119,8 +140,11 @@ export default function GamePage() {
             </div>
 
             {/* Create Room Button */}
-            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
-              Create New Room
+            <button
+              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+              onClick={handleStartGame}
+            >
+              Start Game
             </button>
 
             <button

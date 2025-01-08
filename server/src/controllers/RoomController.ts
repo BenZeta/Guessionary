@@ -30,7 +30,6 @@ export default class RoomController {
         data: {
           name: roomName,
           code: randomLetters,
-          isActive: false, // Default value
           users: {
             connect: { id: user.id }, // Associate the user with the room
           },
