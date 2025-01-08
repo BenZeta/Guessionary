@@ -4,57 +4,44 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default class GameController {
-  static async startGame(req: Request, res: Response, next: NextFunction) {
+  static async startGame(req: Request<{ roomId: string; gameId: string }>, res: Response, next: NextFunction) {
     try {
-      const { roomId } = req.params;
+      const { roomId, gameId } = req.params;
 
-      // Fetch the room and its users
       const room = await prisma.room.findUnique({
-        where: { id: roomId },
-        include: { users: true }, // Include users in the room
-      });
-
-      console.log(room);
-
-      if (!room) throw { name: 'NotFound', message: 'Room not found' };
-
-      // Use a transaction to create the game and update the room
-      const game = await prisma.$transaction(async (tx) => {
-        // Create the game
-        const createdGame = await tx.game.create({
-          data: {
-            isActive: true,
-            createdAt: new Date(),
-          },
-        });
-
-        // Update the room with the gameId
-        await tx.room.update({
-          where: { id: roomId },
-          data: { gameId: createdGame.id },
-        });
-
-        for (const user of room.users) {
-          await tx.user.update({
-            where: { id: user.id },
-            data: { gameId: createdGame.id },
-          });
-        }
-
-        return createdGame;
-      });
-
-      const newGame = await prisma.game.findUnique({
-        where: { id: game.id },
+        where: {
+          id: roomId,
+        },
         include: {
-          Room: true,
           users: true,
         },
       });
+      if (!room) throw { name: 'NotFound', message: 'Data not Found' };
 
-      res.status(201).json({
-        message: 'Game has started',
-        game: newGame,
+      await prisma.room.update({
+        where: {
+          id: roomId,
+        },
+        data: {
+          gameId,
+        },
+      });
+
+      const userIds = room.users.map((user) => user.id); // Extract user IDs
+
+      await prisma.user.updateMany({
+        where: {
+          id: {
+            in: userIds, // Update only the users in the room
+          },
+        },
+        data: {
+          gameId,
+        },
+      });
+
+      res.status(200).json({
+        message: 'Game is starting..',
       });
     } catch (error) {
       console.log(error);

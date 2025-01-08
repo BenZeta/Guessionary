@@ -33,6 +33,7 @@ model Game {
   id            String         @id @unique @default(uuid())
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
+  name          String
   contributions Contribution[]
   Room          Room?
   rounds        Round[]
