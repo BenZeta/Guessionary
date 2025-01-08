@@ -79,7 +79,11 @@ export default function LobbyPage() {
         },
       });
 
-      socket.emit("startGame", data);
+      socket.emit("startGame", { gameId, roomId });
+
+      setTimeout(() => {
+        socket.emit("endRound1", `${roomId}`);
+      }, 30000);
 
       navigate(`/round_1/${roomId}/${gameId}`);
     } catch (error) {
@@ -158,7 +162,8 @@ export default function LobbyPage() {
     });
 
     socket.on("startGame:server", (data) => {
-      console.log(data);
+      console.log("Game started:", data);
+      navigate(`/round_1/${data.roomId}/${data.gameId}`);
     });
 
     socket.on("leaveRoom:server", (data) => {
