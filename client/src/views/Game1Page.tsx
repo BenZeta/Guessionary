@@ -35,11 +35,31 @@ export default function Game1Page() {
 
       setRoom(data);
 
+      console.log("room >>>>>>>", data);
+
       socket.emit("userList", data?.users);
     } catch (error) {
       console.log(error);
     }
   };
+
+  async function getContributions() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/game/word`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      console.log(">>>>>>>>>>>>>>> DATA CONST", data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getContributions();
+  }, []);
 
   useEffect(() => {
     if (isFirstRender.current) {
