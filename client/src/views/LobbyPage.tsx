@@ -183,7 +183,7 @@ export default function LobbyPage() {
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Your Profile</h2>
 
             {/* Grid Content */}
-            <div className="grid grid-cols-3 gap-5 rounded-lg w-full overflow-y-auto scrollbar p-1">
+            <div className="grid grid-cols-4 gap-5 rounded-lg w-full overflow-y-auto scrollbar p-1">
               {loading ? (
                 <div className="flex justify-center h-full items-center">
                   <img
@@ -197,17 +197,17 @@ export default function LobbyPage() {
                     return (
                       <div
                         key={user.id}
-                        className="bg-gray-300/15 border border-black/20 rounded-xl min-h-[300px] min-w-[300px] flex items-center justify-center relative">
+                        className="bg-gray-300/10 rounded-xl flex flex-col items-center justify-between relative">
                         {/* Image placed in the background */}
 
                         <img
                           src={user.avatar}
-                          className="absolute inset-0 w-full h-full object-cover rounded-xl z-0"
+                          className="w-full h-full object-cover rounded-t-xl"
                           alt=""
                         />
 
                         {/* Name div overlay */}
-                        <div className="absolute bottom-0 w-full bg-black/90 text-white p-5 rounded-b-xl text-center z-10">{user.username}</div>
+                        <div className="w-full bg-black/0 text-white p-4 rounded-b-xl text-center">{user.username}</div>
                       </div>
                     );
                   })}

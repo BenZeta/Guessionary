@@ -124,7 +124,7 @@ export default function Game1Page() {
                 <div className="bg-gray-200/10 h-full">
                   <div className="flex flex-col justify-center h-full items-center p-5">
                     <img
-                      src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-playful-kitten-kitty-cute-cat-smile-png-image_10263743.png"
+                      src=""
                       alt=""
                     />
                     <input

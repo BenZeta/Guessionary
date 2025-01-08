@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [avatar, setAvatar] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     if (localStorage.access_token) {
       Swal.fire({

@@ -23,7 +23,7 @@ export default function App() {
             element={<LobbyPage />}
           />
           <Route
-            path="/game/:roomId"
+            path="/game1/"
             element={<Game1Page />}
           />
         </Route>
