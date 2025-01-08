@@ -1,10 +1,14 @@
-import React, { useRef, useLayoutEffect, useState } from "react";
+import { useRef, useLayoutEffect, useState } from "react";
 import * as fabric from "fabric";
+import axios from "axios";
+import { baseUrl } from "../constants/baseUrl";
+import { useParams } from "react-router";
 
 export default function Game2Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
+  const { gameId } = useParams();
 
   useLayoutEffect(() => {
     const canvasElement = canvasRef.current;
@@ -41,7 +45,18 @@ export default function Game2Page() {
 
   const handleSubmit = async () => {
     if (canvas) {
-      const dataUrl = canvas.toDataURL();
+      const dataUrl: string = canvas.toDataURL();
+
+      await axios.post(
+        `${baseUrl}/game/post-url/round_2/${gameId}`,
+        { dataUrl },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
+
       console.log("Canvas Data URL:", dataUrl);
     } else {
       console.error("Canvas belum siap!");

@@ -14,7 +14,7 @@ export default function App() {
         <Route element={<BaseLayout />}>
           <Route index element={<HomePage />} />
           <Route path="/game/:roomId" element={<Game1Page />} />
-          <Route path="/draw/:roomId" element={<Game2Page />} />
+          <Route path="/draw/:roomId/:gameId" element={<Game2Page />} />
         </Route>
       </Routes>
     </BrowserRouter>

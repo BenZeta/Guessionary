@@ -25,6 +25,7 @@ export default function LobbyPage() {
   const [loading, setLoading] = useState(false);
   const [room, setRoom] = useState([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [gameId, setGameId] = useState<string>("");
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
   const { roomId } = useParams();
@@ -49,7 +50,7 @@ export default function LobbyPage() {
 
   const handleStartGame = async () => {
     try {
-      const { data } = await axios.get(baseUrl + `/game/start/${roomId}`, {
+      const { data } = await axios.get(baseUrl + `/game/start/${roomId}/${gameId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.access_token}`,
         },
