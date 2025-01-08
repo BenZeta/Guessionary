@@ -22,7 +22,10 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(baseUrl + "/login", { username });
+      const { data } = await axios.post(baseUrl + "/login", {
+        // avatar,
+        username,
+      });
 
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("username", data.username);
@@ -35,17 +38,22 @@ export default function LoginPage() {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="username">Username</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+      <div>
+        <img
+          className="h-7"
+          src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299"
+          alt="logo"
         />
-        <button type="submit">Submit</button>
-      </form>
+      </div>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <input
+            onChange={(e) => setUsername(e.target.value)}
+            type="text"
+            placeholder="username..."
+          />
+        </form>
+      </div>
     </div>
   );
 }

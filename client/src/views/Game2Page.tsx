@@ -4,7 +4,7 @@ import * as fabric from "fabric";
 export default function Game2Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [canvas, setCanvas] = useState<any>(null);
+  const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
 
   useLayoutEffect(() => {
     const canvasElement = canvasRef.current;
@@ -12,11 +12,12 @@ export default function Game2Page() {
 
     if (!canvasElement || !containerElement) return;
 
-    // Set canvas size dynamically
+    // Ambil dimensi container
     const width = containerElement.offsetWidth;
     const height = containerElement.offsetHeight;
 
-    const canvas = new fabric.Canvas(canvasElement, {
+    // Inisialisasi canvas Fabric.js
+    const fabricCanvas = new fabric.Canvas(canvasElement, {
       height,
       width,
       isDrawingMode: true,
@@ -24,21 +25,36 @@ export default function Game2Page() {
       selection: false,
     });
 
-    setCanvas(canvas);
+    // Set brush default
+    fabricCanvas.freeDrawingBrush = new fabric.PencilBrush(fabricCanvas);
+    fabricCanvas.freeDrawingBrush.color = "#000000";
+    fabricCanvas.freeDrawingBrush.width = 5;
 
-    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-    canvas.freeDrawingBrush.color = "#000000";
-    canvas.freeDrawingBrush.width = 5;
+    // Simpan canvas ke state
+    setCanvas(fabricCanvas);
 
-    // Cleanup on unmount
+    // Cleanup pada unmount
     return () => {
-      canvas.dispose();
+      fabricCanvas.dispose();
     };
   }, []);
 
-  async function handleSubmit() {
-    const data = await canvas.toDataURL();
-  }
+  const handleSubmit = async () => {
+    if (canvas) {
+      const dataUrl = canvas.toDataURL();
+      console.log("Canvas Data URL:", dataUrl);
+    } else {
+      console.error("Canvas belum siap!");
+    }
+  };
+
+  const handleClear = () => {
+    if (canvas) {
+      canvas.clear();
+    } else {
+      console.error("Canvas belum siap!");
+    }
+  };
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
@@ -49,50 +65,37 @@ export default function Game2Page() {
 
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: Room List */}
+        {/* Left Panel */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
-            <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://stickershop.line-scdn.net/stickershop/v1/product/11365/LINEStorePC/main.png?v=19"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haloooooooooooooooooo</div>
-              </div>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Player</h2>
+            <div className="flex-1 overflow-y-auto flex flex-col gap-4 p-1">
+              {/* Tambahkan elemen player di sini */}
             </div>
-
-            {/* Create Room Button */}
             <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
               Create New Room
             </button>
           </div>
         </div>
 
-        {/* Right Panel: Profile */}
+        {/* Right Panel */}
         <div className="w-9/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game</h2>
-
-            {/* Grid Content */}
-            <div className="flex-1 w-full h-full relative bg-white">
-              <div ref={containerRef} style={{ width: "100%", height: "95%" }}>
-                <canvas ref={canvasRef}></canvas>
-              </div>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Game</h2>
+            <div className="flex-1 relative" ref={containerRef}>
+              <canvas ref={canvasRef}></canvas>
             </div>
             <button
               onClick={handleSubmit}
               className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
             >
-              submit
+              Submit
             </button>
             <button
-              onClick={() => canvas.clear()}
-              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+              onClick={handleClear}
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
             >
-              clear
+              Clear
             </button>
           </div>
         </div>

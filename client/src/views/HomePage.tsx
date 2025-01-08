@@ -54,7 +54,7 @@ export default function HomePage() {
         return;
       }
 
-      const { data } = await axios.patch(
+      await axios.patch(
         baseUrl + "/join-room",
         { targetedRoomId },
         {
@@ -65,7 +65,7 @@ export default function HomePage() {
       );
 
       socket.emit("joinRoom", `${targetedRoomId}`);
-      navigate(`/game/${targetedRoomId}`);
+      navigate(`/lobby/${targetedRoomId}`);
     } catch (error) {
       console.log(error);
     }
@@ -126,22 +126,6 @@ export default function HomePage() {
     });
   };
 
-  async function handleLogout() {
-    try {
-      const { data } = await axios.delete(`${baseUrl}/delete-user`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.access_token}`,
-        },
-      });
-
-      console.log(data);
-      localStorage.clear();
-      navigate("/login");
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false; // Mark the first render as handled
@@ -170,21 +154,6 @@ export default function HomePage() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 bg-black/20">
-        <button className="border-2 border-black/20 rounded-xl bg-black/10 p-2 text-white">
-          Back to Home
-        </button>
-        <h1 className="text-2xl text-white font-bold">Welcome to Game Rooms</h1>
-      </div>
-      <div className="pl-10 pt-3 bg-white/10">
-        <button
-          onClick={handleLogout}
-          className="mt-4 bg-red-500 mx-4 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-        >
-          Back to Home
-        </button>
-      </div>
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel: Room List */}
@@ -209,22 +178,11 @@ export default function HomePage() {
                         targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"
                       }`}
                     >
+                      {/* className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}> */}
                       <div>{room.name}</div>
                     </button>
                   );
                 })}
-                {/* <button className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Room List
-            </h2>
-            <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
-                <div>Halo</div>
-              </button>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
-                <div>Room</div>
-              </div> */}
-                {/* Add more rooms dynamically if needed */}
               </div>
             )}
 
