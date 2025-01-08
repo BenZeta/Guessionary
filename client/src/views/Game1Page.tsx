@@ -48,7 +48,7 @@ export default function Game1Page() {
     }
   }, []);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: any) {
     e.preventDefault();
     try {
       const { data } = await axios.post(
