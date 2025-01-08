@@ -20,7 +20,8 @@ type Room = {
 
 export default function Game1Page() {
   const [room, setRoom] = useState<Room | null>(null);
-  const { roomId } = useParams();
+  const { roomId, gameId } = useParams();
+  const [words, setWords] = useState<string>("");
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
 
@@ -46,6 +47,25 @@ export default function Game1Page() {
       getUser(); // Call the function only once
     }
   }, []);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post(
+        `${baseUrl}/game/round_1/${roomId}/${gameId}`,
+        { words },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
+
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   useEffect(() => {
     // Initialize socket connection
@@ -96,9 +116,7 @@ export default function Game1Page() {
         {/* Left Panel: Room List */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceLeft">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Player
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
               {room?.users.map((user, index) => (
                 <div
@@ -116,9 +134,7 @@ export default function Game1Page() {
         {/* Right Panel: Profile */}
         <div className="w-9/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceDown">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Game
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game</h2>
 
             {/* Grid Content */}
             <div className="gap-5 rounded-lg w-full h-full overflow-y-auto scrollbar flex-1 p-1">
@@ -129,10 +145,13 @@ export default function Game1Page() {
                       src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-playful-kitten-kitty-cute-cat-smile-png-image_10263743.png"
                       alt=""
                     />
-                    <input
-                      className="w-1/2 rounded-2xl p-2 text-center border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Type here..."
-                    />
+                    <form onSubmit={handleSubmit}>
+                      <input
+                        onChange={(e) => setWords(e.target.value)}
+                        className="w-1/2 rounded-2xl p-2 text-center border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Type here..."
+                      />
+                    </form>
                   </div>
                 </div>
               </div>

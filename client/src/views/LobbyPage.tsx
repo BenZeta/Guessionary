@@ -65,8 +65,9 @@ export default function LobbyPage() {
       });
 
       setGames(data);
+      console.log(">>>>>>", data);
     } catch (error) {
-      console.log(error);
+      console.log(">>>>>>>", error);
     }
   };
 
@@ -80,7 +81,7 @@ export default function LobbyPage() {
 
       socket.emit("startGame", data);
 
-      // navigate("/game1");
+      navigate("/round_1/:roomId/:gameId");
     } catch (error) {
       console.log(error);
     }
@@ -186,11 +187,10 @@ export default function LobbyPage() {
               {games.map((game) => (
                 <div
                   key={game.id}
-                  className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300">
+                  className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300"
+                >
                   {/* Game Image Placeholder */}
-                  <div
-                    className="absolute inset-0"
-                    onClick={() => setGameId(game.id)}>
+                  <div className="absolute inset-0" onClick={() => setGameId(game.id)}>
                     <img
                       src={`https://via.placeholder.com/150x75?text=${game.name}`} // Replace with actual image URLs
                       alt={game.name}
