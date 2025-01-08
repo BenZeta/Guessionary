@@ -169,15 +169,17 @@ export default function GamePage() {
                 </div>
               ))}
             </div>
-
+            <button
               className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-              onClick={handleStartGame}>
+              onClick={handleStartGame}
+            >
               Start Game
             </button>
 
             <button
               onClick={leaveRoom}
-              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+            >
               Leave Room
             </button>
           </div>
@@ -195,7 +197,10 @@ export default function GamePage() {
               <div className="bg-gray-300/50 p-5 h-full rounded-lg">
                 <div className="bg-gray-200/10 h-full">
                   <div className="flex flex-col justify-center h-full items-center p-5">
-                    <img src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-playful-kitten-kitty-cute-cat-smile-png-image_10263743.png" alt="" />
+                    <img
+                      src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-playful-kitten-kitty-cute-cat-smile-png-image_10263743.png"
+                      alt=""
+                    />
                     <input
                       className="w-1/2 rounded-2xl p-2 text-center border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Type here..."
