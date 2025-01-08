@@ -61,6 +61,8 @@ export default function Game1Page() {
         }
       );
 
+      socket.emit("submitWords", { roomId, username: localStorage.username, words });
+
       console.log(data);
     } catch (error) {
       console.log(error);
@@ -96,7 +98,19 @@ export default function Game1Page() {
       setRoom(data.updatedRoom);
     });
 
+    socket.on("receiveWords", ({ words }) => {
+      console.log("New words received:", words);
+      setWords(words); // Update state with the new words
+    });
+
+    socket.on("endRound1:server", (roomId) => {
+      console.log("Round 1 ended for room", roomId);
+
+      navigate(`/draw/${roomId}/${gameId}`);
+    });
+
     return () => {
+      socket.off("receiveWords");
       socket.off("userList:server");
       socket.off("startGame:server");
       socket.off("serverLeaveRoom");

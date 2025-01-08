@@ -38,7 +38,9 @@ interface ClientToServerEvents {
   joinRoom: (targetedRoomId: string) => void;
   leaveRoom: (data: { roomId: string; updatedRoom: Room }) => void;
   userList: (user: { users: User[] }) => void;
-  startGame: (data: { message: string; game: Game }) => void;
+  startGame: (data: { roomId: string; gameId: string }) => void;
+  submitWords: (data: { roomId: string; username: string; words: string }) => void;
+  endRound1: (roomId: string) => void;
 }
 
 interface InterServerEvents {
@@ -49,6 +51,13 @@ interface SocketData {
   name: string;
   age: number;
 }
+
+interface PlayerWords {
+  username: string;
+  words: string;
+}
+
+const roomWords: { [roomId: string]: PlayerWords[] } = {}; // Store words for each room
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -71,40 +80,75 @@ app.use(cors({ origin: '*' }));
 app.use(router);
 
 io.on('connection', (socket) => {
-  // console.log('A user connected:', socket.id);
-
+  // Room creation
   socket.on('roomCreated', (room: Room) => {
     io.emit('roomCreated:server', room);
   });
 
-  // Emit the current room list to the newly connected client
+  // Emit the current room list
   socket.on('roomList', (rooms: Room[]) => {
     io.emit('roomList:server', rooms);
   });
 
-  // Handle join room
+  // Handle joining a room
   socket.on('joinRoom', (targetedRoomId) => {
     socket.join(targetedRoomId);
     console.log(`User joined room: ${targetedRoomId}`);
   });
 
-  // Handle leave room && send updated room with users
+  // Handle leaving a room
   socket.on('leaveRoom', (data) => {
-    console.log(data.updatedRoom, '<<<<<');
-
     console.log('leaveRoom event triggered', data.roomId);
     io.emit('leaveRoom:server', data);
     socket.leave(data.roomId);
   });
 
-  // handle start game
-  socket.on('startGame', (data: { message: string; game: Game }) => {
-    io.emit('startGame:server', data);
+  // start game
+  socket.on('startGame', (data) => {
+    console.log(`Starting game ${data.gameId} in room ${data.roomId}`);
+
+    // Broadcast to all clients in the room that the game has started
+    io.emit('startGame:server', { gameId: data.gameId, roomId: data.roomId });
   });
 
-  // handle userList
+  // Op
+
+  // User list update
   socket.on('userList', (users) => {
     socket.broadcast.emit('userList:server', users);
+  });
+
+  // Collect words for Round 1
+  socket.on('submitWords', ({ roomId, username, words }: { roomId: string; username: string; words: string }) => {
+    if (!roomWords[roomId]) {
+      roomWords[roomId] = [];
+    }
+    roomWords[roomId].push({ username, words });
+    console.log(`Words submitted for room ${roomId}:`, roomWords[roomId]);
+  });
+
+  // End Round 1 and redistribute words
+  socket.on('endRound1', (roomId) => {
+    const players = roomWords[roomId];
+    if (!players || players.length === 0) {
+      console.error(`No words found for room ${roomId}`);
+      return;
+    }
+
+    // Shuffle words
+    const shuffledWords = shuffleArray(players.map((player) => player.words));
+
+    // Assign shuffled words to players
+    players.forEach((player, index) => {
+      const newWords = shuffledWords[index];
+      io.to(player.username).emit('receiveWords', { words: newWords });
+    });
+
+    // Clear words for the room to prepare for the next round
+    roomWords[roomId] = [];
+    console.log(`Round 1 ended for room ${roomId}`);
+
+    io.emit('endRound1:server', roomId);
   });
 
   // Handle client disconnection
@@ -112,6 +156,15 @@ io.on('connection', (socket) => {
     console.log('A user disconnected:', socket.id);
   });
 });
+
+// Utility function to shuffle an array
+function shuffleArray<T>(array: T[]): T[] {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 httpServer.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
