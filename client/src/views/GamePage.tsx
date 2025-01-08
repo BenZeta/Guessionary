@@ -58,6 +58,7 @@ export default function GamePage() {
 
   const leaveRoom = async () => {
     try {
+      // Step 1: Send request to backend to leave the room
       const { data } = await axios.patch(
         `${baseUrl}/leave-room`,
         { targetedRoomId: roomId },
@@ -68,8 +69,10 @@ export default function GamePage() {
         }
       );
 
-      socket.emit("leaveRoom", `${roomId}`);
+      // Step 2: Emit the "leaveRoom" event to the server (optional)
+      socket.emit("leaveRoom", { roomId: roomId, updatedRoom: data });
 
+      // Optionally navigate after the user has left the room
       navigate(`/`);
     } catch (error) {
       console.log(error);
@@ -107,9 +110,15 @@ export default function GamePage() {
       console.log(data);
     });
 
+    socket.on("leaveRoom:server", (data) => {
+      console.log("leaving", data.roomId);
+      setRoom(data.updatedRoom);
+    });
+
     return () => {
       socket.off("userList:server");
       socket.off("startGame:server");
+      socket.off("serverLeaveRoom");
       socket.disconnect(); // Cleanup on unmount
     };
   }, []);
