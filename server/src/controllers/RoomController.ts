@@ -112,7 +112,6 @@ export default class RoomController {
       }
 
       const userInRoom = room.users.find((user) => user.id === userId);
-      console.log('>>>>>>>>>>>>>>>>>>>', room.users);
 
       console.log('USER IN ROOM', userInRoom);
 
