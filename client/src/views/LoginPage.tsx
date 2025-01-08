@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { baseUrl } from "../constants/baseUrl";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
-import { Avatar } from "../helpers/avatar";
+import { Avatar } from "../helpers/Avatar";
 
 export default function LoginPage() {
   const [avatar, setAvatar] = useState<string>("");
@@ -95,6 +95,15 @@ export default function LoginPage() {
               Start
             </button>
           </div>
+        </form>
+      </div>
+      <div>
+        <form onSubmit={handleLogin}>
+          <input
+            onChange={(e) => setUsername(e.target.value)}
+            type="text"
+            placeholder="username..."
+          />
         </form>
       </div>
     </div>

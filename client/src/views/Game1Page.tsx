@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from "react";
 import { baseUrl } from "../constants/baseUrl";
 import { useNavigate, useParams } from "react-router";
 import { socket } from "../socket/socket";
-import Toastify from "toastify-js";
 
 type User = {
   id: string;
@@ -19,7 +18,7 @@ type Room = {
   users: User[];
 };
 
-export default function GamePage() {
+export default function Game1Page() {
   const [room, setRoom] = useState<Room | null>(null);
   const { roomId } = useParams();
   const isFirstRender = useRef(true);
@@ -36,64 +35,6 @@ export default function GamePage() {
       setRoom(data);
 
       socket.emit("userList", data?.users);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleStartGame = async () => {
-    try {
-      const { data } = await axios.get(baseUrl + `/game/start/${roomId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.access_token}`,
-        },
-      });
-
-      socket.emit("startGame", data);
-
-      // navigate("/game1");
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const leaveRoom = async () => {
-    try {
-      // Step 1: Send request to backend to leave the room
-      const { data } = await axios.patch(
-        `${baseUrl}/leave-room`,
-        { targetedRoomId: roomId },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.access_token}`,
-          },
-        }
-      );
-
-      Toastify({
-        text: data.message,
-        duration: 3000,
-        close: true,
-        gravity: "bottom", // `top` or `bottom`
-        position: "right", // `left`, `center` or `right`
-        stopOnFocus: true, // Prevents dismissing of toast on hover
-        style: {
-          background: "green",
-          color: "#ffffff", // Teks putih
-          borderRadius: "8px", // Membuat sudut lebih bulat
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Memberikan bayangan
-          padding: "10px 20px", // Menambah ruang dalam
-          fontFamily: "'Roboto', sans-serif", // Sesuaikan dengan font umum
-          fontSize: "14px",
-        },
-        onClick: function () {}, // Callback setelah klik
-      }).showToast();
-
-      // Step 2: Emit the "leaveRoom" event to the server (optional)
-      socket.emit("leaveRoom", { roomId: roomId, updatedRoom: data });
-
-      // Optionally navigate after the user has left the room
-      navigate(`/`);
     } catch (error) {
       console.log(error);
     }
@@ -169,19 +110,6 @@ export default function GamePage() {
                 </div>
               ))}
             </div>
-            <button
-              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-              onClick={handleStartGame}
-            >
-              Start Game
-            </button>
-
-            <button
-              onClick={leaveRoom}
-              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-            >
-              Leave Room
-            </button>
           </div>
         </div>
 

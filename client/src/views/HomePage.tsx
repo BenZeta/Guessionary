@@ -54,7 +54,7 @@ export default function HomePage() {
         return;
       }
 
-      const { data } = await axios.patch(
+      await axios.patch(
         baseUrl + "/join-room",
         { targetedRoomId },
         {
@@ -65,7 +65,7 @@ export default function HomePage() {
       );
 
       socket.emit("joinRoom", `${targetedRoomId}`);
-      navigate(`/game/${targetedRoomId}`);
+      navigate(`/lobby/${targetedRoomId}`);
     } catch (error) {
       console.log(error);
     }
@@ -89,10 +89,8 @@ export default function HomePage() {
       color: "#edf2f7", // white text color for contrast
       customClass: {
         input: "px-4 py-2 rounded-md bg-teal-700 text-white", // Apply theme styles
-        confirmButton:
-          "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
-        cancelButton:
-          "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        confirmButton: "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        cancelButton: "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
       },
       preConfirm: (inputRoomName) => {
         if (!inputRoomName) {
@@ -126,22 +124,6 @@ export default function HomePage() {
     });
   };
 
-  async function handleLogout() {
-    try {
-      const { data } = await axios.delete(`${baseUrl}/delete-user`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.access_token}`,
-        },
-      });
-
-      console.log(data);
-      localStorage.clear();
-      navigate("/login");
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false; // Mark the first render as handled
@@ -170,31 +152,13 @@ export default function HomePage() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 bg-black/20">
-      <button className="border-2 border-black/20 rounded-xl bg-black/10 p-2 text-white">Back to Home</button>
-        <h1 className="text-2xl text-white font-bold">Welcome to Game Rooms</h1>
-        
-      </div>
-      <div className="pl-10 pt-3 bg-white/10">
-
-        <button
-          onClick={handleLogout}
-          className="mt-4 bg-red-500 mx-4 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-        >
-          Back to Home
-        </button>
-
-      </div>
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel: Room List */}
 
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Room List
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Room List</h2>
             {loading ? (
               <div className="flex justify-center h-full items-center">
                 <img
@@ -211,28 +175,11 @@ export default function HomePage() {
                       onClick={() => {
                         setTargetedRoomId(room.id);
                       }}
-                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${
-                        targetedRoomId === room.id
-                          ? "bg-teal-500"
-                          : "bg-black/20"
-                      }`}
-                    >
+                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}>
                       <div>{room.name}</div>
                     </button>
                   );
                 })}
-                {/* <button className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Room List
-            </h2>
-            <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
-                <div>Halo</div>
-              </button>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer hover:bg-teal-500">
-                <div>Room</div>
-              </div> */}
-                {/* Add more rooms dynamically if needed */}
               </div>
             )}
 
@@ -240,14 +187,12 @@ export default function HomePage() {
             <div className="flex justify-center w-full space-x-5">
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleSwal}
-              >
+                onClick={handleSwal}>
                 Create New Room
               </button>
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleJoinRoom}
-              >
+                onClick={handleJoinRoom}>
                 Join Room
               </button>
             </div>
@@ -257,33 +202,17 @@ export default function HomePage() {
         {/* Right Panel: Profile */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Your Profile
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Your Profile</h2>
 
             {/* Grid Content */}
             <div className="grid grid-cols-2 gap-5 rounded-lg w-full overflow-y-auto scrollbar flex-1 p-1">
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">{/* Content */}</div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">{/* Content */}</div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">{/* Content */}</div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">{/* Content */}</div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">{/* Content */}</div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">{/* Content */}</div>
+              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">{/* Content */}</div>
             </div>
           </div>
         </div>
