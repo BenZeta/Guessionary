@@ -36,6 +36,7 @@ interface ClientToServerEvents {
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
   joinRoom: (targetedRoomId: string) => void;
+  leaveRoom: (targetedRoomId: string) => void;
   userList: (user: { users: User[] }) => void;
   startGame: (data: { message: string; game: Game }) => void;
 }
@@ -84,6 +85,11 @@ io.on('connection', (socket) => {
   // handle join room
   socket.on('joinRoom', (targetedRoomId: string) => {
     socket.join(targetedRoomId);
+  });
+
+  //handle leave room
+  socket.on('leaveRoom', (targetedRoomId: string) => {
+    socket.leave(targetedRoomId);
   });
 
   // handle start game
