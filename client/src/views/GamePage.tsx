@@ -41,8 +41,25 @@ export default function GamePage() {
     }
   };
 
+  const handleStartGame = async () => {
+    try {
+      const { data } = await axios.get(baseUrl + `/game/start/${roomId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      socket.emit("startGame", data);
+
+      // navigate("/game1");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const leaveRoom = async () => {
     try {
+      // Step 1: Send request to backend to leave the room
       const { data } = await axios.patch(
         `${baseUrl}/leave-room`,
         { targetedRoomId: roomId },
@@ -52,8 +69,6 @@ export default function GamePage() {
           },
         }
       );
-
-      console.log(data.message);
 
       Toastify({
         text: data.message,
@@ -74,8 +89,10 @@ export default function GamePage() {
         onClick: function () {}, // Callback setelah klik
       }).showToast();
 
-      socket.emit("leaveRoom", `${roomId}`);
+      // Step 2: Emit the "leaveRoom" event to the server (optional)
+      socket.emit("leaveRoom", { roomId: roomId, updatedRoom: data });
 
+      // Optionally navigate after the user has left the room
       navigate(`/`);
     } catch (error) {
       console.log(error);
@@ -109,8 +126,19 @@ export default function GamePage() {
       });
     });
 
+    socket.on("startGame:server", (data) => {
+      console.log(data);
+    });
+
+    socket.on("leaveRoom:server", (data) => {
+      console.log("leaving", data.roomId);
+      setRoom(data.updatedRoom);
+    });
+
     return () => {
       socket.off("userList:server");
+      socket.off("startGame:server");
+      socket.off("serverLeaveRoom");
       socket.disconnect(); // Cleanup on unmount
     };
   }, []);
@@ -132,18 +160,26 @@ export default function GamePage() {
               {room?.users.map((user, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
-                >
-                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
+                  <img
+                    src={user?.avatar}
+                    className="w-20 h-20 rounded-full"
+                  />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
               ))}
             </div>
 
+            {/* Create Room Button */}
+            <button
+              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+              onClick={handleStartGame}>
+              Start Game
+            </button>
+
             <button
               onClick={leaveRoom}
-              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-            >
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
               Leave Room
             </button>
           </div>
