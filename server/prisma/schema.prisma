@@ -15,7 +15,7 @@ model User {
   role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
-  Game          Game?          @relation(fields: [gameId], references: [id]) // One user can belong to one game at a time
+  Game          Game?          @relation(fields: [gameId], references: [id])
   Room          Room[]         @relation("RoomToUser")
 }
 
@@ -33,18 +33,18 @@ model Game {
   id            String         @id @unique @default(uuid())
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
-  name          String
-  gameImage     String?
   contributions Contribution[]
   Room          Room?
+  Round         Round[]
   scores        Score[]
-  users         User[]         
+  users         User?
 }
 
 model Contribution {
   id             String           @id @unique @default(uuid())
   userId         String
   gameId         String
+  roundId        String
   type           ContributionType
   content        String
   targetUserId   String?
@@ -53,6 +53,7 @@ model Contribution {
   game           Game             @relation(fields: [gameId], references: [id])
   originalWord   Contribution?    @relation("OriginalWord", fields: [originalWordId], references: [id])
   Contribution   Contribution[]   @relation("OriginalWord")
+  Round          Round            @relation(fields: [roundId], references: [id])
   user           User             @relation(fields: [userId], references: [id])
 }
 
@@ -64,6 +65,15 @@ model Score {
   createdAt DateTime @default(now())
   game      Game     @relation(fields: [gameId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model Round {
+  id           String         @id @unique
+  gameId       String
+  roundNumber  Int
+  createdAt    DateTime       @default(now())
+  Contribution Contribution[]
+  Game         Game           @relation(fields: [gameId], references: [id])
 }
 
 enum ContributionType {
