@@ -48,7 +48,7 @@ export default function Game1Page() {
     }
   }, []);
 
-  async function handleSubmit(e: any) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
       const { data } = await axios.post(
