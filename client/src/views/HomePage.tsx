@@ -65,7 +65,7 @@ export default function HomePage() {
       );
 
       socket.emit("joinRoom", `${targetedRoomId}`);
-      navigate(`/lobby/${targetedRoomId}`);
+      navigate(`/game/${targetedRoomId}`);
     } catch (error) {
       console.log(error);
     }

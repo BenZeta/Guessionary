@@ -82,7 +82,7 @@ export default function Game2Page() {
         <div className="w-9/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Game</h2>
-            <div className="flex-1 relative" ref={containerRef}>
+            <div className="flex-1 bg-white relative" ref={containerRef}>
               <canvas ref={canvasRef}></canvas>
             </div>
             <button
