@@ -3,6 +3,7 @@ import HomePage from "./views/HomePage";
 import LoginPage from "./views/LoginPage";
 import LobbyPage from "./views/LobbyPage";
 import BaseLayout from "./views/BaseLayout";
+import Game2Page from "./views/Game2Page";
 import Game1Page from "./views/Game1Page";
 
 export default function App() {
@@ -23,8 +24,12 @@ export default function App() {
             element={<LobbyPage />}
           />
           <Route
-            path="/game/:roomId"
+            path="/round_1/:roomId/:gameId"
             element={<Game1Page />}
+          />
+          <Route
+            path="/draw/:roomId/:gameId"
+            element={<Game2Page />}
           />
         </Route>
       </Routes>

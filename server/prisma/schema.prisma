@@ -11,7 +11,7 @@ model User {
   id            String         @id @unique @default(uuid())
   username      String         @unique
   avatar        String         @default("https://avatars.dicebear.com/api/bottts/1.svg")
-  gameId        String?        @unique
+  gameId        String?
   role          String         @default("Admin")
   contributions Contribution[]
   scores        Score[]
@@ -24,9 +24,10 @@ model Room {
   name      String   @unique
   code      String   @unique
   createdAt DateTime @default(now())
-  gameId    String?  @unique
+  gameId    String?
   game      Game?    @relation(fields: [gameId], references: [id])
   users     User[]   @relation("RoomToUser")
+  contributions Contribution[]
 }
 
 model Game {
@@ -34,36 +35,23 @@ model Game {
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
   name          String
+  gameImage     String?
+  Room          Room[]         // One game can have many rooms
   contributions Contribution[]
-  Room          Room?
-  rounds        Round[]
   scores        Score[]
-  users         User[]         
-}
-
-model Round {
-  id            String         @id @unique @default(uuid())
-  gameId        String
-  roundNumber   Int
-  createdAt     DateTime       @default(now())
-  contributions Contribution[]
-  game          Game           @relation(fields: [gameId], references: [id])
+  users         User[]         // Users associated with this game
 }
 
 model Contribution {
   id             String           @id @unique @default(uuid())
-  userId         String
+  roomId         String
   gameId         String
-  roundId        String
-  type           ContributionType
+  userId         String
+  type           ContributionType // Defines the type of contribution
   content        String
-  targetUserId   String?
-  originalWordId String?
   createdAt      DateTime         @default(now())
+  Room           Room             @relation(fields: [roomId], references: [id])
   game           Game             @relation(fields: [gameId], references: [id])
-  originalWord   Contribution?    @relation("OriginalWord", fields: [originalWordId], references: [id])
-  Contribution   Contribution[]   @relation("OriginalWord")
-  round          Round            @relation(fields: [roundId], references: [id])
   user           User             @relation(fields: [userId], references: [id])
 }
 
