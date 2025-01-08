@@ -126,6 +126,22 @@ export default function HomePage() {
     });
   };
 
+  async function handleLogout() {
+    try {
+      const { data } = await axios.delete(`${baseUrl}/delete-user`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      console.log(data);
+      localStorage.clear();
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false; // Mark the first render as handled
@@ -161,6 +177,14 @@ export default function HomePage() {
         
       </div>
       <div className="pl-10 pt-3 bg-white/10">
+
+        <button
+          onClick={handleLogout}
+          className="mt-4 bg-red-500 mx-4 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+        >
+          Back to Home
+        </button>
+
       </div>
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
