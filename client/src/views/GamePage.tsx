@@ -155,21 +155,22 @@ export default function GamePage() {
         {/* Left Panel: Room List */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceLeft">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Player
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
               {room?.users.map((user, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
-                >
-                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
+                  <img
+                    src={user?.avatar}
+                    className="w-20 h-20 rounded-full"
+                  />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
               ))}
             </div>
 
+            <button
               className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
               onClick={handleStartGame}>
               Start Game
@@ -186,16 +187,17 @@ export default function GamePage() {
         {/* Right Panel: Profile */}
         <div className="w-9/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceDown">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Game
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game</h2>
 
             {/* Grid Content */}
             <div className="gap-5 rounded-lg w-full h-full overflow-y-auto scrollbar flex-1 p-1">
               <div className="bg-gray-300/50 p-5 h-full rounded-lg">
                 <div className="bg-gray-200/10 h-full">
                   <div className="flex flex-col justify-center h-full items-center p-5">
-                    <img src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-playful-kitten-kitty-cute-cat-smile-png-image_10263743.png" alt="" />
+                    <img
+                      src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-playful-kitten-kitty-cute-cat-smile-png-image_10263743.png"
+                      alt=""
+                    />
                     <input
                       className="w-1/2 rounded-2xl p-2 text-center border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="Type here..."
