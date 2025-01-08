@@ -26,7 +26,7 @@ export default function LoginPage() {
     e.preventDefault();
     try {
       const { data } = await axios.post(baseUrl + "/login", {
-        avatar,
+        // avatar,
         username,
       });
 
@@ -48,6 +48,15 @@ export default function LoginPage() {
           src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299"
           alt="logo"
         />
+      </div>
+      <div>
+        <form onSubmit={handleSubmit}>
+          <input
+            onChange={(e) => setUsername(e.target.value)}
+            type="text"
+            placeholder="username..."
+          />
+        </form>
       </div>
     </div>
   );
