@@ -65,8 +65,9 @@ export default function LobbyPage() {
       });
 
       setGames(data);
+      console.log(">>>>>>", data);
     } catch (error) {
-      console.log(error);
+      console.log(">>>>>>>", error);
     }
   };
 
@@ -81,9 +82,13 @@ export default function LobbyPage() {
         }
       );
 
-      socket.emit("startGame", data);
+      socket.emit("startGame", { gameId, roomId });
 
-      // navigate("/game1");
+      setTimeout(() => {
+        socket.emit("endRound1", `${roomId}`);
+      }, 30000);
+
+      navigate(`/round_1/${roomId}/${gameId}`);
     } catch (error) {
       console.log(error);
     }
@@ -160,7 +165,8 @@ export default function LobbyPage() {
     });
 
     socket.on("startGame:server", (data) => {
-      console.log(data);
+      console.log("Game started:", data);
+      navigate(`/round_1/${data.roomId}/${data.gameId}`);
     });
 
     socket.on("leaveRoom:server", (data) => {
@@ -220,15 +226,13 @@ export default function LobbyPage() {
             <div className="flex justify-center w-full space-x-5">
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleStartGame}
-              >
+                onClick={handleStartGame}>
                 Start Game
               </button>
 
               <button
                 onClick={leaveRoom}
-                className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-              >
+                className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
                 Leave Room
               </button>
             </div>

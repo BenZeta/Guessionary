@@ -116,10 +116,8 @@ getUsers()
       color: "#edf2f7", // white text color for contrast
       customClass: {
         input: "px-4 py-2 rounded-md bg-teal-700 text-white", // Apply theme styles
-        confirmButton:
-          "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
-        cancelButton:
-          "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        confirmButton: "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        cancelButton: "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
       },
       preConfirm: (inputRoomName) => {
         if (!inputRoomName) {
@@ -191,7 +189,10 @@ console.log(users);
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Room List</h2>
             {loading ? (
               <div className="flex justify-center h-full items-center">
-                <img src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif" alt="" />
+                <img
+                  src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif"
+                  alt=""
+                />
               </div>
             ) : (
               <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar">
@@ -202,10 +203,7 @@ console.log(users);
                       onClick={() => {
                         setTargetedRoomId(room.id);
                       }}
-                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${
-                        targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"
-                      }`}
-                    >
+                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}>
                       {/* className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}> */}
                       <div>{room.name}</div>
                     </button>
@@ -218,14 +216,12 @@ console.log(users);
             <div className="flex justify-center w-full space-x-5">
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleSwal}
-              >
+                onClick={handleSwal}>
                 Create New Room
               </button>
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleJoinRoom}
-              >
+                onClick={handleJoinRoom}>
                 Join Room
               </button>
             </div>
@@ -235,9 +231,7 @@ console.log(users);
         {/* Right Panel: Profile */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Your Profile
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Your Profile</h2>
 
             {/* Grid Content */}
             <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
@@ -273,7 +267,6 @@ console.log(users);
                   ))}
                 </>
               )}
-            </div>
           </div>
         </div>
       </div>
