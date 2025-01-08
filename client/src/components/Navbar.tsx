@@ -22,7 +22,7 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="sticky top-0 flex justify-between items-center p-4 bg-purple-800">
+    <nav className="sticky top-0 flex justify-between items-center p-4 bg-purple-800 z-50">
       <button
         onClick={handleLogout}
         className="border-2 border-black/20 rounded-xl bg-black/10 p-2 text-white"

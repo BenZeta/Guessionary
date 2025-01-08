@@ -221,14 +221,16 @@ export default function LobbyPage() {
             {/* Create Room Button */}
             <div className="flex justify-center w-full space-x-5">
               <button
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+                className="mt-4 bg-teal-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
                 onClick={handleStartGame}>
                 Start Game
               </button>
 
               <button
                 onClick={leaveRoom}
-                className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
+                className="mt-4 bg-red-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
                 Leave Room
               </button>
             </div>

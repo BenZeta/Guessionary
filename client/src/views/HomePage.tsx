@@ -25,7 +25,7 @@ export default function HomePage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [targetedRoomId, setTargetedRoomId] = useState<string>("");
   const [loading, setLoading] = useState(false);
-  const [users, setUsers] = useState<User[]>([])
+  const [users, setUsers] = useState<User[]>([]);
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
 
@@ -57,7 +57,7 @@ export default function HomePage() {
         },
       });
       // console.log(data);
-      
+
       setUsers(data);
 
       socket.emit("userList", data?.users);
@@ -67,8 +67,8 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-getUsers()
-  }, [])
+    getUsers();
+  }, []);
   const handleJoinRoom = async () => {
     try {
       if (!targetedRoomId) {
@@ -117,8 +117,10 @@ getUsers()
       color: "#edf2f7", // white text color for contrast
       customClass: {
         input: "px-4 py-2 rounded-md bg-teal-700 text-white", // Apply theme styles
-        confirmButton: "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
-        cancelButton: "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        confirmButton:
+          "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        cancelButton:
+          "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
       },
       preConfirm: (inputRoomName) => {
         if (!inputRoomName) {
@@ -177,7 +179,7 @@ getUsers()
       socket.disconnect();
     };
   }, []);
-console.log(users);
+  console.log(users);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
@@ -187,7 +189,9 @@ console.log(users);
 
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Room List</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+              Room List
+            </h2>
             {loading ? (
               <div className="flex justify-center h-full items-center">
                 <img
@@ -204,7 +208,12 @@ console.log(users);
                       onClick={() => {
                         setTargetedRoomId(room.id);
                       }}
-                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}>
+                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${
+                        targetedRoomId === room.id
+                          ? "bg-teal-500"
+                          : "bg-black/20"
+                      }`}
+                    >
                       {/* className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}> */}
                       <div>{room.name}</div>
                     </button>
@@ -216,13 +225,17 @@ console.log(users);
             {/* Create Room Button */}
             <div className="flex justify-center w-full space-x-5">
               <button
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleSwal}>
+                className="mt-4 bg-teal-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+                onClick={handleSwal}
+              >
                 Create New Room
               </button>
               <button
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleJoinRoom}>
+                className="mt-4 bg-teal-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+                onClick={handleJoinRoom}
+              >
                 Join Room
               </button>
             </div>
@@ -232,7 +245,9 @@ console.log(users);
         {/* Right Panel: Profile */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Your Profile</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+              Your Profile
+            </h2>
 
             {/* Grid Content */}
             <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
