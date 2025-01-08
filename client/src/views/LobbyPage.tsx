@@ -192,11 +192,10 @@ export default function LobbyPage() {
               {games.map((game) => (
                 <div
                   key={game.id}
-                  className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300">
+                  className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300"
+                >
                   {/* Game Image Placeholder */}
-                  <div
-                    className="absolute inset-0"
-                    onClick={() => setGameId(game.id)}>
+                  <div className="absolute inset-0" onClick={() => setGameId(game.id)}>
                     <img
                       src={`https://via.placeholder.com/150x75?text=${game.name}`} // Replace with actual image URLs
                       alt={game.name}
@@ -215,13 +214,15 @@ export default function LobbyPage() {
             <div className="flex justify-center w-full space-x-5">
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleStartGame}>
+                onClick={handleStartGame}
+              >
                 Start Game
               </button>
 
               <button
                 onClick={leaveRoom}
-                className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
+                className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+              >
                 Leave Room
               </button>
             </div>
@@ -231,16 +232,15 @@ export default function LobbyPage() {
         {/* Right Panel: Profile */}
         <div className="w-8/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Your Profile</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+              Your Profile
+            </h2>
 
             {/* Grid Content */}
             <div className="grid grid-cols-3 gap-5 rounded-lg w-full overflow-y-auto scrollbar p-1">
               {loading ? (
                 <div className="flex justify-center h-full items-center">
-                  <img
-                    src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif"
-                    alt=""
-                  />
+                  <img src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif" alt="" />
                 </div>
               ) : (
                 <>
@@ -248,7 +248,8 @@ export default function LobbyPage() {
                     return (
                       <div
                         key={user.id}
-                        className="bg-gray-300/15 border border-black/20 rounded-xl min-h-[300px] min-w-[300px] flex items-center justify-center relative">
+                        className="bg-gray-300/15 border border-black/20 rounded-xl min-h-[300px] min-w-[300px] flex items-center justify-center relative"
+                      >
                         {/* Image placed in the background */}
 
                         <img
@@ -258,7 +259,9 @@ export default function LobbyPage() {
                         />
 
                         {/* Name div overlay */}
-                        <div className="absolute bottom-0 w-full bg-black/90 text-white p-5 rounded-b-xl text-center z-10">{user.username}</div>
+                        <div className="absolute bottom-0 w-full bg-black/90 text-white p-5 rounded-b-xl text-center z-10">
+                          {user.username}
+                        </div>
                       </div>
                     );
                   })}

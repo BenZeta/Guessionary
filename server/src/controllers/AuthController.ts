@@ -32,6 +32,8 @@ export default class AuthController {
     try {
       const username = req.loginInfo?.username;
 
+      console.log('>>>>>>>>>>>>>>>>>>>>', username);
+
       await prisma.user.delete({
         where: {
           username,
