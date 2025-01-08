@@ -49,6 +49,29 @@ export default class GameController {
     }
   }
 
+  static async postGameRound2(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { user64 } = req.body;
+      const userId = req.loginInfo?.userId;
+      const { gameId } = req.params;
+
+      const gameRound2 = await prisma.contribution.create({
+        data: {
+          userId: userId!,
+          gameId: gameId,
+          type: 'DRAWING',
+          content: user64,
+        },
+      });
+
+      res.status(200).json({
+        message: 'successfully submit image',
+      })
+    } catch (error) {
+      console.log(error);
+      next(error);
+    };
+
   static async getGames(req: Request, res: Response, next: NextFunction) {
     try {
       const games = await prisma.game.findMany();

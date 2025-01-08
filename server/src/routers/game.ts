@@ -4,5 +4,6 @@ const router = Router();
 
 router.get('/', GameController.getGames);
 router.get('/start/:roomId/:gameId', GameController.startGame);
+router.post('/post-url/round_2/:gameId', GameController.postGameRound2);
 
 export default router;

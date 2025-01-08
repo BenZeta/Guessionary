@@ -6,7 +6,6 @@ import Swal from "sweetalert2";
 import { Avatar } from "../helpers/Avatar";
 
 export default function LoginPage() {
-  const [avatar, setAvatar] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const navigate = useNavigate();
 
@@ -16,7 +15,7 @@ export default function LoginPage() {
         title: "you already logged in",
         text: "Do you want to continue",
         icon: "error",
-        confirmButtonText: "Cool",
+        confirmButtonText: "yes",
       });
       navigate("/");
     }
@@ -31,7 +30,6 @@ export default function LoginPage() {
       });
 
       localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("avatar", data.avatar);
       localStorage.setItem("username", data.username);
 
       navigate("/");

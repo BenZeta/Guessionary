@@ -41,7 +41,6 @@ model Game {
   users         User[]         
 }
 
-
 model Contribution {
   id             String           @id @unique @default(uuid())
   userId         String

@@ -122,6 +122,7 @@ export default class RoomController {
         },
       });
 
+      res.status(200).json({ message: 'successfully left the room' });
       const updatedRoom = await prisma.room.findUnique({
         where: { id: targetedRoomId },
         include: {
