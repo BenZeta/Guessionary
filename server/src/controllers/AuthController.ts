@@ -7,12 +7,12 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export default class AuthController {
-  static async login(req: Request<unknown, unknown, { username: string }>, res: Response, next: NextFunction) {
+  static async login(req: Request<unknown, unknown, { username: string; avatar: string }>, res: Response, next: NextFunction) {
     try {
-      const { username } = req.body;
+      const { username, avatar } = req.body;
       const user = await prisma.user.upsert({
         where: { username },
-        create: { username },
+        create: { username, avatar },
         update: {},
       });
 
