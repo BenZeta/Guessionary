@@ -15,6 +15,12 @@ type User = {
   avatar: string;
 };
 
+type Game = {
+  id: string;
+  isActive: boolean;
+  createdAt: Date;
+};
+
 interface Room {
   id: string;
   name: string;
@@ -31,6 +37,7 @@ interface ClientToServerEvents {
   roomCreated: (room: Room) => void;
   joinRoom: (targetedRoomId: string) => void;
   userList: (user: { users: User[] }) => void;
+  startGame: (data: { message: string; game: Game }) => void;
 }
 
 interface InterServerEvents {
@@ -74,8 +81,14 @@ io.on('connection', (socket) => {
     io.emit('roomList:server', rooms);
   });
 
+  // handle join room
   socket.on('joinRoom', (targetedRoomId: string) => {
     socket.join(targetedRoomId);
+  });
+
+  // handle start game
+  socket.on('startGame', (data: { message: string; game: Game }) => {
+    io.emit('startGame:server', data);
   });
 
   // handle userList
