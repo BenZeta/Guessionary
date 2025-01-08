@@ -34,27 +34,18 @@ model Game {
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
   name          String
+  gameImage     String?
   contributions Contribution[]
   Room          Room?
-  rounds        Round[]
   scores        Score[]
   users         User[]         
 }
 
-model Round {
-  id            String         @id @unique @default(uuid())
-  gameId        String
-  roundNumber   Int
-  createdAt     DateTime       @default(now())
-  contributions Contribution[]
-  game          Game           @relation(fields: [gameId], references: [id])
-}
 
 model Contribution {
   id             String           @id @unique @default(uuid())
   userId         String
   gameId         String
-  roundId        String
   type           ContributionType
   content        String
   targetUserId   String?
@@ -63,7 +54,6 @@ model Contribution {
   game           Game             @relation(fields: [gameId], references: [id])
   originalWord   Contribution?    @relation("OriginalWord", fields: [originalWordId], references: [id])
   Contribution   Contribution[]   @relation("OriginalWord")
-  round          Round            @relation(fields: [roundId], references: [id])
   user           User             @relation(fields: [userId], references: [id])
 }
 
