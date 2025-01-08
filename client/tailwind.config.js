@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        silkscreen: ['"Silkscreen"'],
+      },
       keyframes: {
         bounceLeft: {
           "0%": { transform: "translateX(-100%)", opacity: 0 },

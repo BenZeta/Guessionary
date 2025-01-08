@@ -8,7 +8,7 @@ export default function Game2Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-  const { gameId } = useParams();
+  const { gameId, roomId } = useParams();
 
   useLayoutEffect(() => {
     const canvasElement = canvasRef.current;
@@ -48,7 +48,7 @@ export default function Game2Page() {
       const dataUrl: string = canvas.toDataURL();
 
       await axios.post(
-        `${baseUrl}/game/post-url/round_2/${gameId}`,
+        `${baseUrl}/game/round_2/${roomId}/${gameId}`,
         { dataUrl },
         {
           headers: {
@@ -84,12 +84,8 @@ export default function Game2Page() {
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Player</h2>
-            <div className="flex-1 overflow-y-auto flex flex-col gap-4 p-1">
-              {/* Tambahkan elemen player di sini */}
-            </div>
-            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
-              Create New Room
-            </button>
+            <div className="flex-1 overflow-y-auto flex flex-col gap-4 p-1">{/* Tambahkan elemen player di sini */}</div>
+            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">Create New Room</button>
           </div>
         </div>
 
@@ -97,19 +93,19 @@ export default function Game2Page() {
         <div className="w-9/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Game</h2>
-            <div className="flex-1 bg-white relative" ref={containerRef}>
+            <div
+              className="flex-1 bg-white relative"
+              ref={containerRef}>
               <canvas ref={canvasRef}></canvas>
             </div>
             <button
               onClick={handleSubmit}
-              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-            >
+              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
               Submit
             </button>
             <button
               onClick={handleClear}
-              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-            >
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
               Clear
             </button>
           </div>

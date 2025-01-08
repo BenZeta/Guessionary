@@ -15,10 +15,17 @@ interface Room {
   // Add other properties as needed
 }
 
+type User = {
+  id: string;
+  avatar: string;
+  username: string;
+};
+
 export default function HomePage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [targetedRoomId, setTargetedRoomId] = useState<string>("");
   const [loading, setLoading] = useState(false);
+  const [users, setUsers] = useState<User[]>([])
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
 
@@ -42,6 +49,26 @@ export default function HomePage() {
     }
   };
 
+  const getUsers = async () => {
+    try {
+      const { data } = await axios.get(`${baseUrl}/users`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+      // console.log(data);
+      
+      setUsers(data);
+
+      socket.emit("userList", data?.users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+getUsers()
+  }, [])
   const handleJoinRoom = async () => {
     try {
       if (!targetedRoomId) {
@@ -65,7 +92,7 @@ export default function HomePage() {
       );
 
       socket.emit("joinRoom", `${targetedRoomId}`);
-      navigate(`/game/${targetedRoomId}`);
+      navigate(`/lobby/${targetedRoomId}`);
     } catch (error) {
       console.log(error);
     }
@@ -151,6 +178,7 @@ export default function HomePage() {
       socket.disconnect();
     };
   }, []);
+console.log(users);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
@@ -212,28 +240,39 @@ export default function HomePage() {
             </h2>
 
             {/* Grid Content */}
-            <div className="grid grid-cols-2 gap-5 rounded-lg w-full overflow-y-auto scrollbar flex-1 p-1">
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
-              <div className="bg-gray-300 rounded-xl min-h-[200px] flex items-center justify-center">
-                {/* Content */}
-              </div>
+            <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
+              {loading ? (
+                <div className="flex justify-center h-full items-center">
+                  <img
+                    src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif"
+                    alt="loading"
+                  />
+                </div>
+              ) : (
+                <>
+                  {users.map((user) => (
+                    <div
+                      key={user.id}
+                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative"
+                    >
+                      {/* Image placed in the background */}
+                      <div className="relative overflow-hidden w-full rounded-full">
+                        <img
+                          src={user.avatar}
+                          className="h-full w-full object-cover"
+                          alt={user.username}
+                        />
+                        {/* Overlay div for animation */}
+                        <div className="absolute h-full w-full bg-black/40 text-white flex items-center justify-center rounded-full -bottom-10 group-hover:bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
+                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">
+                            {user.username}
+                          </h2>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </div>
         </div>

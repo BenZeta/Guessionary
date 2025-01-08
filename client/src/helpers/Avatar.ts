@@ -19,5 +19,4 @@ export const Avatar = [
   "https://ik.imagekit.io/3a0xukows/NFT-18.png?updatedAt=1736308213943",
   "https://ik.imagekit.io/3a0xukows/NFT-19.png?updatedAt=1736308213975",
   "https://ik.imagekit.io/3a0xukows/NFt-20.png?updatedAt=1736308213689",
-  "https://ik.imagekit.io/3a0xukows/NFT-21.png?updatedAt=1736308215581",
 ];
