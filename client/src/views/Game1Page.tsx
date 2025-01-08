@@ -91,16 +91,12 @@ export default function Game1Page() {
 
     socket.on("startGame:server", (data) => {
       console.log(data);
+      navigate(`/round_1/${data.roomId}/${data.gameId}`);
     });
 
     socket.on("leaveRoom:server", (data) => {
       console.log("leaving", data.roomId);
       setRoom(data.updatedRoom);
-    });
-
-    socket.on("receiveWords", ({ words }) => {
-      console.log("New words received:", words);
-      setWords(words); // Update state with the new words
     });
 
     socket.on("endRound1:server", (roomId) => {
@@ -110,11 +106,10 @@ export default function Game1Page() {
     });
 
     return () => {
+      socket.off("joinRoom");
       socket.off("receiveWords");
       socket.off("userList:server");
       socket.off("startGame:server");
-      socket.off("serverLeaveRoom");
-      socket.disconnect(); // Cleanup on unmount
     };
   }, []);
 
