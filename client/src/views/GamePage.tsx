@@ -22,6 +22,7 @@ export default function HomePage() {
 
   const getUser = async () => {
     try {
+      
       const { data } = await axios.get(`${baseUrl}/users/${roomId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.access_token}`,
