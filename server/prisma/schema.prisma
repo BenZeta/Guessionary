@@ -34,13 +34,12 @@ model Game {
   isActive      Boolean        @default(true)
   createdAt     DateTime       @default(now())
   name          String
+  gameImage     String?
   contributions Contribution[]
   Room          Room?
   scores        Score[]
   users         User[]         
 }
-
-
 
 model Contribution {
   id             String           @id @unique @default(uuid())

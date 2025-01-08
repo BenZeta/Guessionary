@@ -66,7 +66,17 @@ export default class GameController {
 
       res.status(200).json({
         message: 'successfully submit image',
-      });
+      })
+    } catch (error) {
+      console.log(error);
+      next(error);
+    };
+
+  static async getGames(req: Request, res: Response, next: NextFunction) {
+    try {
+      const games = await prisma.game.findMany();
+
+      res.status(200).json(games);
     } catch (error) {
       console.log(error);
       next(error);
