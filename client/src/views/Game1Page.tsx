@@ -96,16 +96,16 @@ export default function Game1Page() {
         {/* Left Panel: Room List */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceLeft">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+              Player
+            </h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
               {room?.users.map((user, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
-                  <img
-                    src={user?.avatar}
-                    className="w-20 h-20 rounded-full"
-                  />
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
+                >
+                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
               ))}
@@ -116,7 +116,9 @@ export default function Game1Page() {
         {/* Right Panel: Profile */}
         <div className="w-9/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceDown">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+              Game
+            </h2>
 
             {/* Grid Content */}
             <div className="gap-5 rounded-lg w-full h-full overflow-y-auto scrollbar flex-1 p-1">
