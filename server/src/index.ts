@@ -36,7 +36,7 @@ interface ClientToServerEvents {
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
   joinRoom: (targetedRoomId: string) => void;
-  leaveRoom: (targetedRoomId: string) => void;
+  leaveRoom: (data: { roomId: string; updatedRoom: Room }) => void;
   userList: (user: { users: User[] }) => void;
   startGame: (data: { message: string; game: Game }) => void;
 }
@@ -82,14 +82,19 @@ io.on('connection', (socket) => {
     io.emit('roomList:server', rooms);
   });
 
-  // handle join room
-  socket.on('joinRoom', (targetedRoomId: string) => {
+  // Handle join room
+  socket.on('joinRoom', (targetedRoomId) => {
     socket.join(targetedRoomId);
+    console.log(`User joined room: ${targetedRoomId}`);
   });
 
-  //handle leave room
-  socket.on('leaveRoom', (targetedRoomId: string) => {
-    socket.leave(targetedRoomId);
+  // Handle leave room && send updated room with users
+  socket.on('leaveRoom', (data) => {
+    console.log(data.updatedRoom, '<<<<<');
+
+    console.log('leaveRoom event triggered', data.roomId);
+    io.emit('leaveRoom:server', data);
+    socket.leave(data.roomId);
   });
 
   // handle start game
