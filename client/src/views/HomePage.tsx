@@ -126,21 +126,7 @@ export default function HomePage() {
     });
   };
 
-  async function handleLogout() {
-    try {
-      const { data } = await axios.delete(`${baseUrl}/delete-user`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.access_token}`,
-        },
-      });
-
-      console.log(data);
-      localStorage.clear();
-      navigate("/login");
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -170,22 +156,6 @@ export default function HomePage() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
-      {/* Header */}
-      <div className="flex justify-between items-center p-4 bg-black/20">
-      <button className="border-2 border-black/20 rounded-xl bg-black/10 p-2 text-white">Back to Home</button>
-        <h1 className="text-2xl text-white font-bold">Welcome to Game Rooms</h1>
-        
-      </div>
-      <div className="pl-10 pt-3 bg-white/10">
-
-        <button
-          onClick={handleLogout}
-          className="mt-4 bg-red-500 mx-4 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-        >
-          Back to Home
-        </button>
-
-      </div>
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel: Room List */}

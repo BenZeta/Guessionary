@@ -1,12 +1,6 @@
 export default function Game3Page() {
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
-      {/* Header */}
-      <div className="flex justify-center items-center p-4 bg-black/20">
-        <h1 className="text-2xl text-white font-bold">Round</h1>
-      </div>
-
-
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel: Room List */}
