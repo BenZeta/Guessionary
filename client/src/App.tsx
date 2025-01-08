@@ -4,6 +4,7 @@ import LoginPage from "./views/LoginPage";
 import LobbyPage from "./views/LobbyPage";
 import BaseLayout from "./views/BaseLayout";
 import Game1Page from "./views/Game1Page";
+import Game2Page from "./views/Game2Page";
 
 export default function App() {
   return (
@@ -25,6 +26,10 @@ export default function App() {
           <Route
             path="/game/:roomId"
             element={<Game1Page />}
+          />
+          <Route
+            path="/game2"
+            element={<Game2Page />}
           />
         </Route>
       </Routes>

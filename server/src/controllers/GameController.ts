@@ -48,4 +48,15 @@ export default class GameController {
       next(error);
     }
   }
+
+  static async getGames(req: Request, res: Response, next: NextFunction) {
+    try {
+      const games = await prisma.game.findMany();
+
+      res.status(200).json(games);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }
