@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { baseUrl } from "../constants/baseUrl";
 import { useNavigate, useParams } from "react-router";
 import { socket } from "../socket/socket";
+import Toastify from "toastify-js";
 
 type User = {
   id: string;
@@ -51,6 +52,27 @@ export default function GamePage() {
           },
         }
       );
+
+      console.log(data.message);
+
+      Toastify({
+        text: data.message,
+        duration: 3000,
+        close: true,
+        gravity: "bottom", // `top` or `bottom`
+        position: "right", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "green",
+          color: "#ffffff", // Teks putih
+          borderRadius: "8px", // Membuat sudut lebih bulat
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Memberikan bayangan
+          padding: "10px 20px", // Menambah ruang dalam
+          fontFamily: "'Roboto', sans-serif", // Sesuaikan dengan font umum
+          fontSize: "14px",
+        },
+        onClick: function () {}, // Callback setelah klik
+      }).showToast();
 
       socket.emit("leaveRoom", `${roomId}`);
 
@@ -117,11 +139,6 @@ export default function GamePage() {
                 </div>
               ))}
             </div>
-
-            {/* Create Room Button */}
-            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
-              Create New Room
-            </button>
 
             <button
               onClick={leaveRoom}

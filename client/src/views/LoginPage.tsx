@@ -1,11 +1,24 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { baseUrl } from "../constants/baseUrl";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 export default function LoginPage() {
   const [username, setUsername] = useState<string>("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.access_token) {
+      Swal.fire({
+        title: "you are already logged in",
+        text: "Do you want to continue",
+        icon: "error",
+        confirmButtonText: "Cool",
+      });
+      navigate("/");
+    }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
