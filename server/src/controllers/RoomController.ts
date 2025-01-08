@@ -92,6 +92,51 @@ export default class RoomController {
     }
   }
 
+  static async leaveRoom(req: Request<unknown, unknown, { targetedRoomId: string }>, res: Response, next: NextFunction) {
+    try {
+      const { targetedRoomId } = req.body;
+
+      const userId = req.loginInfo?.userId;
+
+      console.log('Leaving room with userId:', userId);
+
+      const room = await prisma.room.findUnique({
+        where: { id: targetedRoomId },
+        include: {
+          users: true,
+        },
+      });
+
+      if (!room) {
+        throw { name: 'NotFound', message: 'Room not found' };
+      }
+
+      const userInRoom = room.users.find((user) => user.id === userId);
+      console.log('>>>>>>>>>>>>>>>>>>>', room.users);
+
+      console.log('USER IN ROOM', userInRoom);
+
+      if (!userInRoom) {
+        res.status(200).json({ message: 'User is not in the room' });
+        return;
+      }
+
+      await prisma.room.update({
+        where: { id: targetedRoomId },
+        data: {
+          users: {
+            disconnect: { id: userId },
+          },
+        },
+      });
+
+      res.status(200).json({ message: 'Room left successfully' });
+    } catch (error) {
+      console.log('error', error);
+      next(error);
+    }
+  }
+
   static async getRooms(req: Request, res: Response, next: NextFunction) {
     try {
       const room = await prisma.room.findMany({

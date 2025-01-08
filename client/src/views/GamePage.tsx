@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { baseUrl } from "../constants/baseUrl";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { socket } from "../socket/socket";
 
 type User = {
@@ -22,6 +22,7 @@ export default function GamePage() {
   const [room, setRoom] = useState<Room | null>(null);
   const { roomId } = useParams();
   const isFirstRender = useRef(true);
+  const navigate = useNavigate();
 
   const getUser = async () => {
     try {
@@ -34,6 +35,26 @@ export default function GamePage() {
       setRoom(data);
 
       socket.emit("userList", data?.users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const leaveRoom = async () => {
+    try {
+      const { data } = await axios.patch(
+        `${baseUrl}/leave-room`,
+        { targetedRoomId: roomId },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
+
+      socket.emit("leaveRoom", `${roomId}`);
+
+      navigate(`/`);
     } catch (error) {
       console.log(error);
     }
@@ -89,18 +110,25 @@ export default function GamePage() {
               {room?.users.map((user, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
-                  <img
-                    src={user?.avatar}
-                    className="w-20 h-20 rounded-full"
-                  />
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
+                >
+                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
               ))}
             </div>
 
             {/* Create Room Button */}
-            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">Create New Room</button>
+            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
+              Create New Room
+            </button>
+
+            <button
+              onClick={leaveRoom}
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+            >
+              Leave Room
+            </button>
           </div>
         </div>
 
