@@ -163,20 +163,6 @@ export default function Game1Page() {
         {/* Right Panel: Profile */}
         <div className="w-9/12 bg-white/10 p-6 relative overflow-hidden">
           {/* Background Animation */}
-          <div className="area absolute inset-0 pointer-events-none">
-            <ul className="circles">
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-            </ul>
-          </div>
 
           <div className="relative z-10 bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceDown">
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game</h2>

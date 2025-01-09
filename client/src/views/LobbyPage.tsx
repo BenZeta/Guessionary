@@ -49,7 +49,9 @@ export default function LobbyPage() {
 
       setRoom(data);
       setUsers(data.users);
-      const user = data.users.find((user: User) => user.id === localStorage.userId);
+      const user = data.users.find(
+        (user: User) => user.id === localStorage.userId
+      );
       console.log("User Role:", user.role); // Log to check user role
       setUserRole(user.role || ""); // Set user role
       socket.emit("userList", data?.users);
