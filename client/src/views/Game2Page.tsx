@@ -95,7 +95,7 @@ export default function Game2Page() {
         }
       );
 
-      // console.log("Canvas Data URL:", dataUrl);
+      console.log("Canvas Data URL:", dataUrl);
     } else {
       console.error("Canvas belum siap!");
     }

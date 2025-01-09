@@ -32,8 +32,6 @@ export default function Navbar() {
         },
       });
 
-      console.log("NAVBAR>>>>>>>", data);
-
       setRole(data.role);
     } catch (error) {
       console.log(error);

@@ -1,10 +1,50 @@
 import { useEffect, useState } from "react";
 // import { useParams } from "react-router";
 import { socket } from "../socket/socket";
+import axios from "axios";
+import { baseUrl } from "../constants/baseUrl";
 
 export default function Game3Page() {
   // const { roomId, gameId } = useParams();
   const [drawingFromR2, setDrawingFromR2] = useState<string>("");
+  const [word, setWord] = useState<[]>([]);
+  const [draw, setDraw] = useState<[]>([]);
+
+  async function getWord() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/game/word`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      console.log(data);
+
+      setWord(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async function getDraw() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/game/draw`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      console.log(data);
+
+      setDraw(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getWord();
+    getDraw();
+  }, []);
 
   useEffect(() => {
     // Configure socket with auth token
@@ -57,7 +97,9 @@ export default function Game3Page() {
             </div>
 
             {/* Create Room Button */}
-            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">Create New Room</button>
+            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
+              Create New Room
+            </button>
           </div>
         </div>
 
@@ -80,7 +122,9 @@ export default function Game3Page() {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <p className="text-white text-center">Real-Time Drawing Data: {drawingFromR2 || "No data yet"}</p>
+                  <p className="text-white text-center">
+                    Real-Time Drawing Data: {drawingFromR2 || "No data yet"}
+                  </p>
                 </div>
               </div>
             </div>

@@ -105,6 +105,8 @@ export default function HomePage() {
       }
       console.log(targetedRoomId);
 
+      localStorage.setItem("currentRoomId", targetedRoomId);
+
       await axios.patch(
         `${baseUrl}/join-room`,
         { targetedRoomId },
@@ -168,8 +170,15 @@ export default function HomePage() {
           )
           .then((response) => {
             const newRoom = response.data;
+
+            // Set roomId to localStorage
+            localStorage.setItem("currentRoomId", newRoom.id);
+
+            // Emit event to socket
             socket.emit("roomCreated", newRoom);
-            navigate(`/lobby/${newRoom.id}`); // Navigate to the newly created room
+
+            // Navigate to the newly created room
+            navigate(`/lobby/${newRoom.id}`);
           })
           .catch((error) => {
             console.error("Error creating room:", error);
@@ -177,6 +186,7 @@ export default function HomePage() {
       }
     });
   };
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
