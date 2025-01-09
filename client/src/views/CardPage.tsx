@@ -60,7 +60,7 @@ export default function CardPage() {
                   Own your NFT's and kill the game!
                 </p>
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold text-yellow-400">
+                  <span className="text-lg font-bold text-yellow-400">
                     0.0 ETH
                   </span>
                 </div>

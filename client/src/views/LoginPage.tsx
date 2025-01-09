@@ -5,12 +5,14 @@ import { useNavigate } from "react-router"; // Import from react-router-dom
 import Swal from "sweetalert2";
 import { Avatar } from "../helpers/Avatar";
 import { themeContext } from "../context/ThemeContext";
-import { svg } from "motion/react-client";
+import { useSound } from "../context/SoundContext";
 
 export default function LoginPage() {
   const [avatarIndex, setAvatarIndex] = useState<number>(0);
   const [username, setUsername] = useState<string>("");
   const navigate = useNavigate();
+
+  const { isPlaying, toggleAudio } = useSound();
 
   // Correct typing for useContext
   const { currentTheme, setCurrentTheme } = useContext(themeContext);
@@ -66,29 +68,20 @@ export default function LoginPage() {
     // Background
     <div className="h-screen flex flex-col">
       {currentTheme === "light" ? (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          className="w-8 absolute top-3 right-3" // Adjusted position here
+        <img
+          className="w-16 absolute top-10 right-20 animate-bounceRight  " // Adjusted position here
           onClick={() => setCurrentTheme("dark")}
-        >
-          <path
-            fillRule="evenodd"
-            d="M7.455 2.004a.75.75 0 0 1 .26.77 7 7 0 0 0 9.958 7.967.75.75 0 0 1 1.067.853A8.5 8.5 0 1 1 6.647 1.921a.75.75 0 0 1 .808.083Z"
-            clipRule="evenodd"
-          />
-        </svg>
+          src="https://ik.imagekit.io/3a0xukows/sunflower.png?updatedAt=1736393862092
+"
+          alt="sunflower"
+        />
       ) : (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-          className="w-8 absolute top-3 right-3" // Adjusted position here
+        <img
+          className="w-16 absolute top-10 right-20 animate-bounceRight" // Adjusted position here
           onClick={() => setCurrentTheme("light")}
-        >
-          <path d="M10 2a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 10 2ZM10 15a.75.75 0 0 1 .75.75v1.5a.75.75 0 0 1-1.5 0v-1.5A.75.75 0 0 1 10 15ZM10 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM15.657 5.404a.75.75 0 1 0-1.06-1.06l-1.061 1.06a.75.75 0 0 0 1.06 1.06l1.06-1.06ZM6.464 14.596a.75.75 0 1 0-1.06-1.06l-1.06 1.06a.75.75 0 0 0 1.06 1.06l1.06-1.06ZM18 10a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 18 10ZM5 10a.75.75 0 0 1-.75.75h-1.5a.75.75 0 0 1 0-1.5h1.5A.75.75 0 0 1 5 10ZM14.596 15.657a.75.75 0 0 0 1.06-1.06l-1.06-1.061a.75.75 0 1 0-1.06 1.06l1.06 1.06ZM5.404 6.464a.75.75 0 0 0 1.06-1.06l-1.06-1.06a.75.75 0 1 0-1.061 1.06l1.06 1.06Z" />
-        </svg>
+          src="https://ik.imagekit.io/3a0xukows/full-moon.png?updatedAt=1736393887367"
+          alt="mooon"
+        />
       )}
 
       {/* Header */}
@@ -109,7 +102,7 @@ export default function LoginPage() {
       <div className="flex flex-col justify-center items-center h-full">
         {/* Navbar */}
         <div className="flex justify-center mt-12 items-center bg-hidden rounded-3xl w-60 h-14 gap-x-20">
-          <a href="/">
+          <a href="/login">
             <img
               src="https://ik.imagekit.io/3a0xukows/home.png?updatedAt=1736350418372"
               alt="home"
@@ -129,14 +122,14 @@ export default function LoginPage() {
               Avatar
             </span>
           </a>
-          <button>
+          <button onClick={toggleAudio}>
             <img
               src="https://ik.imagekit.io/3a0xukows/wave-sound.png?updatedAt=1736351115020"
               alt="sound"
               className="w-10 animate-bounceUp"
             />
             <span className="font-bold text-sm text-white animate-bounceUp">
-              Sound
+              {isPlaying ? "Pause Audio" : "Play Audio"}
             </span>
           </button>
         </div>
@@ -201,7 +194,7 @@ export default function LoginPage() {
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white border rounded-3xl w-28 h-10 text-lg font-bold font-mono"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#ffff00] rounded-3xl w-28 h-10 text-lg font-bold text-blue"
               >
                 Start
               </button>
