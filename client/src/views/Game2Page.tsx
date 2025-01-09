@@ -80,19 +80,17 @@ export default function Game2Page() {
     };
     socket.connect();
 
-    try {
-      socket.on("receiveWords", (words) => {
-        console.log("New words received:", words);
-        setWordsFromR1(words); // Update state with the new words
-      });
-    } catch (error) {
-      console.log(error, "<<<<<<<<<<<<<<<");
-    }
+    socket.on("receiveWords", (words) => {
+      console.log("Received words:", words);
+      setWordsFromR1(words); // Simpan kata di state atau variabel
+    });
 
     return () => {
       socket.off("receiveWords");
     };
   }, []);
+
+  console.log(wordsFromR1);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
@@ -107,12 +105,8 @@ export default function Game2Page() {
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Player</h2>
-            <div className="flex-1 overflow-y-auto flex flex-col gap-4 p-1">
-              {/* Tambahkan elemen player di sini */}
-            </div>
-            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
-              Create New Room
-            </button>
+            <div className="flex-1 overflow-y-auto flex flex-col gap-4 p-1">{/* Tambahkan elemen player di sini */}</div>
+            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">Create New Room</button>
           </div>
         </div>
 
@@ -120,19 +114,19 @@ export default function Game2Page() {
         <div className="w-9/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Game</h2>
-            <div className="flex-1 bg-white relative" ref={containerRef}>
+            <div
+              className="flex-1 bg-white relative"
+              ref={containerRef}>
               <canvas ref={canvasRef}></canvas>
             </div>
             <button
               onClick={handleSubmit}
-              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-            >
+              className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
               Submit
             </button>
             <button
               onClick={handleClear}
-              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-            >
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
               Clear
             </button>
           </div>

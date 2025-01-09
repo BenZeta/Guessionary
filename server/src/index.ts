@@ -29,12 +29,12 @@ interface ClientToServerEvents {
   roomName: (roomInfo: { roomName: string; username: string }) => void;
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
-  joinRoom: (data: { roomId: string; username: string; avatar: string; role: 'Staff' }) => void;
+  joinRoom: (data: { roomId: string; username: string }) => void;
   leaveRoom: (data: { roomId: string; updatedRoom: Room }) => void;
   userList: (user: { users: User[] }) => void;
   startGame: (data: { roomId: string; gameId: string; users: User[] }) => void;
   submitWords: (data: { roomId: string; username: string; words: string }) => void;
-  endRound1: (roomId: string) => void;
+  endRound1: (data: { roomId: string; gameId: string; users: User[] }) => void;
 }
 
 interface InterServerEvents {
@@ -46,12 +46,24 @@ interface SocketData {
   age: number;
 }
 
+type Player = {
+  name: string;
+  socketId: string;
+  words: string[];
+};
+
+type Players = {
+  [roomId: string]: Player[];
+};
+
 interface PlayerWords {
   username: string;
   words: string;
+  socketId: string;
 }
 
 const roomWords: { [roomId: string]: PlayerWords[] } = {}; // Store words for each room
+const players: Players = {}; // Objek untuk menyimpan data pemain berdasarkan room
 
 if (process.env.NODE_ENV !== 'production') {
   dotenv.config();
@@ -85,18 +97,20 @@ io.on('connection', (socket) => {
     io.emit('roomList:server', rooms);
   });
 
-  // Handle joining a room
-  socket.on('joinRoom', (data) => {
-    console.log(data);
-
-    if (!data.roomId) {
-      console.error('No targeted room ID provided');
-      return;
+  socket.on('joinRoom', ({ roomId, username }) => {
+    if (!players[roomId]) {
+      players[roomId] = [];
     }
 
-    io.emit('joinRoom:server', data);
-    socket.join(data.roomId);
-    console.log(`User joined room: ${data.roomId}`);
+    socket.join(`${roomId}`);
+
+    players[roomId].push({
+      name: username,
+      socketId: socket.id, // Simpan socket.id
+      words: [], // Kata-kata untuk pemain ini
+    });
+
+    console.log(`${username} joined room ${roomId}`);
   });
 
   // Handle leaving a room
@@ -108,8 +122,13 @@ io.on('connection', (socket) => {
 
   // Start game
   socket.on('startGame', (data) => {
-    console.log(`Starting game ${data.gameId} in room ${data.roomId}`);
-    io.emit('startGame:server', { gameId: data.gameId, roomId: data.roomId, users: data.users });
+    console.log(`Starting game ${data.gameId} in room ${data.roomId} with users ${JSON.stringify(data.users)}`);
+    io.to(data.roomId).emit('startGame:server', { gameId: data.gameId, roomId: data.roomId, users: data.users });
+
+    // Start a 15-second timer for Round 1
+    setTimeout(() => {
+      io.to(data.roomId).emit('endRound1:server', { roomId: data.roomId, gameId: data.gameId, users: data.users });
+    }, 15000);
   });
 
   // Collect words for Round 1
@@ -117,34 +136,46 @@ io.on('connection', (socket) => {
     if (!roomWords[data.roomId]) {
       roomWords[data.roomId] = [];
     }
-    roomWords[data.roomId].push({ username: data.username, words: data.words });
+    roomWords[data.roomId].push({ username: data.username, words: data.words, socketId: socket.id });
     console.log(`Words submitted for room ${data.roomId}:`, roomWords[data.roomId]);
   });
 
   // End Round 1 and redistribute words
-  socket.on('endRound1', (roomId) => {
+  socket.on('endRound1', (data: { roomId: string; gameId: string; users: User[] }) => {
+    console.log(data, 'di end round 1 data');
+
+    const { roomId, gameId, users } = data;
     const players = roomWords[roomId];
+
+    console.log(players, 'di end round 1 players');
+
+    io.emit('endRound1:server', data);
+
     if (!players || players.length === 0) {
       console.error(`No words found for room ${roomId}`);
       return;
     }
 
-    // Shuffle words
-    const shuffledWords = shuffleArray(players.map((player) => player.words));
+    // Shuffle words for all players
+    const allWords = players.flatMap((player) => player.words); // Gabungkan semua kata
+    const shuffledWords = shuffleArray(allWords); // Acak semua kata
 
-    // Assign shuffled words to players
+    // Assign shuffled words back to players
     players.forEach((player, index) => {
-      const newWords = shuffledWords[index];
-      console.log(newWords, 'newWords');
+      const startIndex = index * Math.floor(shuffledWords.length / players.length);
+      const endIndex = startIndex + Math.floor(shuffledWords.length / players.length);
+      const assignedWords = shuffledWords.slice(startIndex, endIndex); // Ambil subset kata
 
-      io.to(roomId).emit('receiveWords', newWords);
+      // Kirim kata-kata ke pemain spesifik
+      console.log(player.socketId, 'di end round1');
+
+      io.to(player.socketId).emit('receiveWords', { words: assignedWords });
+      console.log(`Assigned words to player ${player.username}:`, assignedWords);
     });
 
     // Clear words for the room to prepare for the next round
     roomWords[roomId] = [];
     console.log(`Round 1 ended for room ${roomId}`);
-
-    io.emit('endRound1:server', roomId);
   });
 
   // Handle client disconnection
