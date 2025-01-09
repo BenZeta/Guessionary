@@ -1,10 +1,10 @@
-import React, { useRef, useLayoutEffect, useState } from "react";
+import { useRef, useLayoutEffect, useState } from "react";
 import * as fabric from "fabric";
 
 export default function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [canvas, setCanvas] = useState<any>(null);
+  const [, setCanvas] = useState<fabric.Canvas | null>(null);
 
   useLayoutEffect(() => {
     const canvasElement = canvasRef.current;
@@ -38,7 +38,9 @@ export default function Canvas() {
 
   return (
     <>
-      <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
+      <div
+        ref={containerRef}
+        style={{ width: "100%", height: "100%" }}>
         <canvas ref={canvasRef}></canvas>
       </div>
     </>

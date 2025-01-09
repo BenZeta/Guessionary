@@ -13,9 +13,7 @@ export default function CardPage() {
             alt="home"
             className="w-10 animate-bounceUp"
           />
-          <span className="font-bold text-sm text-white animate-bounceUp">
-            Home
-          </span>
+          <span className="font-bold text-sm text-white animate-bounceUp">Home</span>
         </a>
         <a href="/avatars">
           <img
@@ -23,9 +21,7 @@ export default function CardPage() {
             alt="avatars"
             className="w-10 animate-bounceUp"
           />
-          <span className="font-bold text-sm text-white animate-bounceUp">
-            Avatar
-          </span>
+          <span className="font-bold text-sm text-white animate-bounceUp">Avatar</span>
         </a>
         <button>
           <img
@@ -33,9 +29,7 @@ export default function CardPage() {
             alt="sound"
             className="w-10 animate-bounceUp"
           />
-          <span className="font-bold text-sm text-white animate-bounceUp">
-            Sound
-          </span>
+          <span className="font-bold text-sm text-white animate-bounceUp">Sound</span>
         </button>
       </div>
       {/* card */}
@@ -45,24 +39,17 @@ export default function CardPage() {
           {avatars.concat(avatars).map((avatar, index) => (
             <div
               key={index}
-              className="min-w-[250px] max-w-sm bg-[#58BFE2] rounded-xl border-2 border-white shadow-lg overflow-hidden transform transition-transform"
-            >
+              className="min-w-[250px] max-w-sm bg-[#58BFE2] rounded-xl border-2 border-white shadow-lg overflow-hidden transform transition-transform">
               <img
                 src={avatar}
                 alt={`Avatar ${index}`} // Dynamic alt text
                 className="w-full h-60 object-cover"
               />
               <div className="p-5">
-                <h2 className="text-2xl font-bold text-white">
-                  NFT #{(index % avatars.length) + 1}
-                </h2>
-                <p className="text-white text-sm">
-                  Own your NFT's and kill the game!
-                </p>
+                <h2 className="text-2xl font-bold text-white">NFT #{(index % avatars.length) + 1}</h2>
+                <p className="text-white text-sm">Own your NFT's and kill the game!</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-yellow-400">
-                    0.0 ETH
-                  </span>
+                  <span className="text-lg font-bold text-yellow-400">0.0 ETH</span>
                 </div>
               </div>
             </div>
@@ -71,7 +58,7 @@ export default function CardPage() {
       </div>
 
       {/* Keyframe Animation */}
-      <style jsx>{`
+      <style>{`
         @keyframes slideshow {
           0% {
             transform: translateX(0);
