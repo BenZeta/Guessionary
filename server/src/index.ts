@@ -128,7 +128,7 @@ io.on('connection', (socket) => {
 
     io.emit('joinRoom:server', { roomId: data.roomId, user: data.user });
 
-    console.log(`${data.user.username} joined room ${data.roomId}`);
+    console.log(`${data?.user?.username} joined room ${data.roomId}`);
   });
 
   // Handle leaving a room
