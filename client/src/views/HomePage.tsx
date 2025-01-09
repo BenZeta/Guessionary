@@ -4,7 +4,6 @@ import Swal from "sweetalert2";
 import { baseUrl } from "../constants/baseUrl";
 import axios from "axios";
 import { useNavigate } from "react-router";
-import SpinnerLoading from "../components/Loading";
 
 interface Room {
   id: string;
@@ -13,38 +12,40 @@ interface Room {
   isActive: boolean;
   createdAt: Date;
   gameId: string;
-  // Add other properties as needed
+  users: User[];
 }
 
 type User = {
   id: string;
-  avatar: string;
   username: string;
-};
+  avatar: string;
+}
 
 export default function HomePage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [targetedRoomId, setTargetedRoomId] = useState<string>("");
-  const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
 
   const fetchRooms = async () => {
     try {
       setLoading(true);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
       const { data } = await axios.get(`${baseUrl}/rooms`, {
         headers: {
           Authorization: `Bearer ${localStorage.access_token}`,
         },
       });
 
+      console.log(data, "FETCH ROOMS");
+
       setRooms(data);
+      setUsers(data.users);
 
       socket.emit("roomList", data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -81,9 +82,10 @@ export default function HomePage() {
         });
         return;
       }
+      console.log(targetedRoomId);
 
       await axios.patch(
-        baseUrl + "/join-room",
+        `${baseUrl}/join-room`,
         { targetedRoomId },
         {
           headers: {
@@ -92,26 +94,23 @@ export default function HomePage() {
         }
       );
 
-      socket.emit("joinRoom", `${targetedRoomId}`);
+      socket.emit("joinRoom", { roomId: targetedRoomId, username: localStorage.username, avatar: localStorage.avatar });
+
       navigate(`/lobby/${targetedRoomId}`);
       navigate(`/lobby/${targetedRoomId}`);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
-  const handleSwal = () => {
+  const handleCreateRoom = () => {
     Swal.fire({
       title: "Enter Room Name",
-      input: "text", // Use text input
+      input: "text",
       inputPlaceholder: "Enter your room name",
-      inputAttributes: {
-        autocapitalize: "off",
-        autocorrect: "off",
-      },
       showCancelButton: true,
       confirmButtonText: "Create Room",
-      confirmButtonColor: "#38b2ac", // teal-500 color to match theme
+      confirmButtonColor: "#38b2ac",
       cancelButtonText: "Cancel",
       cancelButtonColor: "#e53e3e", // red color for cancel
       background: "#2d3748", // darker background for a modern look
@@ -127,29 +126,27 @@ export default function HomePage() {
         if (!inputRoomName) {
           Swal.showValidationMessage("Room name is required!");
         }
+        return inputRoomName;
       },
     }).then((result) => {
       if (result.isConfirmed && result.value) {
-        // If a room name was successfully entered and confirmed, proceed with room creation
-        socket.emit("roomName", {
-          roomName: result.value,
-          username: localStorage.username,
-        });
+        const roomName = result.value;
 
-        // You can send this room name to your backend or show a toast message here.
         axios
           .post(
-            baseUrl + "/create-room",
-            { roomName: result.value },
+            `${baseUrl}/create-room`,
+            { roomName },
             {
               headers: { Authorization: `Bearer ${localStorage.access_token}` },
             }
           )
           .then((response) => {
-            socket.emit("roomCreated", response.data);
+            const newRoom = response.data;
+            socket.emit("roomCreated", newRoom);
+            navigate(`/lobby/${newRoom.id}`); // Navigate to the newly created room
           })
           .catch((error) => {
-            console.log("Error creating room:", error);
+            console.error("Error creating room:", error);
           });
       }
     });
@@ -157,8 +154,8 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isFirstRender.current) {
-      isFirstRender.current = false; // Mark the first render as handled
-      fetchRooms(); // Call the function only once
+      isFirstRender.current = false;
+      fetchRooms();
     }
   }, []);
 
@@ -171,12 +168,37 @@ export default function HomePage() {
 
     socket.on("roomCreated:server", (newRoom: Room) => {
       setRooms((prev) => {
+        // Check if the room already exists in the state
+        if (prev.some((room) => room.id === newRoom.id)) {
+          return prev;
+        }
         return [...prev, newRoom];
       });
     });
 
+    socket.on("joinRoom:server", (data) => {
+      console.log("User joined room", data.roomId);
+      console.log(data);
+
+      // Update the room list or any other state as needed
+      setRooms((prev) => {
+        return prev.map((room) => {
+          if (room.id === data.roomId) {
+            return {
+              ...room,
+              users: [...room.users, data.username, data.avatar],
+            };
+          }
+          return room;
+        });
+      });
+      // For example, you can fetch the updated room list from the server
+      fetchRooms();
+    });
+
     return () => {
       socket.off("roomCreated:server");
+      socket.off("joinRoom:server");
       socket.disconnect();
     };
   }, []);
@@ -188,8 +210,7 @@ export default function HomePage() {
       {/* Main Content */}
       
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: Room List */}
-
+        {/* Room List */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
@@ -201,6 +222,7 @@ export default function HomePage() {
                   src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299" className="animate-spin w-2/12 h-2/12"
                   alt=""
                 />
+                <img src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif" alt="Loading" />
               </div>
             ) : (
               <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar">
@@ -224,13 +246,10 @@ export default function HomePage() {
                 })}
               </div>
             )}
-
-            {/* Create Room Button */}
             <div className="flex justify-center w-full space-x-5">
               <button
-                className="mt-4 bg-teal-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
-hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
-                onClick={handleSwal}
+                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+                onClick={handleCreateRoom}
               >
                 Create New Room
               </button>
@@ -245,7 +264,7 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
           </div>
         </div>
 
-        {/* Right Panel: Profile */}
+        {/* Profile */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">

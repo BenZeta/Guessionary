@@ -35,11 +35,31 @@ export default function Game1Page() {
 
       setRoom(data);
 
+      console.log("room >>>>>>>", data);
+
       socket.emit("userList", data?.users);
     } catch (error) {
       console.log(error);
     }
   };
+
+  async function getContributions() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/game/word`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      console.log(">>>>>>>>>>>>>>> DATA CONST", data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getContributions();
+  }, []);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -95,16 +115,12 @@ export default function Game1Page() {
 
     socket.on("startGame:server", (data) => {
       console.log(data);
+      navigate(`/round_1/${data.roomId}/${data.gameId}`);
     });
 
     socket.on("leaveRoom:server", (data) => {
       console.log("leaving", data.roomId);
       setRoom(data.updatedRoom);
-    });
-
-    socket.on("receiveWords", ({ words }) => {
-      console.log("New words received:", words);
-      setWords(words); // Update state with the new words
     });
 
     socket.on("endRound1:server", (roomId) => {
@@ -114,11 +130,10 @@ export default function Game1Page() {
     });
 
     return () => {
+      socket.off("joinRoom");
       socket.off("receiveWords");
       socket.off("userList:server");
       socket.off("startGame:server");
-      socket.off("serverLeaveRoom");
-      socket.disconnect(); // Cleanup on unmount
     };
   }, []);
 

@@ -43,9 +43,12 @@ export default function LoginPage() {
         username,
       });
 
+      console.log(">>data login", data);
+
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("avatar", selectedAvatar);
       localStorage.setItem("username", data.username);
+      localStorage.setItem("userId", data.userId);
 
       navigate("/");
     } catch (error) {
@@ -111,11 +114,7 @@ export default function LoginPage() {
             </div>
             {/* Next Avatar */}
             <div className="transition-transform duration-500 transform scale-75 opacity-60">
-              <img
-                src={Avatar[nextIndex]}
-                alt="Next avatar"
-                className="w-40 h-40 rounded-full"
-              />
+              <img src={Avatar[nextIndex]} alt="Next avatar" className="w-40 h-40 rounded-full" />
             </div>
           </div>
           {/* Button Avatar */}
