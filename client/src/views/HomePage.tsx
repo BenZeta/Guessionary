@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { baseUrl } from "../constants/baseUrl";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import SpinnerLoading from "../components/Loading";
 
 interface Room {
   id: string;
@@ -182,8 +183,10 @@ export default function HomePage() {
   console.log(users);
 
   return (
+    
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
       {/* Main Content */}
+      
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel: Room List */}
 
@@ -195,7 +198,7 @@ export default function HomePage() {
             {loading ? (
               <div className="flex justify-center h-full items-center">
                 <img
-                  src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif"
+                  src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299" className="animate-spin w-2/12 h-2/12"
                   alt=""
                 />
               </div>
@@ -254,7 +257,7 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
               {loading ? (
                 <div className="flex justify-center h-full items-center">
                   <img
-                    src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif"
+                    src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299" className="animate-spin w-9/12 h-9/12"
                     alt="loading"
                   />
                 </div>

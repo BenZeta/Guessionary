@@ -4,13 +4,16 @@ import { baseUrl } from "../constants/baseUrl";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 import { Avatar } from "../helpers/Avatar.ts";
+import WordsLoading from "../components/Loading.tsx";
 
 export default function LoginPage() {
+  const [loading, setLoading] = useState(true)
   const [avatarIndex, setAvatarIndex] = useState<number>(0);
   const [username, setUsername] = useState<string>("");
   const navigate = useNavigate();
   
   useEffect(() => {
+    const loadingTimer = setTimeout(() => setLoading(false), 4000);
     if (localStorage.access_token) {
       Swal.fire({
         title: "You are already logged in",
@@ -20,6 +23,7 @@ export default function LoginPage() {
       });
       navigate("/");
     }
+    return () => clearTimeout(loadingTimer);
   }, [navigate]);
 
   const handleNextAvatar = () => {
@@ -58,8 +62,13 @@ export default function LoginPage() {
   const nextIndex = (avatarIndex + 1) % Avatar.length;
 
   return (
+    <>
+      {loading ? (
+        <WordsLoading />
+      ) : (
     <div className="h-screen flex flex-col bg-gradient-to-br from-[#9DE6FF] to-[#58BFE2] relative">
       {/* Header */}
+
       <div className="flex items-center bg-hidden">
         <a href="/login" className="absolute top-4 left-10">
           <img
@@ -150,5 +159,7 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+    )}
+  </>
   );
 }
