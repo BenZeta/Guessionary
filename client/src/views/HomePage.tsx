@@ -202,7 +202,10 @@ export default function HomePage() {
   console.log(users);
 
   return (
+    
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
+      {/* Main Content */}
+      
       <div className="flex flex-1 overflow-hidden">
         {/* Room List */}
         <div className="w-1/2 bg-white/10 p-4">
@@ -258,7 +261,7 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
               {loading ? (
                 <div className="flex justify-center h-full items-center">
                   <img
-                    src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif"
+                    src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299" className="animate-spin w-9/12 h-9/12"
                     alt="loading"
                   />
                 </div>
