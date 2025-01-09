@@ -258,7 +258,7 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
         {/* Profile */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Your Profile</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Players</h2>
 
             {/* Grid Content */}
             <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
