@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { io } from '../';
 
-
 const prisma = new PrismaClient();
 
 export default class GameController {
@@ -96,9 +95,10 @@ export default class GameController {
     }
   }
 
-  static async postGameRound2(req: Request<{ gameId: string; roomId: string }, unknown, { dataUrl: string }>, res: Response, next: NextFunction) {
+  static async postGameRound2(req: Request<{ gameId: string; roomId: string }, unknown, { user64: string }>, res: Response, next: NextFunction) {
     try {
-      const { dataUrl } = req.body;
+      const { user64 } = req.body;
+
       const userId = req.loginInfo?.userId;
       const { gameId, roomId } = req.params;
 
@@ -118,7 +118,7 @@ export default class GameController {
           userId: userId!,
           gameId: gameId,
           type: 'DRAWING',
-          content: dataUrl,
+          content: user64,
         },
       });
 

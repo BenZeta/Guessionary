@@ -1,4 +1,33 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import { socket } from "../socket/socket";
+
 export default function Game3Page() {
+  const { roomId, gameId } = useParams();
+  const [drawingFromR2, setDrawingFromR2] = useState<string>("");
+
+  useEffect(() => {
+    // Configure socket with auth token
+    socket.auth = {
+      token: localStorage.username,
+    };
+
+    // Connect to the socket server
+    socket.connect();
+
+    // Handle server event
+    socket.on("endRound2:server", (data) => {
+      console.log("Received data from server:", data);
+      setDrawingFromR2(data.user64); // Assuming `data.drawing` contains the relevant drawing information
+    });
+
+    // Clean up socket event listeners on component unmount
+    return () => {
+      socket.off("endRound2:server");
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
       {/* Main Content */}
@@ -6,9 +35,7 @@ export default function Game3Page() {
         {/* Left Panel: Room List */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Player
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
               <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
                 <img
@@ -16,9 +43,7 @@ export default function Game3Page() {
                   alt="Avatar"
                   className="w-20 h-20 rounded-full"
                 />
-                <div className="ml-3 text-2xl truncate">
-                  Haloooooooooooooooooo
-                </div>
+                <div className="ml-3 text-2xl truncate">Haloooooooooooooooooo</div>
               </div>
               <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
                 <img
@@ -55,6 +80,11 @@ export default function Game3Page() {
                       placeholder="Type here..."
                     />
                   </div>
+                </div>
+                <div className="mt-4">
+                  <p className="text-white text-center">
+                    Real-Time Drawing Data: {drawingFromR2 || "No data yet"}
+                  </p>
                 </div>
               </div>
             </div>

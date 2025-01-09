@@ -9,6 +9,7 @@ import CardPage from "./views/CardPage";
 import { useContext } from "react";
 import { themeContext } from "./context/ThemeContext";
 import { SoundProvider } from "./context/SoundContext"; // Import the SoundProvider
+import Game3Page from "./views/Game3Page";
 
 type Theme = {
   light: {
@@ -30,31 +31,14 @@ export default function App(): JSX.Element {
       <div className={theme[currentTheme].bgColor}>
         <BrowserRouter>
           <Routes>
-            <Route
-              path="/login"
-              element={<LoginPage />}
-            />
-            <Route
-              path="/avatars"
-              element={<CardPage />}
-            />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/avatars" element={<CardPage />} />
             <Route element={<BaseLayout />}>
-              <Route
-                index
-                element={<HomePage />}
-              />
-              <Route
-                path="/lobby/:roomId"
-                element={<LobbyPage />}
-              />
-              <Route
-                path="/round_1/:roomId/:gameId"
-                element={<Game1Page />}
-              />
-              <Route
-                path="/draw/:roomId/:gameId"
-                element={<Game2Page />}
-              />
+              <Route index element={<HomePage />} />
+              <Route path="/lobby/:roomId" element={<LobbyPage />} />
+              <Route path="/round_1/:roomId/:gameId" element={<Game1Page />} />
+              <Route path="/draw/:roomId/:gameId" element={<Game2Page />} />
+              <Route path="/round_3/:roomId/:gameId" element={<Game3Page />} />
             </Route>
           </Routes>
         </BrowserRouter>
