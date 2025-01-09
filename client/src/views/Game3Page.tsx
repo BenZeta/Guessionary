@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+// import { useParams } from "react-router";
 import { socket } from "../socket/socket";
 
 export default function Game3Page() {
-  const { roomId, gameId } = useParams();
+  // const { roomId, gameId } = useParams();
   const [drawingFromR2, setDrawingFromR2] = useState<string>("");
 
   useEffect(() => {
@@ -57,9 +57,7 @@ export default function Game3Page() {
             </div>
 
             {/* Create Room Button */}
-            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
-              Create New Room
-            </button>
+            <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">Create New Room</button>
           </div>
         </div>
 
@@ -82,9 +80,7 @@ export default function Game3Page() {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <p className="text-white text-center">
-                    Real-Time Drawing Data: {drawingFromR2 || "No data yet"}
-                  </p>
+                  <p className="text-white text-center">Real-Time Drawing Data: {drawingFromR2 || "No data yet"}</p>
                 </div>
               </div>
             </div>

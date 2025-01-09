@@ -1,4 +1,4 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useMemo } from "react";
 import { BrowserRouter, Routes, Route } from "react-router"; // Use react-router-dom
 import HomePage from "./views/HomePage";
 import LoginPage from "./views/LoginPage";
@@ -9,7 +9,7 @@ import Game2Page from "./views/Game2Page";
 import CardPage from "./views/CardPage";
 import { themeContext } from "./context/ThemeContext";
 import { SoundProvider } from "./context/SoundContext";
-import { clickSound } from "./context/ClickContext"; // Removed unnecessary ClickProvider import
+import { useClickSound } from "./context/ClickContext"; // Removed unnecessary ClickProvider import
 import Game3Page from "./views/Game3Page";
 
 type Theme = {
@@ -27,7 +27,8 @@ export default function App(): JSX.Element {
     theme: Theme;
   };
 
-  const { playClickSound } = clickSound();
+  const clickSoundContext = useClickSound();
+  const playClickSound = useMemo(() => (clickSoundContext ? clickSoundContext.playClickSound : () => {}), [clickSoundContext]);
 
   useEffect(() => {
     const handleClick = () => {
