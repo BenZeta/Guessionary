@@ -6,9 +6,10 @@ import Swal from "sweetalert2";
 import { Avatar } from "../helpers/Avatar";
 import { themeContext } from "../context/ThemeContext";
 import { useSound } from "../context/SoundContext";
-// import ClickButton from "../components/Button";
+import WordsLoading from "../components/Loading.tsx";
 
 export default function LoginPage() {
+  const [loading, setLoading] = useState(true)
   const [avatarIndex, setAvatarIndex] = useState<number>(0);
   const [username, setUsername] = useState<string>("");
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function LoginPage() {
   const { isPlaying, toggleAudio } = useSound();
 
   useEffect(() => {
+    const loadingTimer = setTimeout(() => setLoading(false), 4000);
     if (localStorage.access_token) {
       Swal.fire({
         title: "You are already logged in",
@@ -26,6 +28,7 @@ export default function LoginPage() {
       });
       navigate("/");
     }
+    return () => clearTimeout(loadingTimer);
   }, [navigate]);
 
   const handleNextAvatar = () => {
@@ -67,7 +70,11 @@ export default function LoginPage() {
   const nextIndex = (avatarIndex + 1) % Avatar.length;
 
   return (
-    // Background
+    <>
+    {loading ? (
+      <WordsLoading />
+    ) : (
+
     <div className="h-screen flex flex-col">
       {currentTheme === "light" ? (
         <img
@@ -87,6 +94,7 @@ export default function LoginPage() {
       )}
 
       {/* Header */}
+
       <div className="flex items-center bg-hidden">
         <a href="/login" className="absolute top-3 left-14">
           <img
@@ -194,16 +202,18 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
-              <button
+               <button
                 type="submit"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#ffff00] rounded-3xl w-28 h-10 text-lg font-bold text-blue"
               >
                 Start
               </button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
-        </form>
-      </div>
-    </div>
+      )}
+    </>
   );
 }

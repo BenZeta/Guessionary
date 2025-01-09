@@ -103,7 +103,7 @@ export default class RoomController {
       res.status(200).json({
         user,
       });
-      // Update user's role to 'staff'
+
       await prisma.user.update({
         where: { id: userId },
         data: { role: 'Staff' }, // Change role to 'staff'
@@ -122,6 +122,7 @@ export default class RoomController {
 
       const userId = req.loginInfo?.userId;
 
+      // Dapatkan data room beserta informasi user
       const room = await prisma.room.findUnique({
         where: { id: targetedRoomId },
         include: {
@@ -133,6 +134,7 @@ export default class RoomController {
         throw { name: 'NotFound', message: 'Room not found' };
       }
 
+      // Cari user dalam room
       const userInRoom = room.users.find((user) => user.id === userId);
 
       if (!userInRoom) {
@@ -140,24 +142,29 @@ export default class RoomController {
         return;
       }
 
-      await prisma.room.update({
-        where: { id: targetedRoomId },
-        data: {
-          users: {
-            disconnect: { id: userId },
+      // Periksa apakah user memiliki role admin
+      const isAdmin = userInRoom.role === 'Admin'; // Asumsi ada atribut `role` pada user
+
+      if (!isAdmin) {
+        await prisma.room.update({
+          where: { id: targetedRoomId },
+          data: {
+            users: {
+              disconnect: { id: userId },
+            },
           },
-        },
-      });
+        });
 
-      res.status(200).json({ message: 'successfully left the room' });
-      const updatedRoom = await prisma.room.findUnique({
+        res.status(200).json({ message: 'Successfully left the room' });
+        return;
+      }
+
+      // Jika user adalah admin, hapus room
+      await prisma.room.delete({
         where: { id: targetedRoomId },
-        include: {
-          users: true,
-        },
       });
 
-      res.status(200).json(updatedRoom);
+      res.status(200).json({ message: 'Room deleted because admin left' });
     } catch (error) {
       console.log('error', error);
       next(error);

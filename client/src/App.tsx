@@ -10,6 +10,7 @@ import CardPage from "./views/CardPage";
 import { themeContext } from "./context/ThemeContext";
 import { SoundProvider } from "./context/SoundContext";
 import { clickSound } from "./context/ClickContext"; // Removed unnecessary ClickProvider import
+import Game3Page from "./views/Game3Page";
 
 type Theme = {
   light: {
@@ -52,6 +53,7 @@ export default function App(): JSX.Element {
               <Route path="/lobby/:roomId" element={<LobbyPage />} />
               <Route path="/round_1/:roomId/:gameId" element={<Game1Page />} />
               <Route path="/draw/:roomId/:gameId" element={<Game2Page />} />
+              <Route path="/round_3/:roomId/:gameId" element={<Game3Page />} />
             </Route>
           </Routes>
         </BrowserRouter>
