@@ -51,7 +51,9 @@ export default function LobbyPage() {
       setRoom(data);
 
       setUsers(data.users);
-      const user = data.users.find((user: User) => user.id === localStorage.userId);
+      const user = data.users.find(
+        (user: User) => user.id === localStorage.userId
+      );
       console.log("User Role:", user.role); // Log to check user role
       setUserRole(user.role || ""); // Set user role
       socket.emit("userList", data?.users);
@@ -81,11 +83,14 @@ export default function LobbyPage() {
     }
 
     try {
-      const { data } = await axios.get(baseUrl + `/game/start/${roomId}/${gameId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.access_token}`,
-        },
-      });
+      const { data } = await axios.get(
+        baseUrl + `/game/start/${roomId}/${gameId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
       console.log(data, "di loby");
 
       socket.emit("startGame", data);
@@ -178,7 +183,15 @@ export default function LobbyPage() {
 
     socket.on("joinRoom:server", (data) => {
       console.log("User joined room", data.roomId);
-      setUsers((prevUsers) => [...prevUsers, { id: data.userId, username: data.username, avatar: data.avatar, role: data.role }]);
+      setUsers((prevUsers) => [
+        ...prevUsers,
+        {
+          id: data.userId,
+          username: data.username,
+          avatar: data.avatar,
+          role: data.role,
+        },
+      ]);
     });
 
     return () => {
@@ -205,7 +218,8 @@ export default function LobbyPage() {
                   className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[300px] h-[300px] hover:scale-105 transition-transform duration-300">
                   <div
                     className="absolute inset-0"
-                    onClick={() => setGameId(game.id)}>
+                    onClick={() => setGameId(game.id)}
+                  >
                     <img
                       src={game.gameImage}
                       alt={game.name}
@@ -213,8 +227,12 @@ export default function LobbyPage() {
                     />
                   </div>
                   <div className="absolute bottom-0 w-full bg-gray-900/90 text-white p-2">
-                    <h3 className="text-sm font-bold text-teal-300 truncate">{game.name}</h3>
-                    <p className="text-xs text-gray-400">{game.isActive ? "Active" : "Inactive"}</p>
+                    <h3 className="text-sm font-bold text-teal-300 truncate">
+                      {game.name}
+                    </h3>
+                    <p className="text-xs text-gray-400">
+                      {game.isActive ? "Active" : "Inactive"}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -237,7 +255,6 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
           </div>
         </div>
       </div>
-
       <div className="w-8/12 bg-white/10 p-4">
         <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
           <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
