@@ -11,7 +11,7 @@ export default function BaseLayout() {
   useEffect(() => {
     if (!localStorage.access_token) {
       Swal.fire({
-        title: "please login first",
+        title: "Please login first",
         icon: "error",
         confirmButtonText: "yes",
       });

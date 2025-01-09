@@ -2,10 +2,12 @@ import { useNavigate } from "react-router";
 import { baseUrl } from "../constants/baseUrl";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useSound } from "../context/SoundContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const [role, setRole] = useState<string>("");
+  const { isPlaying, toggleAudio } = useSound();
 
   async function handleLogout() {
     try {
@@ -43,14 +45,39 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 flex justify-between items-center p-4 bg-purple-800 z-50">
-      <button
-        onClick={handleLogout}
-        className="border-2 border-black/20 rounded-xl bg-black/10 p-2 text-white"
-      >
-        Back to Home
+    <nav className="flex justify-center h-full items-center bg-hidden  w-full p-5 gap-x-20 bg-purple-800">
+      <button onClick={handleLogout}>
+        <img
+          src="https://ik.imagekit.io/matguchi18/logout.png?updatedAt=1736431150090"
+          alt="logout"
+          className="w-10 animate-bounceUp"
+        />
+        <span className="font-bold text-sm text-white animate-bounceUp">
+          Logout
+        </span>
       </button>
-      <h1 className="text-2xl text-white font-bold">Welcome to Game Rooms</h1>
+
+      <a href="/">
+        <img
+          src="https://ik.imagekit.io/3a0xukows/home.png?updatedAt=1736350418372"
+          alt="home"
+          className="w-10 animate-bounceUp "
+        />
+        <span className="font-bold text-sm text-white animate-bounceUp">
+          Home
+        </span>
+      </a>
+
+      <button onClick={toggleAudio}>
+        <img
+          src="https://ik.imagekit.io/3a0xukows/wave-sound.png?updatedAt=1736351115020"
+          alt="sound"
+          className="w-10 animate-bounceUp "
+        />
+        <span className="font-bold text-sm text-white animate-bounceUp">
+          {isPlaying ? "Pause Audio" : "Play Audio"}
+        </span>
+      </button>
     </nav>
   );
 }

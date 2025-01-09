@@ -3,18 +3,7 @@
     "id": "f4b6d2a4-53b4-4aaf-9372-8244c5f6e2d3",
     "isActive": true,
     "createdAt": "2025-01-08T10:00:00.000Z",
-    "name": "Adventure Quest"
-  },
-  {
-    "id": "ab2d3c45-e8a9-4b7f-b912-7d38468f2146",
-    "isActive": false,
-    "createdAt": "2024-12-25T15:30:00.000Z",
-    "name": "Puzzle Mania"
-  },
-  {
-    "id": "c3d4e5f6-a7b8-4c9d-81ef-9a8b234de789",
-    "isActive": true,
-    "createdAt": "2025-01-01T08:15:00.000Z",
-    "name": "Space Invaders"
+    "name": "Guessionary",
+    "gameImage": "https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299"
   }
 ]

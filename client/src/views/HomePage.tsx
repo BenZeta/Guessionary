@@ -247,7 +247,9 @@ export default function HomePage() {
         {/* Room List */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Room List</h2>
+            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
+              Room List
+            </h2>
             {loading ? (
               <div className="flex justify-center h-full items-center">
                 <img
@@ -291,7 +293,7 @@ export default function HomePage() {
               </button>
 
               <button
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+                className="mt-4 bg-teal-500 font-silkscreen hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
                 onClick={handleJoinRoom}
               >
@@ -304,9 +306,10 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
         {/* Profile */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
               Your Profile
             </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Players</h2>
 
             {/* Grid Content */}
             <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
