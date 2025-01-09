@@ -13,10 +13,10 @@ export const Avatar = [
   "https://ik.imagekit.io/3a0xukows/NFT-12.png?updatedAt=1736308213074",
   "https://ik.imagekit.io/3a0xukows/NFT-13.png?updatedAt=1736308212801",
   "https://ik.imagekit.io/3a0xukows/NFT-14.png?updatedAt=1736308213344",
-  "https://ik.imagekit.io/3a0xukows/NFT-15.png?updatedAt=1736308213361",
+  "https://ik.imagekit.io/3a0xukows/NFt-20.png?updatedAt=1736308213689",
   "https://ik.imagekit.io/3a0xukows/NFT-16.png?updatedAt=1736308213485",
   "https://ik.imagekit.io/3a0xukows/NFT-17.png?updatedAt=1736308213748",
   "https://ik.imagekit.io/3a0xukows/NFT-18.png?updatedAt=1736308213943",
   "https://ik.imagekit.io/3a0xukows/NFT-19.png?updatedAt=1736308213975",
-  "https://ik.imagekit.io/3a0xukows/NFt-20.png?updatedAt=1736308213689",
+  "https://ik.imagekit.io/3a0xukows/NFT-15.png?updatedAt=1736308213361",
 ];

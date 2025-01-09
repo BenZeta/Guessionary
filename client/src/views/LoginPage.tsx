@@ -14,10 +14,8 @@ export default function LoginPage() {
   const [username, setUsername] = useState<string>("");
   const navigate = useNavigate();
 
-  const { isPlaying, toggleAudio } = useSound();
-
-  // Correct typing for useContext
   const { currentTheme, setCurrentTheme } = useContext(themeContext);
+  const { isPlaying, toggleAudio } = useSound();
 
   useEffect(() => {
     const loadingTimer = setTimeout(() => setLoading(false), 4000);
@@ -150,27 +148,27 @@ export default function LoginPage() {
           {/* Avatar */}
           <div className="flex items-center justify-center gap-6">
             {/* Prev Avatar */}
-            <div className="transition-transform duration-500 transform scale-75 opacity-60 animate-bounceRight">
+            <div className="transition-transform duration-500 transform scale-75 opacity-70 animate-bounceRight">
               <img
                 src={Avatar[prevIndex]}
                 alt="Previous avatar"
-                className="w-56 h-56 rounded-full"
+                className="w-60 h-60 rounded-full"
               />
             </div>
             {/* Current Avatar */}
             <div className="mt-8 flex flex-col items-center animate-bounceDown">
               <img
-                className="w-56 h-56 rounded-full"
+                className="w-60 h-60 rounded-full"
                 src={Avatar[avatarIndex]}
                 alt="Selected avatar"
               />
             </div>
             {/* Next Avatar */}
-            <div className="transition-transform duration-500 transform scale-75 opacity-60 animate-bounceLeft">
+            <div className="transition-transform duration-500 transform scale-75 opacity-70 animate-bounceLeft">
               <img
                 src={Avatar[nextIndex]}
                 alt="Next avatar"
-                className="w-56 h-56 rounded-full"
+                className="w-60 h-60 rounded-full"
               />
             </div>
           </div>

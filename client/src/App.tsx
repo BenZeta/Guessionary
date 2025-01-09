@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import React, { useEffect, useContext } from "react";
+import { BrowserRouter, Routes, Route } from "react-router"; // Use react-router-dom
 import HomePage from "./views/HomePage";
 import LoginPage from "./views/LoginPage";
 import LobbyPage from "./views/LobbyPage";
@@ -6,9 +7,9 @@ import BaseLayout from "./views/BaseLayout";
 import Game1Page from "./views/Game1Page";
 import Game2Page from "./views/Game2Page";
 import CardPage from "./views/CardPage";
-import { useContext } from "react";
 import { themeContext } from "./context/ThemeContext";
-import { SoundProvider } from "./context/SoundContext"; // Import the SoundProvider
+import { SoundProvider } from "./context/SoundContext";
+import { clickSound } from "./context/ClickContext"; // Removed unnecessary ClickProvider import
 import Game3Page from "./views/Game3Page";
 
 type Theme = {
@@ -26,9 +27,23 @@ export default function App(): JSX.Element {
     theme: Theme;
   };
 
+  const { playClickSound } = clickSound();
+
+  useEffect(() => {
+    const handleClick = () => {
+      playClickSound(); // Play sound on every click
+    };
+
+    window.addEventListener("click", handleClick);
+
+    return () => {
+      window.removeEventListener("click", handleClick);
+    };
+  }, [playClickSound]);
+
   return (
     <SoundProvider>
-      <div className={theme[currentTheme].bgColor}>
+      <div className={theme[currentTheme]?.bgColor || "default-bg-color"}>
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
