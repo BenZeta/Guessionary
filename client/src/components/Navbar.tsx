@@ -13,7 +13,6 @@ export default function Navbar() {
         },
       });
 
-      console.log(data);
       localStorage.clear();
       navigate("/login");
     } catch (error) {

@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import { log } from 'console';
 
 interface ServerToClientEvents {
   [event: string]: (...args: unknown[]) => void;
@@ -13,12 +14,6 @@ type User = {
   id: string;
   username: string;
   avatar: string;
-};
-
-type Game = {
-  id: string;
-  isActive: boolean;
-  createdAt: Date;
 };
 
 interface Room {
@@ -35,10 +30,10 @@ interface ClientToServerEvents {
   roomName: (roomInfo: { roomName: string; username: string }) => void;
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
-  joinRoom: (targetedRoomId: string) => void;
+  joinRoom: (data: { roomId: string; username: string; avatar: string }) => void;
   leaveRoom: (data: { roomId: string; updatedRoom: Room }) => void;
   userList: (user: { users: User[] }) => void;
-  startGame: (data: { roomId: string; gameId: string }) => void;
+  startGame: (data: { roomId: string; gameId: string; users: User[] }) => void;
   submitWords: (data: { roomId: string; username: string; words: string }) => void;
   endRound1: (roomId: string) => void;
 }
@@ -67,7 +62,7 @@ const app = express();
 const port = process.env.PORT || 8080;
 
 const httpServer = createServer(app);
-const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
+export const io = new Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>(httpServer, {
   cors: {
     origin: '*',
   },
@@ -82,6 +77,7 @@ app.use(router);
 io.on('connection', (socket) => {
   // Room creation
   socket.on('roomCreated', (room: Room) => {
+    console.log('room has been created', room.id);
     io.emit('roomCreated:server', room);
   });
 
@@ -91,9 +87,17 @@ io.on('connection', (socket) => {
   });
 
   // Handle joining a room
-  socket.on('joinRoom', (targetedRoomId) => {
-    socket.join(targetedRoomId);
-    console.log(`User joined room: ${targetedRoomId}`);
+  socket.on('joinRoom', (data) => {
+    console.log(data);
+
+    if (!data.roomId) {
+      console.error('No targeted room ID provided');
+      return;
+    }
+
+    io.emit('joinRoom:server', data);
+    socket.join(data.roomId);
+    console.log(`User joined room: ${data.roomId}`);
   });
 
   // Handle leaving a room
@@ -103,28 +107,19 @@ io.on('connection', (socket) => {
     socket.leave(data.roomId);
   });
 
-  // start game
+  // Start game
   socket.on('startGame', (data) => {
     console.log(`Starting game ${data.gameId} in room ${data.roomId}`);
-
-    // Broadcast to all clients in the room that the game has started
-    io.emit('startGame:server', { gameId: data.gameId, roomId: data.roomId });
-  });
-
-  // Op
-
-  // User list update
-  socket.on('userList', (users) => {
-    socket.broadcast.emit('userList:server', users);
+    io.emit('startGame:server', { gameId: data.gameId, roomId: data.roomId, users: data.users });
   });
 
   // Collect words for Round 1
-  socket.on('submitWords', ({ roomId, username, words }: { roomId: string; username: string; words: string }) => {
-    if (!roomWords[roomId]) {
-      roomWords[roomId] = [];
+  socket.on('submitWords', (data: { roomId: string; username: string; words: string }) => {
+    if (!roomWords[data.roomId]) {
+      roomWords[data.roomId] = [];
     }
-    roomWords[roomId].push({ username, words });
-    console.log(`Words submitted for room ${roomId}:`, roomWords[roomId]);
+    roomWords[data.roomId].push({ username: data.username, words: data.words });
+    console.log(`Words submitted for room ${data.roomId}:`, roomWords[data.roomId]);
   });
 
   // End Round 1 and redistribute words
@@ -141,7 +136,9 @@ io.on('connection', (socket) => {
     // Assign shuffled words to players
     players.forEach((player, index) => {
       const newWords = shuffledWords[index];
-      io.to(player.username).emit('receiveWords', { words: newWords });
+      console.log(newWords, 'newWords');
+
+      io.to(roomId).emit('receiveWords', newWords);
     });
 
     // Clear words for the room to prepare for the next round
