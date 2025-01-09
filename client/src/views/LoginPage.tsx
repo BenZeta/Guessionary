@@ -204,12 +204,12 @@ export default function LoginPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
-              <button
+               <button
                 type="submit"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#ffff00] rounded-3xl w-28 h-10 text-lg font-bold text-blue"
               >
                 Start
-                </button>
+              </button>
                   </div>
                 </div>
               </form>
