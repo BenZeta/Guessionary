@@ -27,7 +27,7 @@ export default function Game3Page() {
       socket.disconnect();
     };
   }, []);
-
+// 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
       {/* Main Content */}
