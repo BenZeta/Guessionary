@@ -35,4 +35,21 @@ export default class UserController {
       next(error);
     }
   }
+
+  static async getUserById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.loginInfo?.userId;
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+      });
+
+      res.status(200).json(user);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }

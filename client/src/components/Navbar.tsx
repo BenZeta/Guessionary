@@ -1,24 +1,48 @@
 import { useNavigate } from "react-router";
 import { baseUrl } from "../constants/baseUrl";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const [role, setRole] = useState<string>("");
 
   async function handleLogout() {
     try {
+      if (role === "Staff") {
+        await axios.delete(`${baseUrl}/delete-user`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        });
+      }
+
       localStorage.clear();
       navigate("/login");
-
-      await axios.delete(`${baseUrl}/delete-user`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.access_token}`,
-        },
-      });
     } catch (error) {
       console.log(error);
     }
   }
+
+  async function getUserDetail() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/user_detail`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      console.log("NAVBAR>>>>>>>", data);
+
+      setRole(data.role);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getUserDetail();
+  }, []);
 
   return (
     <nav className="sticky top-0 flex justify-between items-center p-4 bg-purple-800 z-50">

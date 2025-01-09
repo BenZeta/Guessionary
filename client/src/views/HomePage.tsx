@@ -26,6 +26,7 @@ export default function HomePage() {
   const [targetedRoomId, setTargetedRoomId] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [role, setRole] = useState<string>("");
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
 
@@ -57,9 +58,11 @@ export default function HomePage() {
           Authorization: `Bearer ${localStorage.access_token}`,
         },
       });
-      // console.log(data);
+      console.log(data);
 
       setUsers(data);
+
+      setRole(data.role);
 
       socket.emit("userList", data?.users);
     } catch (error) {
@@ -67,8 +70,24 @@ export default function HomePage() {
     }
   };
 
+  const getUserDetail = async () => {
+    try {
+      const { data } = await axios.get(`${baseUrl}/user_detail`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      setRole(data.role);
+      console.log("role >>>>", data.role);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getUsers();
+    getUserDetail();
   }, []);
   const handleJoinRoom = async () => {
     try {
@@ -246,12 +265,18 @@ export default function HomePage() {
             )}
             <div className="flex justify-center w-full space-x-5">
               <button
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
-hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+                className={`mt-4 font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+                              ${
+                                role === "Staff"
+                                  ? "bg-gray-400 cursor-not-allowed text-white" // Warna abu-abu untuk staff
+                                  : "bg-teal-500 hover:bg-teal-600 text-white hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]" // Warna teal untuk role lain
+                              }`}
                 onClick={handleCreateRoom}
+                disabled={role === "Staff"} // Disable tombol jika role adalah "Staff"
               >
                 Create New Room
               </button>
+
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
