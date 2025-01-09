@@ -147,9 +147,11 @@ export default function Game1Page() {
               {room?.users.map((user, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
-                >
-                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
+                  <img
+                    src={user?.avatar}
+                    className="w-20 h-20 rounded-full"
+                  />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
               ))}
@@ -169,18 +171,17 @@ export default function Game1Page() {
               <div className="bg-gray-300/50 p-5 h-full rounded-lg">
                 <div className="bg-gray-200/10 h-full">
                   <div className="flex flex-col justify-center h-full items-center p-5">
-                    <img src="" alt="" />
-                    <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
+                    <form
+                      className="flex flex-col items-center gap-4"
+                      onSubmit={handleSubmit}>
                       <input
-                        value={words}
                         onChange={(e) => setWords(e.target.value)}
                         className="w-full rounded-2xl p-2 text-center bg-white-300 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Type here..."
                       />
                       <button
                         type="submit"
-                        className="bg-teal-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
-                      >
+                        className="bg-teal-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
                         OK
                       </button>
                     </form>

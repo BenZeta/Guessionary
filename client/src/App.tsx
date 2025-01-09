@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import { useEffect, useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router"; // Use react-router-dom
 import HomePage from "./views/HomePage";
 import LoginPage from "./views/LoginPage";
@@ -46,14 +46,35 @@ export default function App(): JSX.Element {
       <div className={theme[currentTheme]?.bgColor || "default-bg-color"}>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/avatars" element={<CardPage />} />
+            <Route
+              path="/login"
+              element={<LoginPage />}
+            />
+            <Route
+              path="/avatars"
+              element={<CardPage />}
+            />
             <Route element={<BaseLayout />}>
-              <Route index element={<HomePage />} />
-              <Route path="/lobby/:roomId" element={<LobbyPage />} />
-              <Route path="/round_1/:roomId/:gameId" element={<Game1Page />} />
-              <Route path="/draw/:roomId/:gameId" element={<Game2Page />} />
-              <Route path="/round_3/:roomId/:gameId" element={<Game3Page />} />
+              <Route
+                index
+                element={<HomePage />}
+              />
+              <Route
+                path="/lobby/:roomId"
+                element={<LobbyPage />}
+              />
+              <Route
+                path="/round_1/:roomId/:gameId"
+                element={<Game1Page />}
+              />
+              <Route
+                path="/draw/:roomId/:gameId"
+                element={<Game2Page />}
+              />
+              <Route
+                path="/round_3/:roomId/:gameId"
+                element={<Game3Page />}
+              />
             </Route>
           </Routes>
         </BrowserRouter>
