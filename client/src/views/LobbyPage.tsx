@@ -13,13 +13,13 @@ interface Room {
   isActive: boolean;
   createdAt: Date;
   gameId: string;
-  // Add other properties as needed
 }
 
 type User = {
   id: string;
   avatar: string;
   username: string;
+  role: string; // Add role to the user object
 };
 
 type Game = {
@@ -35,6 +35,7 @@ export default function LobbyPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [games, setGames] = useState<Game[]>([]);
   const [gameId, setGameId] = useState<string>("");
+  const [userRole, setUserRole] = useState<string>(""); // State to hold user role
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
   const { roomId } = useParams();
@@ -47,15 +48,21 @@ export default function LobbyPage() {
         },
       });
 
+      console.log(">>>>>>> USERS", data.users);
+
       setRoom(data);
       setUsers(data.users);
-      console.log(data.users);
-
+      const user = data.users.find((user: User) => user.id === localStorage.userId);
+      console.log("User Role:", user.role); // Log to check user role
+      setUserRole(user.role || ""); // Set user role
       socket.emit("userList", data?.users);
     } catch (error) {
       console.log(error);
     }
   };
+
+  console.log("userRoleeeeeeeeee", userRole);
+  console.log("CHECK >>>>>>>>>>", userRole === "Staff");
 
   const getGames = async () => {
     try {
@@ -67,11 +74,16 @@ export default function LobbyPage() {
 
       setGames(data);
     } catch (error) {
-      console.log(">>>>>>>", error);
+      console.log(error);
     }
   };
 
   const handleStartGame = async () => {
+    if (userRole === "Staff") {
+      console.log("User is Staff, cannot start game."); // Debugging: Check if role is "Staff"
+      return;
+    }
+
     try {
       const { data } = await axios.get(baseUrl + `/game/start/${roomId}/${gameId}`, {
         headers: {
@@ -89,7 +101,6 @@ export default function LobbyPage() {
 
   const leaveRoom = async () => {
     try {
-      // Step 1: Send request to backend to leave the room
       const { data } = await axios.patch(
         `${baseUrl}/leave-room`,
         { targetedRoomId: roomId },
@@ -104,25 +115,23 @@ export default function LobbyPage() {
         text: data.message,
         duration: 3000,
         close: true,
-        gravity: "bottom", // `top` or `bottom`
-        position: "right", // `left`, `center` or `right`
-        stopOnFocus: true, // Prevents dismissing of toast on hover
+        gravity: "bottom",
+        position: "right",
+        stopOnFocus: true,
         style: {
           background: "green",
-          color: "#ffffff", // Teks putih
-          borderRadius: "8px", // Membuat sudut lebih bulat
-          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)", // Memberikan bayangan
-          padding: "10px 20px", // Menambah ruang dalam
-          fontFamily: "'Roboto', sans-serif", // Sesuaikan dengan font umum
+          color: "#ffffff",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+          padding: "10px 20px",
+          fontFamily: "'Roboto', sans-serif",
           fontSize: "14px",
         },
-        onClick: function () {}, // Callback setelah klik
+        onClick: function () {},
       }).showToast();
 
-      // Step 2: Emit the "leaveRoom" event to the server (optional)
       socket.emit("leaveRoom", { roomId: roomId, updatedRoom: data });
 
-      // Optionally navigate after the user has left the room
       navigate(`/`);
     } catch (error) {
       console.log(error);
@@ -138,7 +147,6 @@ export default function LobbyPage() {
   }, []);
 
   useEffect(() => {
-    // Initialize socket connection
     socket.auth = {
       token: localStorage.username,
     };
@@ -170,15 +178,13 @@ export default function LobbyPage() {
       socket.off("startGame:server");
       socket.off("leaveRoom:server");
       socket.off("joinRoom:server");
+      socket.disconnect();
     };
   }, []);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
-      {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: Room List */}
-
         <div className="w-4/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game List</h2>
@@ -186,18 +192,15 @@ export default function LobbyPage() {
               {games.map((game) => (
                 <div
                   key={game.id}
-                  className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300">
-                  {/* Game Image Placeholder */}
-                  <div
-                    className="absolute inset-0"
-                    onClick={() => setGameId(game.id)}>
+                  className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300"
+                >
+                  <div className="absolute inset-0" onClick={() => setGameId(game.id)}>
                     <img
-                      src={`https://via.placeholder.com/150x75?text=${game.name}`} // Replace with actual image URLs
+                      src={`https://via.placeholder.com/150x75?text=${game.name}`}
                       alt={game.name}
                       className="w-full h-[75px] object-cover"
                     />
                   </div>
-                  {/* Game Info */}
                   <div className="absolute bottom-0 w-full bg-gray-900/90 text-white p-2">
                     <h3 className="text-sm font-bold text-teal-300 truncate">{game.name}</h3>
                     <p className="text-xs text-gray-400">{game.isActive ? "Active" : "Inactive"}</p>
@@ -205,36 +208,38 @@ export default function LobbyPage() {
                 </div>
               ))}
             </div>
-            {/* Create Room Button */}
             <div className="flex justify-center w-full space-x-5">
               <button
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-                onClick={handleStartGame}>
+                className={`mt-4 py-2 px-4 font-semibold rounded-md shadow-lg ${
+                  userRole === "Staff"
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-teal-500 hover:bg-teal-600 text-white"
+                }`}
+                onClick={handleStartGame}
+                disabled={userRole === "Staff"} // Disable button if user role is "Staff"
+              >
                 Start Game
               </button>
-
               <button
                 onClick={leaveRoom}
-                className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
+                className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
+              >
                 Leave Room
               </button>
             </div>
           </div>
         </div>
 
-        {/* Right Panel: Profile */}
         <div className="w-8/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Your Profile</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+              Your Profile
+            </h2>
 
-            {/* Grid Content */}
             <div className="grid grid-cols-3 gap-5 rounded-lg w-full overflow-y-auto scrollbar p-1">
               {loading ? (
                 <div className="flex justify-center h-full items-center">
-                  <img
-                    src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif"
-                    alt=""
-                  />
+                  <img src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif" alt="" />
                 </div>
               ) : (
                 <>
@@ -242,17 +247,17 @@ export default function LobbyPage() {
                     return (
                       <div
                         key={user.id}
-                        className="bg-gray-300/15 border border-black/20 rounded-xl min-h-[300px] min-w-[300px] flex items-center justify-center relative">
-                        {/* Image placed in the background */}
-
+                        className="bg-gray-300/15 border border-black/20 rounded-xl min-h-[300px] min-w-[300px] flex items-center justify-center relative"
+                      >
                         <img
                           src={user.avatar}
                           className="absolute inset-0 w-full h-full object-cover rounded-xl z-0"
                           alt=""
                         />
 
-                        {/* Name div overlay */}
-                        <div className="absolute bottom-0 w-full bg-black/90 text-white p-5 rounded-b-xl text-center z-10">{user.username}</div>
+                        <div className="absolute bottom-0 w-full bg-black/90 text-white p-5 rounded-b-xl text-center z-10">
+                          {user.username}
+                        </div>
                       </div>
                     );
                   })}

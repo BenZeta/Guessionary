@@ -103,6 +103,13 @@ export default class RoomController {
       res.status(200).json({
         user,
       });
+      // Update user's role to 'staff'
+      await prisma.user.update({
+        where: { id: userId },
+        data: { role: 'Staff' }, // Change role to 'staff'
+      });
+
+      res.status(200).json({ message: 'Room joined successfully and role updated to staff' });
     } catch (error) {
       console.log('error', error);
       next(error);

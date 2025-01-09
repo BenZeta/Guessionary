@@ -135,4 +135,24 @@ export default class GameController {
       next(error);
     }
   }
+
+  static async getAllWordContribution(req: Request, res: Response, next: NextFunction) {
+    try {
+      const wordContribution = await prisma.contribution.findMany({
+        where: {
+          type: 'WORD',
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      console.log('>>>>>>>>>>>>>> WORD', wordContribution);
+
+      res.status(200).json(wordContribution);
+    } catch (error) {
+      next(error);
+      console.log(error);
+    }
+  }
 }
