@@ -12,11 +12,19 @@ interface Room {
   isActive: boolean;
   createdAt: Date;
   gameId: string;
+  users: User[];
+}
+
+interface User {
+  id: string;
+  username: string;
+  avatar: string;
 }
 
 export default function HomePage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [targetedRoomId, setTargetedRoomId] = useState<string>("");
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
@@ -30,7 +38,11 @@ export default function HomePage() {
         },
       });
 
+      console.log(data, "FETCH ROOMS");
+
       setRooms(data);
+      setUsers(data.users);
+
       socket.emit("roomList", data);
     } catch (error) {
       console.error(error);
@@ -50,6 +62,7 @@ export default function HomePage() {
         });
         return;
       }
+      console.log(targetedRoomId);
 
       await axios.patch(
         `${baseUrl}/join-room`,
@@ -61,7 +74,8 @@ export default function HomePage() {
         }
       );
 
-      socket.emit("joinRoom", targetedRoomId);
+      socket.emit("joinRoom", { roomId: targetedRoomId, username: localStorage.username, avatar: localStorage.avatar });
+
       navigate(`/lobby/${targetedRoomId}`);
     } catch (error) {
       console.error(error);
@@ -125,11 +139,38 @@ export default function HomePage() {
     socket.connect();
 
     socket.on("roomCreated:server", (newRoom: Room) => {
-      setRooms((prev) => [...prev, newRoom]);
+      setRooms((prev) => {
+        // Check if the room already exists in the state
+        if (prev.some((room) => room.id === newRoom.id)) {
+          return prev;
+        }
+        return [...prev, newRoom];
+      });
+    });
+
+    socket.on("joinRoom:server", (data) => {
+      console.log("User joined room", data.roomId);
+      console.log(data);
+
+      // Update the room list or any other state as needed
+      setRooms((prev) => {
+        return prev.map((room) => {
+          if (room.id === data.roomId) {
+            return {
+              ...room,
+              users: [...room.users, data.username, data.avatar],
+            };
+          }
+          return room;
+        });
+      });
+      // For example, you can fetch the updated room list from the server
+      fetchRooms();
     });
 
     return () => {
       socket.off("roomCreated:server");
+      socket.off("joinRoom:server");
       socket.disconnect();
     };
   }, []);

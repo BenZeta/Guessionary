@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { io } from '../index'; // Import the io instance
 
 const prisma = new PrismaClient();
 
@@ -40,8 +41,14 @@ export default class GameController {
         },
       });
 
+      // Start a 30-second timer for Round 1
+      setTimeout(() => {
+        io.to(roomId).emit('endRound1:server', roomId);
+      }, 30000);
+
       res.status(200).json({
-        message: 'Game is starting..',
+        roomId,
+        gameId,
       });
     } catch (error) {
       console.log(error);
@@ -82,9 +89,9 @@ export default class GameController {
     }
   }
 
-  static async postGameRound2(req: Request<{ gameId: string; roomId: string }, unknown, { user64: string }>, res: Response, next: NextFunction) {
+  static async postGameRound2(req: Request<{ gameId: string; roomId: string }, unknown, { dataUrl: string }>, res: Response, next: NextFunction) {
     try {
-      const { user64 } = req.body;
+      const { dataUrl } = req.body;
       const userId = req.loginInfo?.userId;
       const { gameId, roomId } = req.params;
 
@@ -104,7 +111,7 @@ export default class GameController {
           userId: userId!,
           gameId: gameId,
           type: 'DRAWING',
-          content: user64,
+          content: dataUrl,
         },
       });
 

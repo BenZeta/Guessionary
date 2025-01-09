@@ -1,12 +1,15 @@
-import { useRef, useLayoutEffect, useState } from "react";
+// filepath: /Users/Ben/Desktop/Hacktiv8/P2/Guessionary/client/src/views/Game2Page.tsx
+import { useRef, useLayoutEffect, useState, useEffect } from "react";
 import * as fabric from "fabric";
 import axios from "axios";
 import { baseUrl } from "../constants/baseUrl";
 import { useParams } from "react-router";
+import { socket } from "../socket/socket";
 
 export default function Game2Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [wordsFromR1, setWordsFromR1] = useState<string>("");
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const { gameId, roomId } = useParams();
 
@@ -70,6 +73,26 @@ export default function Game2Page() {
       console.error("Canvas belum siap!");
     }
   };
+
+  useEffect(() => {
+    socket.auth = {
+      token: localStorage.username,
+    };
+    socket.connect();
+
+    try {
+      socket.on("receiveWords", (words) => {
+        console.log("New words received:", words);
+        setWordsFromR1(words); // Update state with the new words
+      });
+    } catch (error) {
+      console.log(error, "<<<<<<<<<<<<<<<");
+    }
+
+    return () => {
+      socket.off("receiveWords");
+    };
+  }, []);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">

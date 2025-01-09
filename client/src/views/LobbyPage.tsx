@@ -1,3 +1,4 @@
+// filepath: /Users/Ben/Desktop/Hacktiv8/P2/Guessionary/client/src/views/LobbyPage.tsx
 import { useEffect, useState, useRef } from "react";
 import { socket } from "../socket/socket";
 import { baseUrl } from "../constants/baseUrl";
@@ -30,7 +31,7 @@ type Game = {
 
 export default function LobbyPage() {
   const [loading, setLoading] = useState(false);
-  const [room, setRoom] = useState<Room[]>([]);
+  const [room, setRoom] = useState<Room | null>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [games, setGames] = useState<Game[]>([]);
   const [gameId, setGameId] = useState<string>("");
@@ -90,11 +91,7 @@ export default function LobbyPage() {
         },
       });
 
-      socket.emit("startGame", { gameId, roomId });
-
-      setTimeout(() => {
-        socket.emit("endRound1", `${roomId}`);
-      }, 30000);
+      socket.emit("startGame", { gameId: data.gameId, roomId: data.roomId, users });
 
       navigate(`/round_1/${roomId}/${gameId}`);
     } catch (error) {
@@ -157,19 +154,12 @@ export default function LobbyPage() {
     socket.connect();
 
     socket.on("userList:server", (newUsers) => {
-      setRoom((prev) => {
-        if (!prev) return prev;
-        const updatedUsers = [...newUsers];
-
-        return {
-          ...prev,
-          users: updatedUsers,
-        };
-      });
+      setUsers(newUsers);
     });
 
     socket.on("startGame:server", (data) => {
       console.log("Game started:", data);
+      setUsers(data.users); // Update users in the room
       navigate(`/round_1/${data.roomId}/${data.gameId}`);
     });
 
@@ -178,10 +168,16 @@ export default function LobbyPage() {
       setRoom(data.updatedRoom);
     });
 
+    socket.on("joinRoom:server", (data) => {
+      console.log("User joined room", data.roomId);
+      setUsers((prevUsers) => [...prevUsers, { id: data.userId, username: data.username, avatar: data.avatar }]);
+    });
+
     return () => {
       socket.off("userList:server");
       socket.off("startGame:server");
-      socket.off("serverLeaveRoom");
+      socket.off("leaveRoom:server");
+      socket.off("joinRoom:server");
       socket.disconnect();
     };
   }, []);
