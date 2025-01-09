@@ -1,4 +1,3 @@
-// filepath: /Users/Ben/Desktop/Hacktiv8/P2/Guessionary/client/src/views/LobbyPage.tsx
 import { useEffect, useState, useRef } from "react";
 import { socket } from "../socket/socket";
 import { baseUrl } from "../constants/baseUrl";
@@ -85,8 +84,13 @@ export default function LobbyPage() {
           Authorization: `Bearer ${localStorage.access_token}`,
         },
       });
+      console.log(data, "di loby");
 
-      socket.emit("startGame", { gameId: data.gameId, roomId: data.roomId, users });
+      socket.emit("startGame", data);
+
+      setTimeout(() => {
+        socket.emit("endRound1", data);
+      }, 15000);
 
       navigate("/round_1/" + roomId + "/" + gameId);
       // navigate("/game1");
@@ -155,13 +159,19 @@ export default function LobbyPage() {
 
     socket.on("startGame:server", (data) => {
       console.log("Game started:", data);
-      setUsers(data.users); // Update users in the room
+
       navigate(`/round_1/${data.roomId}/${data.gameId}`);
     });
 
     socket.on("leaveRoom:server", (data) => {
       console.log("leaving", data.roomId);
       setRoom(data.updatedRoom);
+    });
+
+    socket.on("endRound1:server", (data) => {
+      console.log("Round 1 ended for room", data.roomId);
+
+      navigate(`/draw/${data.roomId}/${data.gameId}`);
     });
 
     socket.on("joinRoom:server", (data) => {
@@ -173,6 +183,7 @@ export default function LobbyPage() {
       socket.off("userList:server");
       socket.off("startGame:server");
       socket.off("leaveRoom:server");
+      socket.off("endRound1:server");
       socket.off("joinRoom:server");
       socket.disconnect();
     };
