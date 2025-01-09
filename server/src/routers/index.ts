@@ -10,7 +10,7 @@ router.post('/login', AuthController.login);
 
 router.use(authentication);
 
-router.get('/users/', UserController.getAllUser);
+router.get('/users', UserController.getAllUser);
 router.get('/users/:roomId', UserController.getUserByRoom);
 router.get('/rooms', RoomController.getRooms);
 router.post('/create-room', RoomController.createRoom);

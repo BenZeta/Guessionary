@@ -10,6 +10,30 @@ type Game = {
   name: string;
 };
 
+type User = {
+  id: string;
+  username: string;
+  avatar: string;
+  role: string;
+};
+
+const users = [
+  {
+    id: '1',
+    username: 'user1',
+    avatar: 'https://avatars.dicebear.com/api/bottts/1.svg',
+    gameId: '1',
+    role: 'Admin',
+  },
+  {
+    id: '2',
+    username: 'user2',
+    avatar: 'https://avatars.dicebear.com/api/bottts/2.svg',
+    gameId: '2',
+    role: 'Admin',
+  },
+];
+
 async function main() {
   games.forEach(async (game: Game) => {
     await prisma.game.create({
@@ -17,6 +41,17 @@ async function main() {
         isActive: game.isActive,
         createdAt: game.createdAt,
         name: game.name,
+      },
+    });
+  });
+
+  users.forEach(async (user: User) => {
+    await prisma.user.create({
+      data: {
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar,
+        role: user.role,
       },
     });
   });
