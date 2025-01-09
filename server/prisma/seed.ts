@@ -21,14 +21,14 @@ const users = [
   {
     id: '1',
     username: 'user1',
-    avatar: 'https://avatars.dicebear.com/api/bottts/1.svg',
+    avatar: 'https://ik.imagekit.io/3a0xukows/NFT-7.png?updatedAt=1736308208415',
     gameId: '1',
     role: 'Admin',
   },
   {
     id: '2',
     username: 'user2',
-    avatar: 'https://avatars.dicebear.com/api/bottts/2.svg',
+    avatar: 'https://ik.imagekit.io/3a0xukows/NFT-12.png?updatedAt=1736308213074',
     gameId: '2',
     role: 'Admin',
   },

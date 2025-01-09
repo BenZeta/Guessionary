@@ -86,8 +86,11 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    getUsers();
     getUserDetail();
+  }, [getUserDetail]);
+
+  useEffect(() => {
+    getUsers();
   }, []);
   const handleJoinRoom = async () => {
     try {
