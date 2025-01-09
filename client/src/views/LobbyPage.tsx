@@ -85,6 +85,7 @@ export default function LobbyPage() {
     }
 
     try {
+
       const { data } = await axios.get(baseUrl + `/game/start/${roomId}/${gameId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.access_token}`,
@@ -92,8 +93,7 @@ export default function LobbyPage() {
       });
 
       socket.emit("startGame", { gameId: data.gameId, roomId: data.roomId, users });
-
-      navigate(`/round_1/${roomId}/${gameId}`);
+      // navigate("/game1");
     } catch (error) {
       console.log(error);
     }
@@ -187,14 +187,20 @@ export default function LobbyPage() {
       <div className="flex flex-1 overflow-hidden">
         <div className="w-4/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game List</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+              Game List
+            </h2>
             <div className="grid grid-cols-2 gap-4 justify-items-center">
               {games.map((game) => (
                 <div
                   key={game.id}
                   className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300"
                 >
-                  <div className="absolute inset-0" onClick={() => setGameId(game.id)}>
+                  {/* Game Image Placeholder */}
+                  <div
+                    className="absolute inset-0"
+                    onClick={() => setGameId(game.id)}
+                  >
                     <img
                       src={`https://via.placeholder.com/150x75?text=${game.name}`}
                       alt={game.name}
@@ -202,8 +208,12 @@ export default function LobbyPage() {
                     />
                   </div>
                   <div className="absolute bottom-0 w-full bg-gray-900/90 text-white p-2">
-                    <h3 className="text-sm font-bold text-teal-300 truncate">{game.name}</h3>
-                    <p className="text-xs text-gray-400">{game.isActive ? "Active" : "Inactive"}</p>
+                    <h3 className="text-sm font-bold text-teal-300 truncate">
+                      {game.name}
+                    </h3>
+                    <p className="text-xs text-gray-400">
+                      {game.isActive ? "Active" : "Inactive"}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -222,8 +232,8 @@ export default function LobbyPage() {
               </button>
               <button
                 onClick={leaveRoom}
-                className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg"
-              >
+                className="mt-4 bg-red-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
                 Leave Room
               </button>
             </div>
@@ -233,34 +243,41 @@ export default function LobbyPage() {
         <div className="w-8/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Your Profile
+              Player
             </h2>
 
-            <div className="grid grid-cols-3 gap-5 rounded-lg w-full overflow-y-auto scrollbar p-1">
+            {/* Grid Content */}
+            <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
               {loading ? (
                 <div className="flex justify-center h-full items-center">
-                  <img src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif" alt="" />
+                  <img
+                    src="https://media.tenor.com/VwmFDyI4zrIAAAAM/cat.gif"
+                    alt="loading"
+                  />
                 </div>
               ) : (
                 <>
-                  {users.map((user) => {
-                    return (
-                      <div
-                        key={user.id}
-                        className="bg-gray-300/15 border border-black/20 rounded-xl min-h-[300px] min-w-[300px] flex items-center justify-center relative"
-                      >
+                  {users.map((user) => (
+                    <div
+                      key={user.id}
+                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative"
+                    >
+                      {/* Image placed in the background */}
+                      <div className="relative overflow-hidden w-full rounded-full">
                         <img
                           src={user.avatar}
-                          className="absolute inset-0 w-full h-full object-cover rounded-xl z-0"
-                          alt=""
+                          className="h-full w-full object-cover"
+                          alt={user.username}
                         />
-
-                        <div className="absolute bottom-0 w-full bg-black/90 text-white p-5 rounded-b-xl text-center z-10">
-                          {user.username}
+                        {/* Overlay div for animation */}
+                        <div className="absolute h-full w-full bg-black/40 text-white flex items-center justify-center rounded-full -bottom-10 group-hover:bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
+                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">
+                            {user.username}
+                          </h2>
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </>
               )}
             </div>

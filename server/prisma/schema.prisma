@@ -15,7 +15,7 @@ model User {
   role          String         @default("Admin")
   contributions Contribution[]  
   scores        Score[]
-  Game          Game?          @relation(fields: [gameId], references: [id]) // One user can belong to one game at a time
+  Game          Game?          @relation(fields: [gameId], references: [id])
   Room          Room[]         @relation("RoomToUser")
 }
 

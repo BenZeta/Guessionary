@@ -3,8 +3,8 @@ import HomePage from "./views/HomePage";
 import LoginPage from "./views/LoginPage";
 import LobbyPage from "./views/LobbyPage";
 import BaseLayout from "./views/BaseLayout";
-import Game2Page from "./views/Game2Page";
 import Game1Page from "./views/Game1Page";
+import Game2Page from "./views/Game2Page";
 
 export default function App() {
   return (
