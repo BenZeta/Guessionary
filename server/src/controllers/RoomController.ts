@@ -104,12 +104,7 @@ export default class RoomController {
         user,
       });
 
-      await prisma.user.update({
-        where: { id: userId },
-        data: { role: 'Staff' }, // Change role to 'staff'
-      });
-
-      res.status(200).json({ message: 'Room joined successfully and role updated to staff' });
+      res.status(200).json({ message: 'Room joined successfully' });
     } catch (error) {
       console.log('error', error);
       next(error);
@@ -119,7 +114,6 @@ export default class RoomController {
   static async leaveRoom(req: Request<unknown, unknown, { targetedRoomId: string }>, res: Response, next: NextFunction) {
     try {
       const { targetedRoomId } = req.body;
-
       const userId = req.loginInfo?.userId;
 
       // Dapatkan data room beserta informasi user
@@ -138,6 +132,7 @@ export default class RoomController {
       const userInRoom = room.users.find((user) => user.id === userId);
 
       if (!userInRoom) {
+        // Tangani kasus user tidak ada dalam room
         res.status(200).json({ message: 'User is not in the room' });
         return;
       }
@@ -146,6 +141,7 @@ export default class RoomController {
       const isAdmin = userInRoom.role === 'Admin'; // Asumsi ada atribut `role` pada user
 
       if (!isAdmin) {
+        // Hapus user dari room
         await prisma.room.update({
           where: { id: targetedRoomId },
           data: {
@@ -156,16 +152,16 @@ export default class RoomController {
         });
 
         res.status(200).json({ message: 'Successfully left the room' });
-        return;
+      } else {
+        // Hapus room jika user adalah admin
+        await prisma.room.delete({
+          where: { id: targetedRoomId },
+        });
+
+        res.status(200).json({ message: 'Room deleted because admin left' });
       }
-
-      // Jika user adalah admin, hapus room
-      await prisma.room.delete({
-        where: { id: targetedRoomId },
-      });
-
-      res.status(200).json({ message: 'Room deleted because admin left' });
     } catch (error) {
+      // Tangani error
       console.log('error', error);
       next(error);
     }

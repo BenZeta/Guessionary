@@ -11,6 +11,30 @@ type Game = {
   gameImage: string;
 };
 
+type User = {
+  id: string;
+  username: string;
+  avatar: string;
+  role: string;
+};
+
+const users = [
+  {
+    id: '1',
+    username: 'user1',
+    avatar: 'https://ik.imagekit.io/3a0xukows/NFT-7.png?updatedAt=1736308208415',
+    gameId: '1',
+    role: 'Admin',
+  },
+  {
+    id: '2',
+    username: 'user2',
+    avatar: 'https://ik.imagekit.io/3a0xukows/NFT-12.png?updatedAt=1736308213074',
+    gameId: '2',
+    role: 'Admin',
+  },
+];
+
 async function main() {
   for (const game of games) {
     await prisma.game.create({
@@ -21,7 +45,18 @@ async function main() {
         gameImage: game.gameImage,
       },
     });
-  }
+  });
+
+  users.forEach(async (user: User) => {
+    await prisma.user.create({
+      data: {
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar,
+        role: user.role,
+      },
+    });
+  });
 }
 
 main()

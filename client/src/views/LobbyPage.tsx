@@ -76,6 +76,12 @@ export default function LobbyPage() {
     }
   };
 
+  useEffect(() => {
+    if (!localStorage.currentRoomId) {
+      navigate("/");
+    }
+  }, [localStorage.currentRoomId]);
+
   const handleStartGame = async () => {
     if (userRole === "Staff") {
       console.log("User is Staff, cannot start game."); // Debugging: Check if role is "Staff"
@@ -139,6 +145,8 @@ export default function LobbyPage() {
 
       socket.emit("leaveRoom", { roomId: roomId, updatedRoom: data });
 
+      localStorage.removeItem("currentRoomId");
+
       navigate(`/`);
     } catch (error) {
       console.log(error);
@@ -185,12 +193,7 @@ export default function LobbyPage() {
       console.log("User joined room", data.roomId);
       setUsers((prevUsers) => [
         ...prevUsers,
-        {
-          id: data.userId,
-          username: data.username,
-          avatar: data.avatar,
-          role: data.role,
-        },
+        { id: data.userId, username: data.username, avatar: data.avatar, role: data.role },
       ]);
     });
 

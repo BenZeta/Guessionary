@@ -160,4 +160,21 @@ export default class GameController {
       console.log(error);
     }
   }
+  static async getAllDrawContribution(req: Request, res: Response, next: NextFunction) {
+    try {
+      const drawContribution = await prisma.contribution.findMany({
+        where: {
+          type: 'DRAWING',
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      res.status(200).json(drawContribution);
+    } catch (error) {
+      next(error);
+      console.log(error);
+    }
+  }
 }
