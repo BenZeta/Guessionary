@@ -29,12 +29,13 @@ interface ClientToServerEvents {
   roomName: (roomInfo: { roomName: string; username: string }) => void;
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
-  joinRoom: (data: { roomId: string; username: string }) => void;
+  joinRoom: (data: { roomId: string; username: string; avatar: string; role: string }) => void;
   leaveRoom: (data: { roomId: string; updatedRoom: Room }) => void;
   userList: (user: { users: User[] }) => void;
   startGame: (data: { roomId: string; gameId: string; users: User[] }) => void;
   submitWords: (data: { roomId: string; username: string; words: string }) => void;
   endRound1: (data: { roomId: string; gameId: string; users: User[] }) => void;
+  endRound2: (data: { roomId: string; gameId: string; user64: string }) => void;
 }
 
 interface InterServerEvents {
@@ -97,20 +98,22 @@ io.on('connection', (socket) => {
     io.emit('roomList:server', rooms);
   });
 
-  socket.on('joinRoom', ({ roomId, username }) => {
-    if (!players[roomId]) {
-      players[roomId] = [];
+  socket.on('joinRoom', (data: { roomId: string; username: string; avatar: string; role: string }) => {
+    if (!players[data.roomId]) {
+      players[data.roomId] = [];
     }
 
-    socket.join(`${roomId}`);
+    socket.join(`${data.roomId}`);
 
-    players[roomId].push({
-      name: username,
+    players[data.roomId].push({
+      name: data.username,
       socketId: socket.id, // Simpan socket.id
       words: [], // Kata-kata untuk pemain ini
     });
 
-    console.log(`${username} joined room ${roomId}`);
+    socket.emit('joinRoom:server', { roomId: data.roomId, username: data.username, avatar: data.avatar, role: data.role });
+
+    console.log(`${data.username} joined room ${data.roomId}`);
   });
 
   // Handle leaving a room
@@ -123,11 +126,11 @@ io.on('connection', (socket) => {
   // Start game
   socket.on('startGame', (data) => {
     console.log(`Starting game ${data.gameId} in room ${data.roomId} with users ${JSON.stringify(data.users)}`);
-    io.to(data.roomId).emit('startGame:server', { gameId: data.gameId, roomId: data.roomId, users: data.users });
+    io.emit('startGame:server', { gameId: data.gameId, roomId: data.roomId, users: data.users });
 
     // Start a 15-second timer for Round 1
     setTimeout(() => {
-      io.to(data.roomId).emit('endRound1:server', { roomId: data.roomId, gameId: data.gameId, users: data.users });
+      io.emit('endRound1:server', { roomId: data.roomId, gameId: data.gameId, users: data.users });
     }, 15000);
   });
 
@@ -145,14 +148,14 @@ io.on('connection', (socket) => {
     console.log(data, 'di end round 1 data');
 
     const { roomId, gameId, users } = data;
-    const players = roomWords[roomId];
+    const players = roomWords[data.roomId];
 
     console.log(players, 'di end round 1 players');
 
     io.emit('endRound1:server', data);
 
     if (!players || players.length === 0) {
-      console.error(`No words found for room ${roomId}`);
+      console.error(`No words found for room ${data.roomId}`);
       return;
     }
 
@@ -176,6 +179,32 @@ io.on('connection', (socket) => {
     // Clear words for the room to prepare for the next round
     roomWords[roomId] = [];
     console.log(`Round 1 ended for room ${roomId}`);
+  });
+
+  socket.on('endRound2', (data: { roomId: string; gameId: string; user64: string }) => {
+    const { roomId, user64 } = data;
+
+    // Get players in the room
+    const playersInRoom = players[roomId];
+    if (!playersInRoom || playersInRoom.length === 0) {
+      console.error(`No players found in room ${roomId}`);
+      return;
+    }
+
+    console.log(user64, '<<<<<<<<<<<<,');
+
+    // Randomize the `user64` string (assuming it's a string of data that can be split into parts)
+    const user64Array = user64.split(' '); // Example: split by spaces or other delimiters
+    const shuffledData = shuffleArray(user64Array);
+
+    // Distribute randomized data to players
+    playersInRoom.forEach((player, index) => {
+      const assignedData = shuffledData[index % shuffledData.length]; // Assign data cyclically
+      io.to(player.socketId).emit('receiveUser64', { user64: assignedData });
+      console.log(`Sent user64 data to player ${player.name}:`, assignedData);
+    });
+
+    console.log(`Round 2 ended for room ${roomId} and data has been redistributed.`);
   });
 
   // Handle client disconnection
