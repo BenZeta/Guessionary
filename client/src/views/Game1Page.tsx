@@ -50,8 +50,6 @@ export default function Game1Page() {
           Authorization: `Bearer ${localStorage.access_token}`,
         },
       });
-
-      console.log(">>>>>>>>>>>>>>> DATA CONST", data);
     } catch (error) {
       console.log(error);
     }
@@ -86,8 +84,6 @@ export default function Game1Page() {
         username: localStorage.username,
         words,
       });
-
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -114,7 +110,6 @@ export default function Game1Page() {
     });
 
     socket.on("startGame:server", (data) => {
-      console.log(data);
       navigate(`/round_1/${data.roomId}/${data.gameId}`);
     });
 
@@ -123,14 +118,17 @@ export default function Game1Page() {
       setRoom(data.updatedRoom);
     });
 
-    socket.on("endRound1:server", (roomId) => {
-      console.log("Round 1 ended for room", roomId);
-
-      navigate(`/draw/${roomId}/${gameId}`);
+    // Update this handler to match server data format
+    socket.on("endRound1:server", (data) => {
+      console.log("Round 1 ended, received data:", data);
+      if (data.roomId && data.gameId) {
+        navigate(`/draw/${data.roomId}/${data.gameId}`);
+      } else {
+        console.error("Missing roomId or gameId in endRound1:server event");
+      }
     });
 
     return () => {
-      socket.off("joinRoom");
       socket.off("receiveWords");
       socket.off("userList:server");
       socket.off("startGame:server");
@@ -144,9 +142,7 @@ export default function Game1Page() {
         {/* Left Panel: Room List */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceLeft">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Player
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
               {room?.users.map((user, index) => (
                 <div
@@ -166,9 +162,7 @@ export default function Game1Page() {
           {/* Background Animation */}
 
           <div className="relative z-10 bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceDown">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
-              Game
-            </h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game</h2>
 
             {/* Grid Content */}
             <div className="gap-5 rounded-lg w-full h-full overflow-y-auto scrollbar flex-1 p-1">
@@ -176,10 +170,7 @@ export default function Game1Page() {
                 <div className="bg-gray-200/10 h-full">
                   <div className="flex flex-col justify-center h-full items-center p-5">
                     <img src="" alt="" />
-                    <form
-                      className="flex flex-col items-center gap-4"
-                      onSubmit={handleSubmit}
-                    >
+                    <form className="flex flex-col items-center gap-4" onSubmit={handleSubmit}>
                       <input
                         value={words}
                         onChange={(e) => setWords(e.target.value)}

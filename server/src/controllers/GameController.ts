@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { io } from '../index'; // Import the io instance
+import { io } from '../';
 
 const prisma = new PrismaClient();
 
@@ -41,14 +41,20 @@ export default class GameController {
         },
       });
 
-      // Start a 30-second timer for Round 1
-      setTimeout(() => {
-        io.to(roomId).emit('endRound1:server', roomId);
-      }, 30000);
+      const newUsers = await prisma.room.findUnique({
+        where: {
+          id: roomId,
+        },
+        include: {
+          users: true,
+        },
+      });
+      if (!newUsers) throw { name: 'NotFound', message: 'Data not found' };
 
       res.status(200).json({
         roomId,
         gameId,
+        users: newUsers.users,
       });
     } catch (error) {
       console.log(error);
@@ -89,9 +95,10 @@ export default class GameController {
     }
   }
 
-  static async postGameRound2(req: Request<{ gameId: string; roomId: string }, unknown, { dataUrl: string }>, res: Response, next: NextFunction) {
+  static async postGameRound2(req: Request<{ gameId: string; roomId: string }, unknown, { user64: string }>, res: Response, next: NextFunction) {
     try {
-      const { dataUrl } = req.body;
+      const { user64 } = req.body;
+
       const userId = req.loginInfo?.userId;
       const { gameId, roomId } = req.params;
 
@@ -111,7 +118,7 @@ export default class GameController {
           userId: userId!,
           gameId: gameId,
           type: 'DRAWING',
-          content: dataUrl,
+          content: user64,
         },
       });
 
@@ -146,8 +153,6 @@ export default class GameController {
           user: true,
         },
       });
-
-      console.log('>>>>>>>>>>>>>> WORD', wordContribution);
 
       res.status(200).json(wordContribution);
     } catch (error) {
