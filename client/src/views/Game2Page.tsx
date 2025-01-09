@@ -127,6 +127,8 @@ export default function Game2Page() {
         }
       );
 
+      socket.emit("submitDataRound2", { roomId, gameId, user64: dataUrl });
+
       // console.log("Canvas Data URL:", dataUrl);
     } else {
       console.error("Canvas belum siap!");
@@ -148,18 +150,6 @@ export default function Game2Page() {
   };
 
   useEffect(() => {
-    socket.auth = {
-      token: localStorage.username,
-    };
-    socket.connect();
-
-    socket.emit("joinRoom", {
-      roomId,
-      username: localStorage.username,
-      avatar: localStorage.avatar,
-      role: localStorage.role,
-    });
-
     socket.on("receiveWords", (words) => {
       console.log("Received words:", words);
       console.log(words.words[0]);
@@ -176,8 +166,6 @@ export default function Game2Page() {
     }, 15000);
 
     socket.on("endRound2:server", (data) => {
-      console.log("Round 2 has ended on room", data.roomId);
-
       navigate(`/round_3/${data.roomId}/${data.gameId}`);
     });
 
@@ -219,7 +207,12 @@ export default function Game2Page() {
 
         {/* Right Panel */}
         <div className="w-9/12 bg-white/10 p-6">
-          <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault(); // Prevent the default form submission behavior
+              handleSubmit(); // Trigger the custom submit logic
+            }}
+            className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
             <h2 className="text-xl font-silkscreen font-bold text-teal-300 mb-4 text-center">Game</h2>
 
             {/* Toolbar */}
@@ -240,12 +233,14 @@ export default function Game2Page() {
                 className="cursor-pointer"
               />
               <button
+                type="button"
                 onClick={handleEraser}
                 className="bg-gray-500 text-white px-4 py-2 rounded-md">
                 Eraser
               </button>
 
               <button
+                type="button"
                 onClick={handleClear}
                 className="bg-red-500 text-white px-4 py-2 rounded-md">
                 Clear
@@ -257,12 +252,13 @@ export default function Game2Page() {
               ref={containerRef}>
               <canvas ref={canvasRef}></canvas>
             </div>
+
             <button
-              type="submit"
+              type="submit" // Form submission triggers the form's onSubmit handler
               className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
               Submit
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </div>

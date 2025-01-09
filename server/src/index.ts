@@ -95,6 +95,8 @@ app.use(router);
 io.on('connection', (socket) => {
   // Room creation
   socket.on('roomCreated', (room: Room) => {
+    console.log(room, '<<<<<');
+
     console.log('room has been created', room.id);
     io.emit('roomCreated:server', room);
   });
@@ -111,24 +113,43 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinRoom', (data: { roomId: string; user: User }) => {
-    console.log(data.user, '<<<<<<<');
+    const { roomId, user } = data;
 
-    if (!players[data.roomId]) {
-      players[data.roomId] = [];
+    // Validate room and user data
+    if (!roomId || !user || !user.username) {
+      console.error('Invalid room or user data:', data);
+      return;
     }
 
-    players[data.roomId].push({
-      name: data?.user?.username,
-      avatar: data?.user?.avatar,
-      role: data?.user?.role,
-      socketId: socket.id, // Simpan socket.id
+    console.log(`User "${user.username}" is attempting to join room "${roomId}"`);
+
+    // Initialize room's player list if it doesn't exist
+    if (!players[roomId]) {
+      players[roomId] = [];
+    }
+
+    // Check if the user already exists in the room
+    const userExists = players[roomId].some((player) => player.name === user.username);
+
+    if (userExists) {
+      console.warn(`User "${user.username}" is already in room "${roomId}"`);
+      return;
+    }
+
+    // Add user to the room's player list
+    players[roomId].push({
+      name: user.username,
+      avatar: user.avatar,
+      role: user.role,
+      socketId: socket.id, // Save socket ID
       words: [],
-      drawing: [], // Kata-kata untuk pemain ini
+      drawing: [],
     });
 
-    io.emit('joinRoom:server', { roomId: data.roomId, user: data.user });
+    // Emit the join event to all clients
+    io.emit('joinRoom:server', { roomId, user });
 
-    console.log(`${data?.user?.username} joined room ${data.roomId}`);
+    console.log(`User "${user.username}" has joined room "${roomId}"`);
   });
 
   // Handle leaving a room
@@ -199,6 +220,7 @@ io.on('connection', (socket) => {
 
   socket.on('submitDataRound2', (data: { roomId: string; gameId: string; user64: string }) => {
     const playersInRoom = roomWords[data.roomId];
+    console.log(playersInRoom, '<<<<<< submitdataround2');
 
     if (!playersInRoom || playersInRoom.length === 0) {
       console.error(`No players found in room ${data.roomId}`);
@@ -225,11 +247,13 @@ io.on('connection', (socket) => {
 
       // Split the shuffled data and distribute it to players
       playersInRoom.forEach((player, index) => {
+        console.log(player.socketId, 'endRound2 in server socketId player');
+
         const user64 = shuffledUser64[index]; // Get the shuffled user64 for this player
 
         const socket = io.sockets.sockets.get(player.socketId);
         if (socket) {
-          console.log(`Player ${player.username} has a valid socket in round 2. Emitting...`);
+          console.log(`Player ${player.username} has a valid socket in round 2 with socket id ${player.socketId}. Emitting...`);
 
           io.to(player.socketId).emit('receiveUser64', user64);
         } else {

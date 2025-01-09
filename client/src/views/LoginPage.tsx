@@ -7,6 +7,7 @@ import { Avatar } from "../helpers/Avatar";
 import { themeContext } from "../context/ThemeContext";
 import { useSound } from "../context/SoundContext";
 import WordsLoading from "../components/Loading.tsx";
+import { socket } from "../socket/socket";
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(true);
@@ -48,12 +49,12 @@ export default function LoginPage() {
         username,
       });
 
-      console.log(">>data login", data);
-
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("avatar", selectedAvatar);
-      localStorage.setItem("username", data.username);
-      localStorage.setItem("userId", data.userId);
+      localStorage.setItem("username", data.user.username);
+      localStorage.setItem("userId", data.user.id);
+
+      socket.emit("newUser", { user: data.user });
 
       navigate("/");
     } catch (error) {
@@ -95,16 +96,16 @@ export default function LoginPage() {
           {/* Header */}
 
           <div className="flex items-center bg-hidden">
-            <a href="/login" className="absolute top-3 left-14">
+            <a
+              href="/login"
+              className="absolute top-3 left-14">
               <img
                 className="h-24 animate-bounceLeft"
                 src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299"
                 alt="logo"
               />
             </a>
-            <h1 className="text-3xl text-white font-bold font-silkscreen absolute top-10 left-36 animate-bounceLeft ">
-              Guessionary
-            </h1>
+            <h1 className="text-3xl text-white font-bold font-silkscreen absolute top-10 left-36 animate-bounceLeft ">Guessionary</h1>
           </div>
 
           {/* Main */}
@@ -117,9 +118,7 @@ export default function LoginPage() {
                   alt="home"
                   className="w-10 animate-bounceUp "
                 />
-                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">
-                  Home
-                </span>
+                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">Home</span>
               </a>
               <a href="/avatars">
                 <img
@@ -127,9 +126,7 @@ export default function LoginPage() {
                   alt="avatars"
                   className="w-10 animate-bounceUp"
                 />
-                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">
-                  Avatar
-                </span>
+                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">Avatar</span>
               </a>
               <button onClick={toggleAudio}>
                 <img
@@ -137,9 +134,7 @@ export default function LoginPage() {
                   alt="sound"
                   className="w-10 animate-bounceUp"
                 />
-                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">
-                  {isPlaying ? "Pause Audio" : "Play Audio"}
-                </span>
+                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">{isPlaying ? "Pause Audio" : "Play Audio"}</span>
               </button>
             </div>
 
@@ -176,15 +171,13 @@ export default function LoginPage() {
                 <button
                   type="button"
                   className="w-8 h-8 bg-white hover:bg-gray-300 rounded-full flex items-center justify-center text-2xl font-bold text-gray-700 animate-bounceLeft"
-                  onClick={handlePrevAvatar}
-                >
+                  onClick={handlePrevAvatar}>
                   ‹
                 </button>
                 <button
                   type="button"
                   className="w-8 h-8 bg-white hover:bg-gray-300 rounded-full flex items-center justify-center text-2xl font-bold text-gray-700 animate-bounceRight"
-                  onClick={handleNextAvatar}
-                >
+                  onClick={handleNextAvatar}>
                   ›
                 </button>
               </div>
@@ -203,8 +196,7 @@ export default function LoginPage() {
                   />
                   <button
                     type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#ffff00] rounded-3xl w-28 h-10 text-lg font-bold font-silkscreen text-blue"
-                  >
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#ffff00] rounded-3xl w-28 h-10 text-lg font-bold font-silkscreen text-blue">
                     Start
                   </button>
                 </div>

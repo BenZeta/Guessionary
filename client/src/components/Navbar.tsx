@@ -2,6 +2,7 @@ import { useNavigate } from "react-router";
 import { baseUrl } from "../constants/baseUrl";
 import axios from "axios";
 import { useSound } from "../context/SoundContext";
+import { socket } from "../socket/socket";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -9,14 +10,18 @@ export default function Navbar() {
 
   async function handleLogout() {
     try {
-      localStorage.clear();
-      navigate("/login");
-      await axios.delete(`${baseUrl}/delete-user`, {
+      socket.disconnect();
+
+      const { data } = await axios.delete(`${baseUrl}/delete-user`, {
         headers: {
           Authorization: `Bearer ${localStorage.access_token}`,
         },
       });
 
+      localStorage.clear();
+      navigate("/login");
+
+      console.log(data);
     } catch (error) {
       console.log(error);
     }
@@ -30,9 +35,7 @@ export default function Navbar() {
           alt="logout"
           className="w-10 animate-bounceUp"
         />
-        <span className="font-bold text-sm text-white animate-bounceUp">
-          Logout
-        </span>
+        <span className="font-bold text-sm text-white animate-bounceUp">Logout</span>
       </button>
 
       <a href="/">
@@ -41,9 +44,7 @@ export default function Navbar() {
           alt="home"
           className="w-10 animate-bounceUp "
         />
-        <span className="font-bold text-sm text-white animate-bounceUp">
-          Home
-        </span>
+        <span className="font-bold text-sm text-white animate-bounceUp">Home</span>
       </a>
 
       <button onClick={toggleAudio}>
@@ -52,9 +53,7 @@ export default function Navbar() {
           alt="sound"
           className="w-10 animate-bounceUp "
         />
-        <span className="font-bold text-sm text-white animate-bounceUp">
-          {isPlaying ? "Pause Audio" : "Play Audio"}
-        </span>
+        <span className="font-bold text-sm text-white animate-bounceUp">{isPlaying ? "Pause Audio" : "Play Audio"}</span>
       </button>
     </nav>
   );

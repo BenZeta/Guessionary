@@ -1,30 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // import { useParams } from "react-router";
 import { socket } from "../socket/socket";
+import axios from "axios";
+import { baseUrl } from "../constants/baseUrl";
+import { useParams } from "react-router";
+
+type User = {
+  id: string;
+  avatar: string;
+  username: string;
+};
 
 export default function Game3Page() {
   // const { roomId, gameId } = useParams();
   const [drawingFromR2, setDrawingFromR2] = useState<string>("");
+  const { roomId } = useParams();
+  const [users, setUsers] = useState<User[]>([]);
+  const isFirstRender = useRef(true);
+
+  const getUser = async () => {
+    try {
+      const { data } = await axios.get(`${baseUrl}/users/${roomId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      setUsers(data.users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    // Configure socket with auth token
-    socket.auth = {
-      token: localStorage.username,
-    };
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      getUser();
+    }
+  }, []);
 
-    // Connect to the socket server
-    socket.connect();
-
+  useEffect(() => {
     // Handle server event
-    socket.on("endRound2:server", (data) => {
-      console.log("Received data from server:", data);
-      setDrawingFromR2(data.user64); // Assuming `data.drawing` contains the relevant drawing information
+    socket.on("receiveUser64", (user64) => {
+      console.log("Received data from server:", user64);
+      setDrawingFromR2(user64); // Assuming `data.drawing` contains the relevant drawing information
     });
 
     // Clean up socket event listeners on component unmount
     return () => {
       socket.off("endRound2:server");
-      socket.disconnect();
     };
   }, []);
 
@@ -32,31 +56,23 @@ export default function Game3Page() {
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: Room List */}
+        {/* Left Panel: User List */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Player</h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://stickershop.line-scdn.net/stickershop/v1/product/11365/LINEStorePC/main.png?v=19"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haloooooooooooooooooo</div>
-              </div>
-              <div className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3">
-                <img
-                  src="https://i.pinimg.com/736x/bc/d2/26/bcd226a70d45275c44ac2822ec0c00aa.jpg"
-                  alt="Avatar"
-                  className="w-20 h-20 rounded-full"
-                />
-                <div className="ml-3 text-2xl truncate">Haiiiiiiiiiii</div>
-              </div>
-              {/* Add more rooms dynamically if needed */}
+              {users.map((user: User, index: number) => (
+                <div
+                  key={index}
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
+                  <img
+                    src={user?.avatar}
+                    className="w-20 h-20 rounded-full"
+                  />
+                  <div className="ml-3 text-2xl">{user?.username}</div>
+                </div>
+              ))}
             </div>
-
-            {/* Create Room Button */}
             <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">Create New Room</button>
           </div>
         </div>
@@ -70,6 +86,10 @@ export default function Game3Page() {
               <div className="bg-gray-300/50 p-5 h-full rounded-lg">
                 <div className="bg-gray-200/10 h-full flex justify-center items-end p-5">
                   <div className="flex flex-col items-center w-2/5 gap-2">
+                    <img
+                      src={drawingFromR2 || undefined}
+                      alt=""
+                    />
                     {/* Label */}
                     <label className="text-black font-semibold">Guess Here</label>
                     {/* Input */}

@@ -21,7 +21,7 @@ export default class AuthController {
         username: user.username,
       });
 
-      res.status(200).json({ access_token, username: user.username, userId: user.id });
+      res.status(200).json({ access_token, user });
     } catch (error) {
       console.log(error);
       next(error);
@@ -30,11 +30,11 @@ export default class AuthController {
 
   static async deleteUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const username = req.loginInfo?.username;
+      const userId = req.loginInfo?.userId;
 
       await prisma.user.delete({
         where: {
-          username,
+          id: userId,
         },
       });
 

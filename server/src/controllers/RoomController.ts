@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { io } from '../index'; // Import the io instance
 
 const prisma = new PrismaClient();
 
@@ -39,9 +38,6 @@ export default class RoomController {
           users: true, // Include the users in the response
         },
       });
-
-      // Emit the room creation event
-      io.emit('roomCreated:server', room);
 
       // Return the created room
       res.status(200).json(room);
@@ -100,16 +96,14 @@ export default class RoomController {
         throw { name: 'NotFound', message: 'User not found' };
       }
 
-      res.status(200).json({
-        user,
-      });
-
       await prisma.user.update({
         where: { id: userId },
         data: { role: 'Staff' }, // Change role to 'staff'
       });
 
-      res.status(200).json({ message: 'Room joined successfully and role updated to staff' });
+      res.status(200).json({
+        user,
+      });
     } catch (error) {
       console.log('error', error);
       next(error);
