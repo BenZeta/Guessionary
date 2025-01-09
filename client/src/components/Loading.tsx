@@ -50,7 +50,7 @@ export default function WordsLoading() {
           )}
 
           {showGuessionary && (
-            <div className="bg-black/20 rounded-lg text-white p-3 text-4xl font-silkscreen animate-bounceDown opacity-100 transition-opacity duration-2400">
+            <div className="bg-black/20 rounded-lg text-white p-1 text-4xl font-silkscreen animate-bounceDown opacity-100 transition-opacity duration-2400">
               Guessionary
             </div>
           )}
