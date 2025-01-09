@@ -35,11 +35,31 @@ export default function Game1Page() {
 
       setRoom(data);
 
+      console.log("room >>>>>>>", data);
+
       socket.emit("userList", data?.users);
     } catch (error) {
       console.log(error);
     }
   };
+
+  async function getContributions() {
+    try {
+      const { data } = await axios.get(`${baseUrl}/game/word`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      console.log(">>>>>>>>>>>>>>> DATA CONST", data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    getContributions();
+  }, []);
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -135,11 +155,9 @@ export default function Game1Page() {
               {room?.users.map((user, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
-                  <img
-                    src={user?.avatar}
-                    className="w-20 h-20 rounded-full"
-                  />
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
+                >
+                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
               ))}
