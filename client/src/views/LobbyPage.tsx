@@ -210,7 +210,8 @@ export default function LobbyPage() {
             </div>
             <div className="flex justify-center w-full space-x-5">
               <button
-                className={`mt-4 py-2 px-4 font-semibold rounded-md shadow-lg ${userRole === "Staff" ? "bg-gray-400 cursor-not-allowed" : "bg-teal-500 hover:bg-teal-600 text-white"}`}
+                className={`mt-4 bg-teal-500  hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)] ${userRole === "Staff" ? "bg-gray-400 cursor-not-allowed" : "bg-teal-500 hover:bg-teal-600 text-white"}`}
                 onClick={handleStartGame}
                 disabled={userRole === "Staff"} // Disable button if user role is "Staff"
               >
