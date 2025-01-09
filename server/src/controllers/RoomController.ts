@@ -104,7 +104,7 @@ export default class RoomController {
         user,
       });
 
-      res.status(200).json({ message: 'Room joined successfully and role updated to staff' });
+      res.status(200).json({ message: 'Room joined successfully' });
     } catch (error) {
       console.log('error', error);
       next(error);

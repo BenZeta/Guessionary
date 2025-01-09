@@ -7,14 +7,14 @@ export default function Navbar() {
 
   async function handleLogout() {
     try {
+      localStorage.clear();
+      navigate("/login");
+
       await axios.delete(`${baseUrl}/delete-user`, {
         headers: {
           Authorization: `Bearer ${localStorage.access_token}`,
         },
       });
-
-      localStorage.clear();
-      navigate("/login");
     } catch (error) {
       console.log(error);
     }
