@@ -147,11 +147,11 @@ export default function LoginPage() {
               {/* Avatar */}
               <div className="flex items-center justify-center gap-6">
                 {/* Prev Avatar */}
-                <div className="transition-transform duration-500 transform scale-75 opacity-70 animate-bounceRight">
+                <div className="transition-transform duration-500 transform  opacity-60 animate-bounceRight">
                   <img
                     src={Avatar[prevIndex]}
                     alt="Previous avatar"
-                    className="w-60 h-60 rounded-full"
+                    className="w-48 h-48 rounded-full"
                   />
                 </div>
                 {/* Current Avatar */}
@@ -163,11 +163,11 @@ export default function LoginPage() {
                   />
                 </div>
                 {/* Next Avatar */}
-                <div className="transition-transform duration-500 transform scale-75 opacity-70 animate-bounceLeft">
+                <div className="transition-transform duration-500 transform  opacity-60 animate-bounceLeft">
                   <img
                     src={Avatar[nextIndex]}
                     alt="Next avatar"
-                    className="w-60 h-60 rounded-full"
+                    className="w-48 h-48 rounded-full"
                   />
                 </div>
               </div>
@@ -195,7 +195,7 @@ export default function LoginPage() {
                   <input
                     type="text"
                     placeholder="Nickname"
-                    className="bg-gradient-to-br from-[#9DE6FF] to-[#58BFE2] border-2 border-white text-white font-bold font-silkscreen tex-3xl rounded-3xl w-38 h-14 pl-6 pr-20 "
+                    className="bg-white border-2 border-white text-black font-bold font-silkscreen tex-3xl rounded-3xl w-80 h-14 pl-6 pr-20 "
                     id="username"
                     autoComplete="current-username"
                     onChange={(e) => setUsername(e.target.value)}

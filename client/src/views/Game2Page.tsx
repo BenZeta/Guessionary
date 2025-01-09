@@ -38,7 +38,6 @@ export default function Game2Page() {
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [selectedColor, setSelectedColor] = useState<string>("#000000");
   const [brushSize, setBrushSize] = useState<number>(5);
-  const { gameId, roomId } = useParams();
   const navigate = useNavigate();
 
   useLayoutEffect(() => {
@@ -70,13 +69,13 @@ export default function Game2Page() {
   }, []);
 
   useEffect(() => {
-    if (canvas) {
+    if (canvas && canvas.freeDrawingBrush) {
       canvas.freeDrawingBrush.color = selectedColor;
     }
   }, [selectedColor]);
 
   useEffect(() => {
-    if (canvas) {
+    if (canvas && canvas.freeDrawingBrush) {
       canvas.freeDrawingBrush.width = brushSize;
     }
   }, [brushSize]);
@@ -90,7 +89,7 @@ export default function Game2Page() {
   };
 
   const handleEraser = () => {
-    if (canvas) {
+    if (canvas && canvas.freeDrawingBrush) {
       canvas.freeDrawingBrush.color = "#ffffff"; // Match canvas background color
     }
   };
@@ -191,6 +190,12 @@ export default function Game2Page() {
               <canvas ref={canvasRef}></canvas>
             </div>
           </div>
+          <button
+            type="submit"
+            className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+          >
+            Submit
+          </button>
         </div>
       </div>
     </div>

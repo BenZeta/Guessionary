@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useEffect, useState, useRef } from "react";
+import axios from "axios";
 import { baseUrl } from "../constants/baseUrl";
 import { useNavigate, useParams } from "react-router";
 import { socket } from "../socket/socket";
@@ -24,6 +24,8 @@ export default function Game1Page() {
   const [words, setWords] = useState<string>("");
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
+  const [timer, setTimer] = useState<number>(30); // Timer for 15 seconds
+  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true); // State to track timer status
 
   const getUser = async () => {
     try {
@@ -89,6 +91,20 @@ export default function Game1Page() {
     }
   }
 
+  // Timer logic
+  useEffect(() => {
+    if (isTimerRunning && timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+
+      return () => clearInterval(interval); // Cleanup interval on component unmount or when timer stops
+    } else if (timer === 0) {
+      setIsTimerRunning(false); // Stop the timer when it reaches 0
+      console.log("Time's up!");
+    }
+  }, [isTimerRunning, timer]);
+
   useEffect(() => {
     // Initialize socket connection
     socket.auth = {
@@ -118,7 +134,6 @@ export default function Game1Page() {
       setRoom(data.updatedRoom);
     });
 
-    // Update this handler to match server data format
     socket.on("endRound1:server", (data) => {
       console.log("Round 1 ended, received data:", data);
       if (data.roomId && data.gameId) {
@@ -137,9 +152,8 @@ export default function Game1Page() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
-      {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Panel: Room List */}
+        {/* Left Panel */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceLeft">
             <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
@@ -159,20 +173,22 @@ export default function Game1Page() {
           </div>
         </div>
 
-        {/* Right Panel: Profile */}
+        {/* Right Panel */}
         <div className="w-9/12 bg-white/10 p-6 relative overflow-hidden">
-          {/* Background Animation */}
-
           <div className="relative z-10 bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceDown">
             <h2 className="text-xl font-bold font- text-teal-300 mb-4 flex justify-center">
               Game
             </h2>
 
-            {/* Grid Content */}
             <div className="gap-5 rounded-lg w-full h-full overflow-y-auto scrollbar flex-1 p-1">
               <div className="bg-gray-300/50 p-5 h-full rounded-lg">
                 <div className="bg-gray-200/10 h-full">
                   <div className="flex flex-col justify-center h-full items-center p-5">
+                    {isTimerRunning ? (
+                      <div className="text-2xl font-bold text-white mb-5">
+                        Time remaining: {timer} seconds
+                      </div>
+                    ) : null}
                     <form
                       className="flex flex-col items-center gap-4"
                       onSubmit={handleSubmit}
