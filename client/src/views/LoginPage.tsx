@@ -9,7 +9,7 @@ import { useSound } from "../context/SoundContext";
 import WordsLoading from "../components/Loading.tsx";
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
   const [avatarIndex, setAvatarIndex] = useState<number>(0);
   const [username, setUsername] = useState<string>("");
   const navigate = useNavigate();
@@ -71,148 +71,147 @@ export default function LoginPage() {
 
   return (
     <>
-    {loading ? (
-      <WordsLoading />
-    ) : (
-
-    <div className="h-screen flex flex-col">
-      {currentTheme === "light" ? (
-        <img
-          className="w-16 absolute top-10 right-20 animate-bounceRight  " // Adjusted position here
-          onClick={() => setCurrentTheme("dark")}
-          src="https://ik.imagekit.io/3a0xukows/sunflower.png?updatedAt=1736393862092
-"
-          alt="sunflower"
-        />
+      {loading ? (
+        <WordsLoading />
       ) : (
-        <img
-          className="w-16 absolute top-10 right-20 animate-bounceRight" // Adjusted position here
-          onClick={() => setCurrentTheme("light")}
-          src="https://ik.imagekit.io/3a0xukows/full-moon.png?updatedAt=1736393887367"
-          alt="mooon"
-        />
-      )}
-
-      {/* Header */}
-
-      <div className="flex items-center bg-hidden">
-        <a href="/login" className="absolute top-3 left-14">
-          <img
-            className="h-24 animate-bounceLeft"
-            src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299"
-            alt="logo"
-          />
-        </a>
-        <h1 className="text-4xl text-white font-bold font-mono absolute top-10 left-36 animate-bounceLeft ">
-          Guessionary
-        </h1>
-      </div>
-
-      {/* Main */}
-      <div className="flex flex-col justify-center items-center h-full">
-        {/* Navbar */}
-        <div className="flex justify-center mt-12 items-center bg-hidden rounded-3xl w-60 h-14 gap-x-20">
-          <a href="/login">
+        <div className="h-screen flex flex-col">
+          {currentTheme === "light" ? (
             <img
-              src="https://ik.imagekit.io/3a0xukows/home.png?updatedAt=1736350418372"
-              alt="home"
-              className="w-10 animate-bounceUp "
+              className="w-16 absolute top-10 right-20 animate-bounceRight  " // Adjusted position here
+              onClick={() => setCurrentTheme("dark")}
+              src="https://ik.imagekit.io/3a0xukows/sunflower.png?updatedAt=1736393862092
+"
+              alt="sunflower"
             />
-            <span className="font-bold text-sm text-white animate-bounceUp">
-              Home
-            </span>
-          </a>
-          <a href="/avatars">
+          ) : (
             <img
-              src="https://ik.imagekit.io/3a0xukows/trading-card%20(4).png?updatedAt=1736350980793"
-              alt="avatars"
-              className="w-10 animate-bounceUp"
+              className="w-16 absolute top-10 right-20 animate-bounceRight" // Adjusted position here
+              onClick={() => setCurrentTheme("light")}
+              src="https://ik.imagekit.io/3a0xukows/full-moon.png?updatedAt=1736393887367"
+              alt="mooon"
             />
-            <span className="font-bold text-sm text-white animate-bounceUp">
-              Avatar
-            </span>
-          </a>
-          <button onClick={toggleAudio}>
-            <img
-              src="https://ik.imagekit.io/3a0xukows/wave-sound.png?updatedAt=1736351115020"
-              alt="sound"
-              className="w-10 animate-bounceUp"
-            />
-            <span className="font-bold text-sm text-white animate-bounceUp">
-              {isPlaying ? "Pause Audio" : "Play Audio"}
-            </span>
-          </button>
-        </div>
+          )}
 
-        <form onSubmit={handleLogin}>
-          {/* Avatar */}
-          <div className="flex items-center justify-center gap-6">
-            {/* Prev Avatar */}
-            <div className="transition-transform duration-500 transform scale-75 opacity-70 animate-bounceRight">
+          {/* Header */}
+
+          <div className="flex items-center bg-hidden">
+            <a href="/login" className="absolute top-3 left-14">
               <img
-                src={Avatar[prevIndex]}
-                alt="Previous avatar"
-                className="w-60 h-60 rounded-full"
+                className="h-24 animate-bounceLeft"
+                src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299"
+                alt="logo"
               />
-            </div>
-            {/* Current Avatar */}
-            <div className="mt-8 flex flex-col items-center animate-bounceDown">
-              <img
-                className="w-60 h-60 rounded-full"
-                src={Avatar[avatarIndex]}
-                alt="Selected avatar"
-              />
-            </div>
-            {/* Next Avatar */}
-            <div className="transition-transform duration-500 transform scale-75 opacity-70 animate-bounceLeft">
-              <img
-                src={Avatar[nextIndex]}
-                alt="Next avatar"
-                className="w-60 h-60 rounded-full"
-              />
-            </div>
-          </div>
-          {/* Button Avatar */}
-          <div className="flex justify-center items-center gap-4 mt-4">
-            <button
-              type="button"
-              className="w-8 h-8 bg-white hover:bg-gray-300 rounded-full flex items-center justify-center text-2xl font-bold text-gray-700 animate-bounceLeft"
-              onClick={handlePrevAvatar}
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              className="w-8 h-8 bg-white hover:bg-gray-300 rounded-full flex items-center justify-center text-2xl font-bold text-gray-700 animate-bounceRight"
-              onClick={handleNextAvatar}
-            >
-              ›
-            </button>
+            </a>
+            <h1 className="text-3xl text-white font-bold font-silkscreen absolute top-10 left-36 animate-bounceLeft ">
+              Guessionary
+            </h1>
           </div>
 
-          {/* Nickname Input and Button */}
-          <div className="relative flex justify-center items-center mt-10 animate-bounceUp">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Nickname"
-                className="bg-gradient-to-br from-[#9DE6FF] to-[#58BFE2] border-2 border-white text-white font-bold font-mono tex-3xl rounded-3xl w-38 h-14 pl-6 pr-20 "
-                id="username"
-                autoComplete="current-username"
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-               <button
-                type="submit"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#ffff00] rounded-3xl w-28 h-10 text-lg font-bold text-blue"
-              >
-                Start
+          {/* Main */}
+          <div className="flex flex-col justify-center items-center h-full">
+            {/* Navbar */}
+            <div className="flex justify-center mt-12 items-center bg-hidden rounded-3xl w-60 h-14 gap-x-20">
+              <a href="/login">
+                <img
+                  src="https://ik.imagekit.io/3a0xukows/home.png?updatedAt=1736350418372"
+                  alt="home"
+                  className="w-10 animate-bounceUp "
+                />
+                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">
+                  Home
+                </span>
+              </a>
+              <a href="/avatars">
+                <img
+                  src="https://ik.imagekit.io/3a0xukows/trading-card%20(4).png?updatedAt=1736350980793"
+                  alt="avatars"
+                  className="w-10 animate-bounceUp"
+                />
+                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">
+                  Avatar
+                </span>
+              </a>
+              <button onClick={toggleAudio}>
+                <img
+                  src="https://ik.imagekit.io/3a0xukows/wave-sound.png?updatedAt=1736351115020"
+                  alt="sound"
+                  className="w-10 animate-bounceUp"
+                />
+                <span className="font-bold font-silkscreen text-sm text-white animate-bounceUp">
+                  {isPlaying ? "Pause Audio" : "Play Audio"}
+                </span>
               </button>
-                  </div>
-                </div>
-              </form>
             </div>
+
+            <form onSubmit={handleLogin}>
+              {/* Avatar */}
+              <div className="flex items-center justify-center gap-6">
+                {/* Prev Avatar */}
+                <div className="transition-transform duration-500 transform scale-75 opacity-70 animate-bounceRight">
+                  <img
+                    src={Avatar[prevIndex]}
+                    alt="Previous avatar"
+                    className="w-60 h-60 rounded-full"
+                  />
+                </div>
+                {/* Current Avatar */}
+                <div className="mt-8 flex flex-col items-center animate-bounceDown">
+                  <img
+                    className="w-60 h-60 rounded-full"
+                    src={Avatar[avatarIndex]}
+                    alt="Selected avatar"
+                  />
+                </div>
+                {/* Next Avatar */}
+                <div className="transition-transform duration-500 transform scale-75 opacity-70 animate-bounceLeft">
+                  <img
+                    src={Avatar[nextIndex]}
+                    alt="Next avatar"
+                    className="w-60 h-60 rounded-full"
+                  />
+                </div>
+              </div>
+              {/* Button Avatar */}
+              <div className="flex justify-center items-center gap-4 mt-4">
+                <button
+                  type="button"
+                  className="w-8 h-8 bg-white hover:bg-gray-300 rounded-full flex items-center justify-center text-2xl font-bold text-gray-700 animate-bounceLeft"
+                  onClick={handlePrevAvatar}
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  className="w-8 h-8 bg-white hover:bg-gray-300 rounded-full flex items-center justify-center text-2xl font-bold text-gray-700 animate-bounceRight"
+                  onClick={handleNextAvatar}
+                >
+                  ›
+                </button>
+              </div>
+
+              {/* Nickname Input and Button */}
+              <div className="relative flex justify-center items-center mt-10 animate-bounceUp">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Nickname"
+                    className="bg-gradient-to-br from-[#9DE6FF] to-[#58BFE2] border-2 border-white text-white font-bold font-silkscreen tex-3xl rounded-3xl w-38 h-14 pl-6 pr-20 "
+                    id="username"
+                    autoComplete="current-username"
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-[#ffff00] rounded-3xl w-28 h-10 text-lg font-bold font-silkscreen text-blue"
+                  >
+                    Start
+                  </button>
+                </div>
+              </div>
+            </form>
           </div>
+        </div>
       )}
     </>
   );

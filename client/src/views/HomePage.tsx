@@ -94,7 +94,12 @@ export default function HomePage() {
         }
       );
 
-      socket.emit("joinRoom", { roomId: targetedRoomId, username: localStorage.username, avatar: localStorage.avatar, role: "Staff" });
+      socket.emit("joinRoom", {
+        roomId: targetedRoomId,
+        username: localStorage.username,
+        avatar: localStorage.avatar,
+        role: "Staff",
+      });
 
       navigate(`/lobby/${targetedRoomId}`);
       navigate(`/lobby/${targetedRoomId}`);
@@ -117,8 +122,10 @@ export default function HomePage() {
       color: "#edf2f7", // white text color for contrast
       customClass: {
         input: "px-4 py-2 rounded-md bg-teal-700 text-white", // Apply theme styles
-        confirmButton: "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
-        cancelButton: "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        confirmButton:
+          "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        cancelButton:
+          "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
       },
       preConfirm: (inputRoomName) => {
         if (!inputRoomName) {
@@ -202,34 +209,39 @@ export default function HomePage() {
   console.log(users);
 
   return (
-    
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
       {/* Main Content */}
-      
+
       <div className="flex flex-1 overflow-hidden">
         {/* Room List */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Room List</h2>
+            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
+              Room List
+            </h2>
             {loading ? (
               <div className="flex justify-center h-full items-center">
                 <img
-                  src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299" className="animate-spin w-2/12 h-2/12"
+                  src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299"
+                  className="animate-spin w-2/12 h-2/12"
                   alt="Loading"
                 />
               </div>
             ) : (
               <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar">
-
                 {rooms.map((room) => {
                   return (
-                    
                     <button
                       key={room.id}
                       onClick={() => {
                         setTargetedRoomId(room.id);
                       }}
-                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}>
+                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${
+                        targetedRoomId === room.id
+                          ? "bg-teal-500"
+                          : "bg-black/20"
+                      }`}
+                    >
                       {/* className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}> */}
                       <div>{room.name}</div>
                     </button>
@@ -238,17 +250,18 @@ export default function HomePage() {
               </div>
             )}
             <div className="flex justify-center w-full space-x-5">
-              
               <button
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+                className="mt-4 bg-teal-500 hover:bg-teal-600 font-silkscreen text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
-                onClick={handleCreateRoom}>
+                onClick={handleCreateRoom}
+              >
                 Create New Room
               </button>
               <button
-                className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+                className="mt-4 bg-teal-500 font-silkscreen hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
-                onClick={handleJoinRoom}>
+                onClick={handleJoinRoom}
+              >
                 Join Room
               </button>
             </div>
@@ -258,14 +271,17 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
         {/* Profile */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Your Profile</h2>
+            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
+              Your Profile
+            </h2>
 
             {/* Grid Content */}
             <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
               {loading ? (
                 <div className="flex justify-center h-full items-center">
                   <img
-                    src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299" className="animate-spin w-9/12 h-9/12"
+                    src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299"
+                    className="animate-spin w-9/12 h-9/12"
                     alt="loading"
                   />
                 </div>
@@ -274,7 +290,8 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
                   {users?.map((user) => (
                     <div
                       key={user?.id}
-                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative">
+                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative"
+                    >
                       {/* Image placed in the background */}
                       <div className="relative overflow-hidden w-full rounded-full">
                         <img
@@ -284,7 +301,9 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
                         />
                         {/* Overlay div for animation */}
                         <div className="absolute h-full w-full bg-black/40 text-white flex items-center justify-center rounded-full -bottom-10 group-hover:bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
-                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">{user?.username}</h2>
+                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">
+                            {user?.username}
+                          </h2>
                         </div>
                       </div>
                     </div>
@@ -296,6 +315,5 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
         </div>
       </div>
     </div>
-    
   );
 }

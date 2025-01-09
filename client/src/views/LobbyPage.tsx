@@ -50,7 +50,9 @@ export default function LobbyPage() {
       setRoom(data);
 
       setUsers(data.users);
-      const user = data.users.find((user: User) => user.id === localStorage.userId);
+      const user = data.users.find(
+        (user: User) => user.id === localStorage.userId
+      );
       console.log("User Role:", user.role); // Log to check user role
       setUserRole(user.role || ""); // Set user role
       socket.emit("userList", data?.users);
@@ -80,11 +82,14 @@ export default function LobbyPage() {
     }
 
     try {
-      const { data } = await axios.get(baseUrl + `/game/start/${roomId}/${gameId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.access_token}`,
-        },
-      });
+      const { data } = await axios.get(
+        baseUrl + `/game/start/${roomId}/${gameId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
       console.log(data, "di loby");
 
       socket.emit("startGame", data);
@@ -177,7 +182,15 @@ export default function LobbyPage() {
 
     socket.on("joinRoom:server", (data) => {
       console.log("User joined room", data.roomId);
-      setUsers((prevUsers) => [...prevUsers, { id: data.userId, username: data.username, avatar: data.avatar, role: data.role }]);
+      setUsers((prevUsers) => [
+        ...prevUsers,
+        {
+          id: data.userId,
+          username: data.username,
+          avatar: data.avatar,
+          role: data.role,
+        },
+      ]);
     });
 
     return () => {
@@ -195,16 +208,20 @@ export default function LobbyPage() {
       <div className="flex flex-1 overflow-hidden">
         <div className="w-4/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Game List</h2>
+            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
+              Game List
+            </h2>
             <div className="grid grid-cols-2 gap-4 justify-items-center">
               {games.map((game) => (
                 <div
                   key={game.id}
-                  className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300">
+                  className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[150px] h-[150px] hover:scale-105 transition-transform duration-300"
+                >
                   {/* Game Image Placeholder */}
                   <div
                     className="absolute inset-0"
-                    onClick={() => setGameId(game.id)}>
+                    onClick={() => setGameId(game.id)}
+                  >
                     <img
                       src={`https://via.placeholder.com/150x75?text=${game.name}`}
                       alt={game.name}
@@ -212,16 +229,24 @@ export default function LobbyPage() {
                     />
                   </div>
                   <div className="absolute bottom-0 w-full bg-gray-900/90 text-white p-2">
-                    <h3 className="text-sm font-bold text-teal-300 truncate">{game.name}</h3>
-                    <p className="text-xs text-gray-400">{game.isActive ? "Active" : "Inactive"}</p>
+                    <h3 className="text-sm font-bold text-teal-300 truncate">
+                      {game.name}
+                    </h3>
+                    <p className="text-xs text-gray-400">
+                      {game.isActive ? "Active" : "Inactive"}
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="flex justify-center w-full space-x-5">
               <button
-                className={`mt-4 bg-teal-500  hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
-hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)] ${userRole === "Staff" ? "bg-gray-400 cursor-not-allowed" : "bg-teal-500 hover:bg-teal-600 text-white"}`}
+                className={`mt-4 bg-teal-500  hover:bg-teal-600 text-white font-silkscreen font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+                  hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)] ${
+                    userRole === "Staff"
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-teal-500 hover:bg-teal-600 text-white"
+                  }`}
                 onClick={handleStartGame}
                 disabled={userRole === "Staff"} // Disable button if user role is "Staff"
               >
@@ -229,8 +254,9 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)] ${userRole === "Staff" ?
               </button>
               <button
                 onClick={leaveRoom}
-                className="mt-4 bg-red-500  hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
-hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
+                className="mt-4 bg-red-500 font-silkscreen hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+              >
                 Leave Room
               </button>
             </div>
@@ -239,7 +265,9 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
 
         <div className="w-8/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
+            <h2 className="text-xl font-bold font-silkscreens text-teal-300 mb-4 flex justify-center">
+              Player
+            </h2>
 
             {/* Grid Content */}
             <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
@@ -255,7 +283,8 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
                   {users.map((user) => (
                     <div
                       key={user.id}
-                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative">
+                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative"
+                    >
                       {/* Image placed in the background */}
                       <div className="relative overflow-hidden w-full rounded-full">
                         <img
@@ -265,7 +294,9 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
                         />
                         {/* Overlay div for animation */}
                         <div className="absolute h-full w-full bg-black/40 text-white flex items-center justify-center rounded-full -bottom-10 group-hover:bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
-                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">{user.username}</h2>
+                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">
+                            {user.username}
+                          </h2>
                         </div>
                       </div>
                     </div>
