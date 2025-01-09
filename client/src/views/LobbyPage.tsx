@@ -50,7 +50,9 @@ export default function LobbyPage() {
 
       setRoom(data);
       setUsers(data.users);
-      const user = data.users.find((user: User) => user.id === localStorage.userId);
+      const user = data.users.find(
+        (user: User) => user.id === localStorage.userId
+      );
       console.log("User Role:", user.role); // Log to check user role
       setUserRole(user.role || ""); // Set user role
       socket.emit("userList", data?.users);
@@ -80,14 +82,20 @@ export default function LobbyPage() {
     }
 
     try {
+      const { data } = await axios.get(
+        baseUrl + `/game/start/${roomId}/${gameId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
 
-      const { data } = await axios.get(baseUrl + `/game/start/${roomId}/${gameId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.access_token}`,
-        },
+      socket.emit("startGame", {
+        gameId: data.gameId,
+        roomId: data.roomId,
+        users,
       });
-
-      socket.emit("startGame", { gameId: data.gameId, roomId: data.roomId, users });
       // navigate("/game1");
     } catch (error) {
       console.log(error);
@@ -165,7 +173,15 @@ export default function LobbyPage() {
 
     socket.on("joinRoom:server", (data) => {
       console.log("User joined room", data.roomId);
-      setUsers((prevUsers) => [...prevUsers, { id: data.userId, username: data.username, avatar: data.avatar, role: data.role }]);
+      setUsers((prevUsers) => [
+        ...prevUsers,
+        {
+          id: data.userId,
+          username: data.username,
+          avatar: data.avatar,
+          role: data.role,
+        },
+      ]);
     });
 
     return () => {
@@ -228,7 +244,8 @@ export default function LobbyPage() {
               <button
                 onClick={leaveRoom}
                 className="mt-4 bg-red-500 shadow-[0_5px_0_rgb(0,0,0)] hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
-hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+              >
                 Leave Room
               </button>
             </div>
