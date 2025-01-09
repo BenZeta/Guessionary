@@ -20,22 +20,41 @@ type Theme = {
 };
 
 export default function App(): JSX.Element {
-  const { currentTheme, theme } = useContext(themeContext);
+  const { currentTheme, theme } = useContext(themeContext) as {
+    currentTheme: keyof Theme;
+    theme: Theme;
+  };
 
   return (
     <SoundProvider>
-      {" "}
-      {/* Wrap your app with the SoundProvider */}
       <div className={theme[currentTheme].bgColor}>
         <BrowserRouter>
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/avatars" element={<CardPage />} />
+            <Route
+              path="/login"
+              element={<LoginPage />}
+            />
+            <Route
+              path="/avatars"
+              element={<CardPage />}
+            />
             <Route element={<BaseLayout />}>
-              <Route index element={<HomePage />} />
-              <Route path="/lobby/:roomId" element={<LobbyPage />} />
-              <Route path="/round_1/:roomId/:gameId" element={<Game1Page />} />
-              <Route path="/draw/:roomId/:gameId" element={<Game2Page />} />
+              <Route
+                index
+                element={<HomePage />}
+              />
+              <Route
+                path="/lobby/:roomId"
+                element={<LobbyPage />}
+              />
+              <Route
+                path="/round_1/:roomId/:gameId"
+                element={<Game1Page />}
+              />
+              <Route
+                path="/draw/:roomId/:gameId"
+                element={<Game2Page />}
+              />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -4,7 +4,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { log } from 'console';
 
 interface ServerToClientEvents {
   [event: string]: (...args: unknown[]) => void;
@@ -30,7 +29,7 @@ interface ClientToServerEvents {
   roomName: (roomInfo: { roomName: string; username: string }) => void;
   roomList: (rooms: Room[]) => void;
   roomCreated: (room: Room) => void;
-  joinRoom: (data: { roomId: string; username: string; avatar: string }) => void;
+  joinRoom: (data: { roomId: string; username: string; avatar: string; role: 'Staff' }) => void;
   leaveRoom: (data: { roomId: string; updatedRoom: Room }) => void;
   userList: (user: { users: User[] }) => void;
   startGame: (data: { roomId: string; gameId: string; users: User[] }) => void;
