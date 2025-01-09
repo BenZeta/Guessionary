@@ -4,11 +4,14 @@ import "./index.css";
 import "toastify-js/src/toastify.css";
 import App from "./App.tsx";
 import ThemeContext from "./context/ThemeContext.tsx";
+import { ClickProvider } from "./context/ClickContext";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeContext>
-      <App />
-    </ThemeContext>
-  </StrictMode>
+  <ClickProvider>
+    <StrictMode>
+      <ThemeContext>
+        <App />
+      </ThemeContext>
+    </StrictMode>
+  </ClickProvider>
 );
