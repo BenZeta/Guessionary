@@ -11,23 +11,23 @@ type User = {
   username: string;
 };
 
-const COLORS = [
-  "#ffffff", // White
-  "#000000", // Black
-  "#808080", // Gray
-  "#ff0000", // Red
-  "#ffff00", // Yellow
-  "#0000ff", // Blue
-  "#008000", // Green
-  "#00ffff", // Cyan
-  "#ffa500", // Orange
-  "#ffc0cb", // Pink
-  "#800080", // Purple
-  "#a52a2a", // Brown
-  "#008080", // Teal
-  "#ff00ff", // Magenta
-  "#ffbf00", // Amber
-];
+// const COLORS = [
+//   "#ffffff", // White
+//   "#000000", // Black
+//   "#808080", // Gray
+//   "#ff0000", // Red
+//   "#ffff00", // Yellow
+//   "#0000ff", // Blue
+//   "#008000", // Green
+//   "#00ffff", // Cyan
+//   "#ffa500", // Orange
+//   "#ffc0cb", // Pink
+//   "#800080", // Purple
+//   "#a52a2a", // Brown
+//   "#008080", // Teal
+//   "#ff00ff", // Magenta
+//   "#ffbf00", // Amber
+// ];
 
 export default function Game2Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
