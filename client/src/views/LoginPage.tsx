@@ -46,9 +46,12 @@ export default function LoginPage() {
         username,
       });
 
+      console.log(">>data login", data);
+
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("avatar", selectedAvatar);
       localStorage.setItem("username", data.username);
+      localStorage.setItem("userId", data.userId);
 
       navigate("/");
     } catch (error) {

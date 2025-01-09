@@ -13,9 +13,9 @@ model User {
   avatar        String         @default("https://avatars.dicebear.com/api/bottts/1.svg")
   gameId        String?
   role          String         @default("Admin")
-  contributions Contribution[]
+  contributions Contribution[]  
   scores        Score[]
-  Game          Game?          @relation(fields: [gameId], references: [id]) // One user can belong to one game at a time
+  Game          Game?          @relation(fields: [gameId], references: [id])
   Room          Room[]         @relation("RoomToUser")
 }
 
@@ -46,13 +46,13 @@ model Contribution {
   id             String           @id @unique @default(uuid())
   roomId         String
   gameId         String
-  userId         String
+  userId         String           
   type           ContributionType // Defines the type of contribution
   content        String
   createdAt      DateTime         @default(now())
   Room           Room             @relation(fields: [roomId], references: [id])
   game           Game             @relation(fields: [gameId], references: [id])
-  user           User             @relation(fields: [userId], references: [id])
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Score {

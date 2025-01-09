@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      fontFamily: {
+        silkscreen: ['"Silkscreen"'],
+      },
       keyframes: {
         bounceLeft: {
           "0%": { transform: "translateX(-100%)", opacity: 0 },
@@ -24,12 +27,17 @@ export default {
           "50%": { transform: "translateY(10%)", opacity: 1 },
           "100%": { transform: "translateY(0)", opacity: 1 },
         },
+        slideIn: {
+          "0%": { transform: "translateX(-1000%)", opacity: "0" },
+          "100%": { transform: "translateX(0)", opacity: "1" },
+        },
       },
       animation: {
         bounceLeft: "bounceLeft 1s ease-in-out",
         bounceRight: "bounceRight 1s ease-in-out",
         bounceUp: "bounceUp 1s ease-in-out",
         bounceDown: "bounceDown 1s ease-in-out",
+        slideIn: "slideIn 3s cubic-bezier(0.19, 1, 0.22, 1)",
       },
     },
   },

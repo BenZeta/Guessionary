@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { io } from '../index'; // Import the io instance
 
 const prisma = new PrismaClient();
 
@@ -38,6 +39,9 @@ export default class RoomController {
           users: true, // Include the users in the response
         },
       });
+
+      // Emit the room creation event
+      io.emit('roomCreated:server', room);
 
       // Return the created room
       res.status(200).json(room);
@@ -82,7 +86,30 @@ export default class RoomController {
         },
       });
 
-      res.status(200).json({ message: 'Room joined successfully' });
+      // Find the user again to get the updated user data
+      const updatedRoom = await prisma.room.findUnique({
+        where: { id: targetedRoomId },
+        include: {
+          users: true,
+        },
+      });
+
+      const user = updatedRoom?.users.find((user) => user.id === userId);
+
+      if (!user) {
+        throw { name: 'NotFound', message: 'User not found' };
+      }
+
+      res.status(200).json({
+        user,
+      });
+      // Update user's role to 'staff'
+      await prisma.user.update({
+        where: { id: userId },
+        data: { role: 'Staff' }, // Change role to 'staff'
+      });
+
+      res.status(200).json({ message: 'Room joined successfully and role updated to staff' });
     } catch (error) {
       console.log('error', error);
       next(error);
