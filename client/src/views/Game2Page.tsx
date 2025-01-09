@@ -12,6 +12,24 @@ type User = {
   username: string;
 };
 
+// const COLORS = [
+//   "#ffffff", // White
+//   "#000000", // Black
+//   "#808080", // Gray
+//   "#ff0000", // Red
+//   "#ffff00", // Yellow
+//   "#0000ff", // Blue
+//   "#008000", // Green
+//   "#00ffff", // Cyan
+//   "#ffa500", // Orange
+//   "#ffc0cb", // Pink
+//   "#800080", // Purple
+//   "#a52a2a", // Brown
+//   "#008080", // Teal
+//   "#ff00ff", // Magenta
+//   "#ffbf00", // Amber
+// ];
+
 export default function Game2Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,6 +37,8 @@ export default function Game2Page() {
   const [wordsFromR1, setWordsFromR1] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
+  const [selectedColor, setSelectedColor] = useState<string>("#000000");
+  const [brushSize, setBrushSize] = useState<number>(5);
   const [dataDrawing, setDataDrawing] = useState<string>("");
   const { gameId, roomId } = useParams();
   const navigate = useNavigate();
@@ -56,6 +76,7 @@ export default function Game2Page() {
     };
   }, []);
 
+
   const getUser = async () => {
     try {
       const { data } = await axios.get(`${baseUrl}/users/${roomId}`, {
@@ -74,11 +95,22 @@ export default function Game2Page() {
   };
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      getUser();
-    }
-  }, []);
+    if (canvas && canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.width = brushSize;
+  }, [brushSize]);
+    
+    useEffect(() => {
+      if (canvas && canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.color = selectedColor;
+      }
+    }, [selectedColor])
+    
+    useEffect(() => {
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        getUser();
+      }
+    }, [])
 
   const handleSubmit = async () => {
     if (canvas) {
@@ -101,6 +133,13 @@ export default function Game2Page() {
     }
   };
 
+  const handleEraser = () => {
+    if (canvas && canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.color = "#ffffff"; // Match canvas background color
+    }
+  }
+  
+  
   const handleClear = () => {
     if (canvas) {
       canvas.clear();
@@ -200,8 +239,15 @@ export default function Game2Page() {
               Clear
             </button>
           </div>
+          <button
+            type="submit"
+            className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+          >
+            Submit
+          </button>
         </div>
       </div>
     </div>
   );
 }
+//test test
