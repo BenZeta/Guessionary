@@ -45,7 +45,7 @@ export default function Game1Page() {
 
   async function getContributions() {
     try {
-      const { data } = await axios.get(`${baseUrl}/game/word`, {
+      await axios.get(`${baseUrl}/game/word`, {
         headers: {
           Authorization: `Bearer ${localStorage.access_token}`,
         },
@@ -69,7 +69,7 @@ export default function Game1Page() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
+      await axios.post(
         `${baseUrl}/game/round_1/${roomId}/${gameId}`,
         { words },
         {
