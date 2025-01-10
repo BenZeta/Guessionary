@@ -14,9 +14,10 @@ type User = {
 export default function Game3Page() {
   // const { roomId, gameId } = useParams();
   const [drawingFromR2, setDrawingFromR2] = useState<string>("");
-  const { roomId } = useParams();
+  const { roomId, gameId } = useParams();
   const [users, setUsers] = useState<User[]>([]);
   const isFirstRender = useRef(true);
+  const [guesses, setGuesses] = useState<string>("");
 
   const getUser = async () => {
     try {
@@ -32,6 +33,26 @@ export default function Game3Page() {
     }
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post(
+        `${baseUrl}/game/guess/${roomId}/${gameId}`,
+        { guesses },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
+      console.log(data, "handlesubmit round 3");
+
+      socket.emit("guessRound3", { roomId, guesser: localStorage.username, guess: guesses });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -41,14 +62,26 @@ export default function Game3Page() {
 
   useEffect(() => {
     // Handle server event
+    if (!socket.connected) {
+      socket.auth = {
+        token: localStorage.username,
+      };
+      socket.connect();
+    }
+
     socket.on("receiveUser64", (user64) => {
       console.log("Received data from server:", user64);
       setDrawingFromR2(user64); // Assuming `data.drawing` contains the relevant drawing information
     });
 
+    socket.on("guessResult:server", (data: { guesser: string; isCorrect: boolean; submitter: string }) => {
+      console.log("Guess result:", data);
+    });
+
     // Clean up socket event listeners on component unmount
     return () => {
-      socket.off("endRound2:server");
+      socket.off("guessResult:server");
+      // socket.off("endRound2:server");
     };
   }, []);
 
@@ -87,16 +120,19 @@ export default function Game3Page() {
                 <div className="bg-gray-200/10 h-full flex justify-center items-end p-5">
                   <div className="flex flex-col items-center w-2/5 gap-2">
                     <img
-                      src={drawingFromR2 || undefined}
+                      src={`${drawingFromR2}` || undefined}
                       alt=""
                     />
                     {/* Label */}
-                    <label className="text-black font-semibold">Guess Here</label>
-                    {/* Input */}
-                    <input
-                      className="w-full rounded-2xl p-2 text-center border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Type here..."
-                    />
+                    <form onSubmit={handleSubmit}>
+                      <label className="text-black font-semibold">Guess Here</label>
+                      {/* Input */}
+                      <input
+                        onChange={(e) => setGuesses(e.target.value)}
+                        className="w-full rounded-2xl p-2 text-center border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Type here..."
+                      />
+                    </form>
                   </div>
                 </div>
                 <div className="mt-4">

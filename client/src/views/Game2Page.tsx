@@ -12,24 +12,6 @@ type User = {
   username: string;
 };
 
-const COLORS = [
-  "#ffffff", // White
-  "#000000", // Black
-  "#808080", // Gray
-  "#ff0000", // Red
-  "#ffff00", // Yellow
-  "#0000ff", // Blue
-  "#008000", // Green
-  "#00ffff", // Cyan
-  "#ffa500", // Orange
-  "#ffc0cb", // Pink
-  "#800080", // Purple
-  "#a52a2a", // Brown
-  "#008080", // Teal
-  "#ff00ff", // Magenta
-  "#ffbf00", // Amber
-];
-
 export default function Game2Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -37,8 +19,6 @@ export default function Game2Page() {
   const [wordsFromR1, setWordsFromR1] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string>("#000000");
-  const [brushSize, setBrushSize] = useState<number>(5);
   const [dataDrawing, setDataDrawing] = useState<string>("");
   const { gameId, roomId } = useParams();
   const navigate = useNavigate();
@@ -94,18 +74,6 @@ export default function Game2Page() {
   };
 
   useEffect(() => {
-    if (canvas && canvas.freeDrawingBrush) {
-      canvas.freeDrawingBrush.width = brushSize;
-    }
-  }, [brushSize]);
-
-  useEffect(() => {
-    if (canvas && canvas.freeDrawingBrush) {
-      canvas.freeDrawingBrush.color = selectedColor;
-    }
-  }, [selectedColor]);
-
-  useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       getUser();
@@ -129,15 +97,9 @@ export default function Game2Page() {
 
       socket.emit("submitDataRound2", { roomId, gameId, user64: dataUrl });
 
-      // console.log("Canvas Data URL:", dataUrl);
+      console.log("Canvas Data URL:", JSON.stringify(dataUrl));
     } else {
       console.error("Canvas belum siap!");
-    }
-  };
-
-  const handleEraser = () => {
-    if (canvas && canvas.freeDrawingBrush) {
-      canvas.freeDrawingBrush.color = "#ffffff"; // Match canvas background color
     }
   };
 
@@ -150,11 +112,18 @@ export default function Game2Page() {
   };
 
   useEffect(() => {
-    socket.on("receiveWords", (words) => {
-      console.log("Received words:", words);
-      console.log(words.words[0]);
+    if (!socket.connected) {
+      socket.auth = {
+        token: localStorage.username,
+      };
+      socket.connect();
+    }
 
-      setWordsFromR1(words.words[0]); // Simpan kata di state atau variabel
+    socket.on("receiveWords", (words) => {
+      console.log("Received words:", words?.words[0]);
+      // console.log(words);
+
+      setWordsFromR1(words?.words); // Simpan kata di state atau variabel
     });
 
     socket.on("userList:server", (newUsers) => {
@@ -166,12 +135,14 @@ export default function Game2Page() {
     }, 15000);
 
     socket.on("endRound2:server", (data) => {
+      console.log("Ended Round 2:", data);
+
       navigate(`/round_3/${data.roomId}/${data.gameId}`);
     });
 
     return () => {
       socket.off("receiveWords");
-      socket.off("userList:server");
+      socket.off("endRound2:server");
     };
   }, []);
 
@@ -207,61 +178,29 @@ export default function Game2Page() {
 
         {/* Right Panel */}
         <div className="w-9/12 bg-white/10 p-6">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault(); // Prevent the default form submission behavior
-              handleSubmit(); // Trigger the custom submit logic
-            }}
-            className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-silkscreen font-bold text-teal-300 mb-4 text-center">Game</h2>
-
-            {/* Toolbar */}
-            <div className="flex gap-4 mb-4 items-center">
-              {COLORS.map((color) => (
-                <div
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
-                  style={{ backgroundColor: color }}
-                  className={`w-10 h-10 rounded-full cursor-pointer border-2 ${selectedColor === color ? "border-white" : "border-transparent"}`}></div>
-              ))}
-              <input
-                type="range"
-                min="1"
-                max="20"
-                value={brushSize}
-                onChange={(e) => setBrushSize(Number(e.target.value))}
-                className="cursor-pointer"
-              />
-              <button
-                type="button"
-                onClick={handleEraser}
-                className="bg-gray-500 text-white px-4 py-2 rounded-md">
-                Eraser
-              </button>
-
-              <button
-                type="button"
-                onClick={handleClear}
-                className="bg-red-500 text-white px-4 py-2 rounded-md">
-                Clear
-              </button>
-            </div>
-
+          <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
+            <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Game</h2>
+            <h3>{wordsFromR1}</h3>
             <div
               className="flex-1 bg-white relative"
               ref={containerRef}>
               <canvas ref={canvasRef}></canvas>
             </div>
-
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}>
+              <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">Submit</button>
+            </form>
             <button
-              type="submit" // Form submission triggers the form's onSubmit handler
-              className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
-              Submit
+              onClick={handleClear}
+              className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">
+              Clear
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
   );
 }
-//test test

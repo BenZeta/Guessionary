@@ -12,7 +12,7 @@ model User {
   username      String         @unique
   avatar        String         @default("https://avatars.dicebear.com/api/bottts/1.svg")
   gameId        String?
-  role          String         @default("Admin")
+  role          String         @default("Staff")
   contributions Contribution[]  
   scores        Score[]
   Game          Game?          @relation(fields: [gameId], references: [id])
@@ -43,17 +43,22 @@ model Game {
 }
 
 model Contribution {
-  id             String           @id @unique @default(uuid())
-  roomId         String
+  id             String          @id @default(uuid())
+  userId         String
+  user           User            @relation(fields: [userId], references: [id])
   gameId         String
-  userId         String           
-  type           ContributionType // Defines the type of contribution
-  content        String
-  createdAt      DateTime         @default(now())
-  Room           Room             @relation(fields: [roomId], references: [id])
-  game           Game             @relation(fields: [gameId], references: [id])
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  game           Game            @relation(fields: [gameId], references: [id])
+  type           ContributionType
+  content        String          // Word, drawing (URL), or guessed word
+  targetUserId   String?         // The player who receives the word/drawing
+  originalWordId String?         // References the first-round word
+  originalWord   Contribution?   @relation("OriginalWord", fields: [originalWordId], references: [id])
+  guesses        Contribution[]  @relation("OriginalWord")
+  createdAt      DateTime        @default(now())
+  room           Room            @relation(fields: [roomId], references: [id])
+  roomId         String
 }
+
 
 model Score {
   id        String   @id @unique @default(uuid())
