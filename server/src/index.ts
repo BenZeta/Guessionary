@@ -5,6 +5,21 @@ import dotenv from 'dotenv';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
+// Global error handler for uncaught exceptions
+process.on('uncaughtException', (err, origin) => {
+  console.error('Uncaught Exception:', err);
+  console.error('Exception origin:', origin);
+  // Optionally, exit the process gracefully
+  process.exit(1);
+});
+
+// Global error handler for unhandled promise rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Optionally, exit the process gracefully
+  process.exit(1);
+});
+
 interface ServerToClientEvents {
   [event: string]: (...args: unknown[]) => void;
 }
@@ -39,6 +54,7 @@ interface ClientToServerEvents {
   endRound2: (data: { roomId: string; gameId: string; user64: string }) => void;
   newUser: (user: User) => void;
   submitDataRound2: (data: { roomId: string; gameId: string; user64: string }) => void;
+  guessRound3: (data: { roomId: string; guesser: string; guess: string }) => void;
 }
 
 interface InterServerEvents {
@@ -95,6 +111,8 @@ app.use(router);
 io.on('connection', (socket) => {
   // Room creation
   socket.on('roomCreated', (room: Room) => {
+    console.log(room, '<<<<<');
+
     console.log('room has been created', room.id);
     io.emit('roomCreated:server', room);
   });
@@ -111,24 +129,43 @@ io.on('connection', (socket) => {
   });
 
   socket.on('joinRoom', (data: { roomId: string; user: User }) => {
-    console.log(data.user, '<<<<<<<');
+    const { roomId, user } = data;
 
-    if (!players[data.roomId]) {
-      players[data.roomId] = [];
+    // Validate room and user data
+    if (!roomId || !user || !user.username) {
+      console.error('Invalid room or user data:', data);
+      return;
     }
 
-    players[data.roomId].push({
-      name: data?.user?.username,
-      avatar: data?.user?.avatar,
-      role: data?.user?.role,
-      socketId: socket.id, // Simpan socket.id
+    console.log(`User "${user.username}" is attempting to join room "${roomId}"`);
+
+    // Initialize room's player list if it doesn't exist
+    if (!players[roomId]) {
+      players[roomId] = [];
+    }
+
+    // Check if the user already exists in the room
+    const userExists = players[roomId].some((player) => player.name === user.username);
+
+    if (userExists) {
+      console.warn(`User "${user.username}" is already in room "${roomId}"`);
+      return;
+    }
+
+    // Add user to the room's player list
+    players[roomId].push({
+      name: user.username,
+      avatar: user.avatar,
+      role: user.role,
+      socketId: socket.id, // Save socket ID
       words: [],
-      drawing: [], // Kata-kata untuk pemain ini
+      drawing: [],
     });
 
-    io.emit('joinRoom:server', { roomId: data.roomId, user: data.user });
+    // Emit the join event to all clients
+    io.emit('joinRoom:server', { roomId, user });
 
-    console.log(`${data?.user?.username} joined room ${data.roomId}`);
+    console.log(`User "${user.username}" has joined room "${roomId}"`);
   });
 
   // Handle leaving a room
@@ -154,47 +191,116 @@ io.on('connection', (socket) => {
     if (!roomWords[data.roomId]) {
       roomWords[data.roomId] = [];
     }
-    roomWords[data.roomId].push({ username: data.username, words: data.words, socketId: socket.id });
+    roomWords[data.roomId].push({
+      username: data.username,
+      words: data.words,
+      socketId: socket.id,
+    });
     console.log(`Words submitted for room ${data.roomId}:`, roomWords[data.roomId]);
   });
 
-  // End Round 1 and redistribute words
+  // // End Round 1 and redistribute words
+  // socket.on('endRound1', (data: { roomId: string; gameId: string; users: User[] }) => {
+  //   console.log(data, 'di end round 1 data');
+  //   const players = roomWords[data.roomId];
+
+  //   io.emit('endRound1:server', data);
+
+  //   if (!players || players.length === 0) {
+  //     console.error(`No words found for room ${data.roomId}`);
+  //     return;
+  //   }
+
+  //   // Shuffle words for all players
+  //   const allWords = players.flatMap((player) => player.words); // Gabungkan semua kata
+  //   const shuffledWords = shuffleArray(allWords); // Acak semua kata
+
+  //   players.forEach((player, index) => {
+  //     const startIndex = index * Math.floor(shuffledWords.length / players.length);
+  //     const endIndex = startIndex + Math.floor(shuffledWords.length / players.length);
+  //     const assignedWords = shuffledWords.slice(startIndex, endIndex); // Ambil subset kata
+
+  //     const socket = io.sockets.sockets.get(player.socketId);
+  //     if (socket) {
+  //       // console.log(`Player ${player.username} has a valid socket. Emitting...`);
+  //       io.to(player.socketId).emit('receiveWords', { words: assignedWords });
+  //     } else {
+  //       console.error(`Player ${player.username} has an invalid or disconnected socketId: ${player.socketId}`);
+  //     }
+
+  //     console.log(`Assigned words to player ${player.username}:`, assignedWords);
+  //   });
+
+  //   // Clear words for the room to prepare for the next round
+
+  //   console.log(`Round 1 ended for room ${data.roomId}`);
+  // });
+
   socket.on('endRound1', (data: { roomId: string; gameId: string; users: User[] }) => {
-    console.log(data, 'di end round 1 data');
     const players = roomWords[data.roomId];
-
-    console.log(players, 'di end round 1 players');
-
-    io.emit('endRound1:server', data);
 
     if (!players || players.length === 0) {
       console.error(`No words found for room ${data.roomId}`);
       return;
     }
 
+    io.emit('endRound1:server', data);
+
     // Shuffle words for all players
-    const allWords = players.flatMap((player) => player.words); // Gabungkan semua kata
-    const shuffledWords = shuffleArray(allWords); // Acak semua kata
+    const shuffledPlayers = shuffleArray(players); // Shuffle players for random word assignment
+
+    const assignments: PlayerWords[] = [];
 
     players.forEach((player, index) => {
-      const startIndex = index * Math.floor(shuffledWords.length / players.length);
-      const endIndex = startIndex + Math.floor(shuffledWords.length / players.length);
-      const assignedWords = shuffledWords.slice(startIndex, endIndex); // Ambil subset kata
+      const assignTo = shuffledPlayers[index]; // Get the shuffled player for assignment
+
+      console.log(`Assigning words from ${assignTo.username} to ${player.username}:`, assignTo.words);
+
+      assignments.push({
+        username: player.username,
+        words: assignTo.words, // Ensure this is the full string
+        socketId: player.socketId,
+      });
 
       const socket = io.sockets.sockets.get(player.socketId);
       if (socket) {
-        // console.log(`Player ${player.username} has a valid socket. Emitting...`);
-        io.to(player.socketId).emit('receiveWords', { words: assignedWords });
+        io.to(player.socketId).emit('receiveWords', { words: assignTo.words });
       } else {
         console.error(`Player ${player.username} has an invalid or disconnected socketId: ${player.socketId}`);
       }
 
-      console.log(`Assigned words to player ${player.username}:`, assignedWords);
+      console.log(`Assigned words from ${assignTo.username} to ${player.username}`);
     });
 
-    // Clear words for the room to prepare for the next round
+    // Save assignments to the roomWords for future use
+    roomWords[data.roomId] = assignments;
 
     console.log(`Round 1 ended for room ${data.roomId}`);
+  });
+
+  socket.on('guessRound3', (data: { roomId: string; guesser: string; guess: string }) => {
+    const assignments = roomWords[data.roomId];
+
+    if (!assignments) {
+      console.error(`No assignments found for room ${data.roomId}`);
+      return;
+    }
+
+    // Find the original submitter
+    const assignment = assignments.find((assignment) => assignment.username === data.guesser);
+    if (!assignment) {
+      console.error(`No assignment found for guesser ${data.guesser}`);
+      return;
+    }
+    const { username: submitter, words } = assignment;
+
+    // Check if the guess matches any of the original submitter's words
+    const isCorrect = words.includes(data.guess);
+
+    console.log(`Guesser ${data.guesser} guessed "${data.guess}". Is correct: ${isCorrect}`);
+
+    // Notify players of the result
+    io.emit('guessResult:server', { guesser: data.guesser, isCorrect, submitter });
   });
 
   socket.on('submitDataRound2', (data: { roomId: string; gameId: string; user64: string }) => {
@@ -211,35 +317,37 @@ io.on('connection', (socket) => {
 
     socket.on('endRound2', (data: { roomId: string; gameId: string }) => {
       // Get players in the room
-      const playersInRoom = roomWords[data.roomId];
-      console.log(playersInRoom);
+      console.log('Round 2 ended for room', data.roomId);
 
-      if (!playersInRoom || playersInRoom.length === 0) {
-        console.error(`No players found in room ${data.roomId}`);
-        return;
-      }
+      const playersInRoom = roomWords[data.roomId];
+      // console.log(playersInRoom, 'end round 2 server');
+      io.emit('endRound2:server', { roomId: data.roomId, gameId: data.gameId });
 
       // Ensure that `user64` data is correctly assigned for each player
-      const allUser64 = playersInRoom.flatMap((player) => player.words); // Get all user64 data from players
-      const shuffledUser64 = shuffleArray(allUser64);
+
+      // const allUser64 = playersInRoom.map((player) => player.words); // Get all user64 data from players
+      // const shuffledUser64 = shuffleArray(allUser64);
+      // console.log(allUser64, ' didalam try catch');
+      console.log('HALOO IN SERVER');
 
       // Split the shuffled data and distribute it to players
-      playersInRoom.forEach((player, index) => {
-        const user64 = shuffledUser64[index]; // Get the shuffled user64 for this player
+      // playersInRoom.forEach((player, index) => {
+      //   console.log(player.socketId, 'endRound2 in server socketId player');
 
-        const socket = io.sockets.sockets.get(player.socketId);
-        if (socket) {
-          console.log(`Player ${player.username} has a valid socket in round 2. Emitting...`);
+      //   const user64 = shuffledUser64[index]; // Get the shuffled user64 for this player
 
-          io.to(player.socketId).emit('receiveUser64', user64);
-        } else {
-          console.error(`Player ${player.username} has an invalid or disconnected socketId: ${player.socketId}`);
-        }
-        console.log(`Sent user64 data to player ${player.username}:`, user64);
-      });
+      //   const socket = io.sockets.sockets.get(player.socketId);
+      //   if (socket) {
+      //     console.log(`Player ${player.username} has a valid socket in round 2 with socket id ${player.socketId}. Emitting...`);
+
+      //     io.to(player.socketId).emit('receiveUser64', user64);
+      //   } else {
+      //     console.error(`Player ${player.username} has an invalid or disconnected socketId: ${player.socketId}`);
+      //   }
+      //   console.log(`Sent user64 data to player ${player.username}:`, user64);
+      // });
 
       console.log(`Round 2 ended for room ${data.roomId} and data has been redistributed.`);
-      io.emit('endRound2:server', { roomId: data.roomId, gameId: data.gameId });
     });
   });
 
@@ -253,11 +361,18 @@ io.on('connection', (socket) => {
 
 // Utility function to shuffle an array
 function shuffleArray<T>(array: T[]): T[] {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
+  if (array.length <= 1) return array; // If there's only one or no element, return as is.
+
+  let shuffledArray: T[];
+  do {
+    shuffledArray = [...array]; // Create a copy of the array to shuffle
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+    }
+  } while (shuffledArray.every((item, index) => item === array[index]));
+
+  return shuffledArray;
 }
 
 httpServer.listen(port, () => {

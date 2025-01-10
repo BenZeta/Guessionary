@@ -12,6 +12,7 @@ interface Room {
   isActive: boolean;
   createdAt: Date;
   gameId: string;
+  users: User[];
 }
 
 type User = {
@@ -53,15 +54,12 @@ export default function LobbyPage() {
         },
       });
 
-      setRoom(data);
+      console.log(data, "getUser");
 
       setUsers(data.users);
-      const user = data.users.find(
-        (user: User) => user.id === localStorage.userId
-      );
-      console.log("User Role:", user.role); // Log to check user role
+
+      const user = data.users.find((user: User) => user.id === localStorage.userId);
       setUserRole(user.role || ""); // Set user role
-      socket.emit("userList", data?.users);
     } catch (error) {
       console.log(error);
     }
@@ -88,14 +86,11 @@ export default function LobbyPage() {
     }
 
     try {
-      const { data } = await axios.get(
-        baseUrl + `/game/start/${roomId}/${gameId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.access_token}`,
-          },
-        }
-      );
+      const { data } = await axios.get(baseUrl + `/game/start/${roomId}/${gameId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
       console.log(data, "di loby");
 
       socket.emit("startGame", data);
@@ -159,14 +154,31 @@ export default function LobbyPage() {
   }, []);
 
   useEffect(() => {
-    socket.auth = {
-      token: localStorage.username,
-    };
+    if (!socket.connected) {
+      socket.auth = {
+        token: localStorage.username,
+      };
+      socket.connect();
+    }
 
-    socket.connect();
+    socket.on("roomCreated:server", (newRoom: Room) => {
+      console.log("Room has been created");
+      console.log(newRoom.users);
 
-    socket.on("userList:server", (newUsers) => {
-      setUsers(newUsers);
+      setUsers(newRoom.users);
+    });
+
+    socket.on("joinRoom:server", (data) => {
+      console.log("User joined room", data.roomId);
+      console.log(data.user);
+
+      setUsers((prev) => {
+        // Log the previous state for debugging
+        console.log("Previous users state:", prev);
+
+        // Return a new array with the previous users and the new user
+        return [...prev, data.user];
+      });
     });
 
     socket.on("startGame:server", (data) => {
@@ -186,26 +198,12 @@ export default function LobbyPage() {
       navigate(`/draw/${data.roomId}/${data.gameId}`);
     });
 
-    socket.on("joinRoom:server", (data) => {
-      console.log("User joined room", data.roomId);
-      setUsers((prevUsers) => [
-        ...prevUsers,
-        {
-          id: data.userId,
-          username: data.username,
-          avatar: data.avatar,
-          role: data.role,
-        },
-      ]);
-    });
-
     return () => {
-      socket.off("userList:server");
+      socket.off("roomCreated:server");
       socket.off("startGame:server");
       socket.off("leaveRoom:server");
       socket.off("endRound1:server");
       socket.off("joinRoom:server");
-      socket.disconnect();
     };
   }, []);
 
@@ -218,7 +216,6 @@ export default function LobbyPage() {
               <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
                 Choose a Game
               </h2>
-
               <div className="flex justify-center">
                 {games.map((game) => (
                   <div

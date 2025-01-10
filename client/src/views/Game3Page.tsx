@@ -1,12 +1,25 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router";=
 import { socket } from "../socket/socket";
+import axios from "axios";
+import { baseUrl } from "../constants/baseUrl";
+import { useParams } from "react-router";
+
+type User = {
+  id: string;
+  avatar: string;
+  username: string;
+};
 
 export default function Game3Page() {
   const [drawingFromR2, setDrawingFromR2] = useState<string>("");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [timer, setTimer] = useState<number>(60); // Timer for 15 seconds
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
-
+  const { roomId, gameId } = useParams();
+  const [users, setUsers] = useState<User[]>([]);
+  const isFirstRender = useRef(true);
+  const [guesses, setGuesses] = useState<string>("");
 
   // Timer logic
   useEffect(() => {
@@ -22,20 +35,69 @@ export default function Game3Page() {
     }
   }, [isTimerRunning, timer]);
 
-  useEffect(() => {
-    socket.auth = {
-      token: localStorage.username,
-    };
-    socket.connect();
 
-    socket.on("endRound2:server", (data) => {
-      console.log("Received data from server:", data);
-      setDrawingFromR2(data.user64);
+  const getUser = async () => {
+    try {
+      const { data } = await axios.get(`${baseUrl}/users/${roomId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.access_token}`,
+        },
+      });
+
+      setUsers(data.users);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.post(
+        `${baseUrl}/game/guess/${roomId}/${gameId}`,
+        { guesses },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.access_token}`,
+          },
+        }
+      );
+      console.log(data, "handlesubmit round 3");
+
+      socket.emit("guessRound3", { roomId, guesser: localStorage.username, guess: guesses });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      getUser();
+    }
+  }, []);
+
+  useEffect(() => {
+    // Handle server event
+    if (!socket.connected) {
+      socket.auth = {
+        token: localStorage.username,
+      };
+      socket.connect();
+    }
+
+    socket.on("receiveUser64", (user64) => {
+      console.log("Received data from server:", user64);
+      setDrawingFromR2(user64); // Assuming `data.drawing` contains the relevant drawing information
+    });
+
+    socket.on("guessResult:server", (data: { guesser: string; isCorrect: boolean; submitter: string }) => {
+      console.log("Guess result:", data);
     });
 
     return () => {
-      socket.off("endRound2:server");
-      socket.disconnect();
+      socket.off("guessResult:server");
+      // socket.off("endRound2:server");
     };
   }, []);
 
@@ -109,7 +171,6 @@ export default function Game3Page() {
               <button className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md w-full mt-2 transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)] ">
                 Submit Guess
               </button>
-
               </div>
             </div>
           </div>
