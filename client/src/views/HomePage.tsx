@@ -39,9 +39,7 @@ export default function HomePage() {
       });
 
       console.log(data, "FETCH ROOMS");
-
       setRooms(data);
-      setUsers(data.users);
 
       socket.emit("roomList", data);
     } catch (error) {
@@ -61,15 +59,16 @@ export default function HomePage() {
       // console.log(data);
 
       setUsers(data);
-
-      socket.emit("userList", data?.users);
     } catch (error) {
       console.log(error);
     }
   };
 
   useEffect(() => {
-    getUsers();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      getUsers();
+    }
   }, []);
   const handleJoinRoom = async () => {
     try {
@@ -84,7 +83,7 @@ export default function HomePage() {
       }
       console.log(targetedRoomId);
 
-      await axios.patch(
+      const { data } = await axios.patch(
         `${baseUrl}/join-room`,
         { targetedRoomId },
         {
@@ -93,15 +92,13 @@ export default function HomePage() {
           },
         }
       );
+      console.log(data, " handle join room");
 
       socket.emit("joinRoom", {
         roomId: targetedRoomId,
-        username: localStorage.username,
-        avatar: localStorage.avatar,
-        role: "Staff",
+        user: data.user,
       });
 
-      navigate(`/lobby/${targetedRoomId}`);
       navigate(`/lobby/${targetedRoomId}`);
     } catch (error) {
       console.error(error);
@@ -122,10 +119,8 @@ export default function HomePage() {
       color: "#edf2f7", // white text color for contrast
       customClass: {
         input: "px-4 py-2 rounded-md bg-teal-700 text-white", // Apply theme styles
-        confirmButton:
-          "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
-        cancelButton:
-          "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        confirmButton: "bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
+        cancelButton: "bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg",
       },
       preConfirm: (inputRoomName) => {
         if (!inputRoomName) {
@@ -164,15 +159,17 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    socket.auth = {
-      token: localStorage.username,
-    };
-
-    socket.connect();
+    if (!socket.connected) {
+      socket.auth = {
+        token: localStorage.username,
+      };
+      socket.connect();
+    }
 
     socket.on("roomCreated:server", (newRoom: Room) => {
+      console.log(newRoom);
+
       setRooms((prev) => {
-        // Check if the room already exists in the state
         if (prev.some((room) => room.id === newRoom.id)) {
           return prev;
         }
@@ -180,33 +177,22 @@ export default function HomePage() {
       });
     });
 
-    socket.on("joinRoom:server", (data) => {
-      console.log("User joined room", data.roomId);
-      console.log(data);
+    socket.on("newUser:server", (newUser) => {
+      console.log(newUser);
 
-      // Update the room list or any other state as needed
-      setRooms((prev) => {
-        return prev.map((room) => {
-          if (room.id === data.roomId) {
-            return {
-              ...room,
-              users: [...room.users, data.username, data.avatar, data.role],
-            };
-          }
-          return room;
-        });
+      setUsers((prev) => {
+        if (prev.some((user) => user.id === newUser.user.id)) {
+          return prev;
+        }
+        return [...prev, newUser.user];
       });
-      // For example, you can fetch the updated room list from the server
-      fetchRooms();
     });
 
     return () => {
+      socket.off("newUser:server");
       socket.off("roomCreated:server");
-      socket.off("joinRoom:server");
-      socket.disconnect();
     };
   }, []);
-  console.log(users);
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
@@ -216,9 +202,7 @@ export default function HomePage() {
         {/* Room List */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
-              Room List
-            </h2>
+            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">Room List</h2>
             {loading ? (
               <div className="flex justify-center h-full items-center">
                 <img
@@ -236,12 +220,7 @@ export default function HomePage() {
                       onClick={() => {
                         setTargetedRoomId(room.id);
                       }}
-                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${
-                        targetedRoomId === room.id
-                          ? "bg-teal-500"
-                          : "bg-black/20"
-                      }`}
-                    >
+                      className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}>
                       {/* className={`p-4 rounded-lg cursor-pointer hover:bg-teal-500 text-white ${targetedRoomId === room.id ? "bg-teal-500" : "bg-black/20"}`}> */}
                       <div>{room.name}</div>
                     </button>
@@ -253,15 +232,13 @@ export default function HomePage() {
               <button
                 className="mt-4 bg-teal-500 hover:bg-teal-600 font-silkscreen text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
-                onClick={handleCreateRoom}
-              >
+                onClick={handleCreateRoom}>
                 Create New Room
               </button>
               <button
                 className="mt-4 bg-teal-500 font-silkscreen hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
-                onClick={handleJoinRoom}
-              >
+                onClick={handleJoinRoom}>
                 Join Room
               </button>
             </div>
@@ -271,9 +248,6 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
         {/* Profile */}
         <div className="w-1/2 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
-              Your Profile
-            </h2>
             <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Players</h2>
 
             {/* Grid Content */}
@@ -291,8 +265,7 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
                   {users?.map((user) => (
                     <div
                       key={user?.id}
-                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative"
-                    >
+                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative">
                       {/* Image placed in the background */}
                       <div className="relative overflow-hidden w-full rounded-full">
                         <img
@@ -302,9 +275,7 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
                         />
                         {/* Overlay div for animation */}
                         <div className="absolute h-full w-full bg-black/40 text-white flex items-center justify-center rounded-full -bottom-10 group-hover:bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
-                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">
-                            {user?.username}
-                          </h2>
+                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">{user?.username}</h2>
                         </div>
                       </div>
                     </div>

@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { io } from '../';
 
 const prisma = new PrismaClient();
 
@@ -158,6 +157,51 @@ export default class GameController {
     } catch (error) {
       next(error);
       console.log(error);
+    }
+  }
+
+  static async checkGuess(req: Request<{ roomId: string; gameId: string }, unknown, { guesses: string }>, res: Response, next: NextFunction) {
+    try {
+      const { roomId, gameId } = req.params;
+      const { guesses } = req.body;
+      const userId = req.loginInfo?.userId;
+      const originalWord = await prisma.contribution.findFirst({
+        where: {
+          roomId,
+          gameId,
+          type: 'WORD',
+        },
+      });
+
+      if (!originalWord) {
+        throw res.status(404).json({ message: 'No original word found for this room and game.' });
+      }
+
+      const guessContribution = await prisma.contribution.create({
+        data: {
+          roomId,
+          userId: userId!,
+          gameId,
+          type: 'GUESS',
+          content: guesses,
+          originalWordId: originalWord.id,
+        },
+      });
+
+      if (originalWord.content.toLowerCase() === guesses.toLowerCase()) {
+        res.status(200).json({
+          message: 'Correct guess! Congrats!!',
+          guess: guessContribution,
+        });
+      } else {
+        res.status(200).json({
+          message: 'Incorrect guess. Try again!',
+          guess: guessContribution,
+        });
+      }
+    } catch (error) {
+      console.error('Error in checkGuess:', error);
+      next(error);
     }
   }
 }

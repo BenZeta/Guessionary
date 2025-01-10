@@ -35,11 +35,9 @@ export default function Game1Page() {
         },
       });
 
+      console.log(data, "<<<<<<<");
+
       setRoom(data);
-
-      console.log("room >>>>>>>", data);
-
-      socket.emit("userList", data?.users);
     } catch (error) {
       console.log(error);
     }
@@ -106,12 +104,12 @@ export default function Game1Page() {
   }, [isTimerRunning, timer]);
 
   useEffect(() => {
-    // Initialize socket connection
-    socket.auth = {
-      token: localStorage.username,
-    };
-
-    socket.connect();
+    if (!socket.connected) {
+      socket.auth = {
+        token: localStorage.username,
+      };
+      socket.connect();
+    }
 
     socket.on("userList:server", (newUsers) => {
       setRoom((prev) => {
@@ -156,16 +154,16 @@ export default function Game1Page() {
         {/* Left Panel */}
         <div className="w-3/12 bg-white/10 p-6">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceLeft">
-            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">
-              Player
-            </h2>
+            <h2 className="text-xl font-bold font-silkscreen text-teal-300 mb-4 flex justify-center">Player</h2>
             <div className="h-[calc(100%-100px)] overflow-y-auto flex flex-col gap-4 scrollbar p-1">
               {room?.users.map((user, index) => (
                 <div
                   key={index}
-                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 "
-                >
-                  <img src={user?.avatar} className="w-20 h-20 rounded-full" />
+                  className="p-4 bg-black/20 text-white rounded-lg cursor-pointer flex items-center gap-3 ">
+                  <img
+                    src={user?.avatar}
+                    className="w-20 h-20 rounded-full"
+                  />
                   <div className="ml-3 text-2xl">{user?.username}</div>
                 </div>
               ))}
@@ -176,23 +174,16 @@ export default function Game1Page() {
         {/* Right Panel */}
         <div className="w-9/12 bg-white/10 p-6 relative overflow-hidden">
           <div className="relative z-10 bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col animate-bounceDown">
-            <h2 className="text-xl font-bold font- text-teal-300 mb-4 flex justify-center">
-              Game
-            </h2>
+            <h2 className="text-xl font-bold font- text-teal-300 mb-4 flex justify-center">Game</h2>
 
             <div className="gap-5 rounded-lg w-full h-full overflow-y-auto scrollbar flex-1 p-1">
               <div className="bg-gray-300/50 p-5 h-full rounded-lg">
                 <div className="bg-gray-200/10 h-full">
                   <div className="flex flex-col justify-center h-full items-center p-5">
-                    {isTimerRunning ? (
-                      <div className="text-2xl font-bold text-white mb-5">
-                        Time remaining: {timer} seconds
-                      </div>
-                    ) : null}
+                    {isTimerRunning ? <div className="text-2xl font-bold text-white mb-5">Time remaining: {timer} seconds</div> : null}
                     <form
                       className="flex flex-col items-center gap-4"
-                      onSubmit={handleSubmit}
-                    >
+                      onSubmit={handleSubmit}>
                       <input
                         onChange={(e) => setWords(e.target.value)}
                         className="w-full font-silkscreen rounded-2xl p-2 text-center bg-white-300 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -200,8 +191,7 @@ export default function Game1Page() {
                       />
                       <button
                         type="submit"
-                        className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
-                      >
+                        className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
                         OK
                       </button>
                     </form>
