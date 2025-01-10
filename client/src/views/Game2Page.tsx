@@ -12,6 +12,24 @@ type User = {
   username: string;
 };
 
+const COLORS = [
+  "#ffffff", // White
+  "#000000", // Black
+  "#808080", // Gray
+  "#ff0000", // Red
+  "#ffff00", // Yellow
+  "#0000ff", // Blue
+  "#008000", // Green
+  "#00ffff", // Cyan
+  "#ffa500", // Orange
+  "#ffc0cb", // Pink
+  "#800080", // Purple
+  "#a52a2a", // Brown
+  "#008080", // Teal
+  "#ff00ff", // Magenta
+  "#ffbf00", // Amber
+];
+
 export default function Game2Page() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,6 +38,8 @@ export default function Game2Page() {
   const [users, setUsers] = useState<User[]>([]);
   const [canvas, setCanvas] = useState<fabric.Canvas | null>(null);
   const [dataDrawing, setDataDrawing] = useState<string>("");
+  const [selectedColor, setSelectedColor] = useState<string>("#000000");
+  const [brushSize, setBrushSize] = useState<number>(5);
   const [timer, setTimer] = useState<number>(60); // Timer for 15 seconds
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
   const { gameId, roomId } = useParams();
@@ -117,9 +137,21 @@ export default function Game2Page() {
 
       console.log("Canvas Data URL:", JSON.stringify(dataUrl));
     } else {
-      console.error("Canvas belum siap!");
+      console.error("Canvas bel um siap!");
     }
   };
+
+  useEffect(() => {
+    if (canvas && canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.color = selectedColor;
+    }
+  }, [selectedColor]);
+
+  useEffect(() => {
+    if (canvas && canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.width = brushSize;
+    }
+  }, [brushSize]);
 
   const handleClear = () => {
     if (canvas) {
@@ -128,6 +160,13 @@ export default function Game2Page() {
       console.error("Canvas belum siap!");
     }
   };
+
+const handleEraser = () => {
+    if (canvas && canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.color = "#ffffff"; // Match canvas background color
+    }
+  };
+
 
   useEffect(() => {
     if (!socket.connected) {
@@ -166,11 +205,6 @@ export default function Game2Page() {
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-purple-700 via-purple-500 to-blue-600">
-      {/* Header */}
-      <div className="flex justify-center items-center p-4 bg-black/20">
-        <h1 className="text-2xl text-white font-bold">Round</h1>
-      </div>
-
       {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Left Panel */}
@@ -244,27 +278,26 @@ export default function Game2Page() {
               </button>
             </div>
 
-            <div className="flex-1 bg-white relative" ref={containerRef}>
-            <h2 className="text-xl font-bold text-teal-300 mb-4 text-center">Game</h2>
             <h3>{wordsFromR1}</h3>
-            <div
-              className="flex-1 bg-white relative"
-              ref={containerRef}>
-              <canvas ref={canvasRef}></canvas>
+            <div className="flex-1 bg-white relative" ref={containerRef}>
+              <canvas
+                ref={canvasRef}
+                className="absolute top-0 left-0 w-full h-full"
+              ></canvas>
+
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSubmit();
+                }}
+              ></form>
+              <button
+                type="submit"
+                className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+              >
+                Submit
+              </button>
             </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit();
-              }}>
-              <button className="mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg">Submit</button>
-            </form>
-            <button
-              type="submit"
-              className="bg-teal-500 font-silkscreen shadow-[0_5px_0_rgb(0,0,0)] hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md  transition-all ease-out p-2 hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
-            >
-              Submit
-            </button>
           </div>
         </div>
       </div>

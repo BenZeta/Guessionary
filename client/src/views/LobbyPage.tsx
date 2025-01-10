@@ -44,6 +44,8 @@ export default function LobbyPage() {
 
   const handleClick = () => {
     setIsSelected(!isSelected);
+
+    setGameId("0a2ca377-d025-4ae2-b715-737dc2c4be7b")
   };
 
   const getUser = async () => {
@@ -235,7 +237,7 @@ export default function LobbyPage() {
                             isSelected ? "bg-sky-400" : "bg-gray-800"
                           } group-hover:bg-sky-400`}
                         >
-                          <img src={game.gameImage} alt={game.name} />
+                          <img src="https://ik.imagekit.io/3a0xukows/Guessionary%20v1.png?updatedAt=1736265436299" alt={game.name} />
                         </span>
                         <div className="space-y-6 pt-5 text-base leading-7 text-gray-600 transition-all duration-300 group-hover:text-white/90">
                           <h3 className="text-sm font-bold text-teal-300 truncate">
