@@ -40,6 +40,11 @@ export default function LobbyPage() {
   const isFirstRender = useRef(true);
   const navigate = useNavigate();
   const { roomId } = useParams();
+  const [isSelected, setIsSelected] = useState(false);
+
+  const handleClick = () => {
+    setIsSelected(!isSelected);
+  };
 
   const getUser = async () => {
     try {
@@ -208,24 +213,39 @@ export default function LobbyPage() {
         <div className="w-4/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col justify-between">
             <div>
-              <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Choose a Game</h2>
+              <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+                Choose a Game
+              </h2>
               <div className="flex justify-center">
                 {games.map((game) => (
                   <div
                     key={game.id}
-                    className="relative bg-gray-800 border border-gray-700 rounded-lg overflow-hidden shadow-md w-[300px] h-[300px] hover:scale-105 transition-transform duration-300">
+                    className="relative justify-center overflow-hidden rounded-2xl bg-transparent w-full flex"
+                  >
                     <div
-                      className="absolute inset-0"
-                      onClick={() => setGameId(game.id)}>
-                      <img
-                        src={game.gameImage}
-                        alt={game.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="absolute bottom-0 w-full bg-gray-900/90 text-white p-2">
-                      <h3 className="text-sm font-bold text-teal-300 truncate">{game.name}</h3>
-                      <p className="text-xs text-gray-400">{game.isActive ? "Active" : "Inactive"}</p>
+                      className={`group relative cursor-pointer overflow-hidden px-6 pt-10 w-full flex justify-center pb-8 shadow-xl ring-1 ring-gray-900/5 transition-all duration-300 sm:mx-auto sm:max-w-sm sm:rounded-2xl sm:px-10 ${
+                        isSelected ? "bg-gray-800" : "bg-white/20"
+                      }`}
+                      onClick={handleClick}
+                    >
+                      <span className="absolute top-10 z-0 h-20 w-20 rounded-full  bg-gray-800  transition-all duration-300 group-hover:scale-[10]" />
+                      <div className="relative z-10 mx-auto max-w-md">
+                        <span
+                          className={`grid h-20 w-20 place-items-center rounded-full transition-all duration-300 ${
+                            isSelected ? "bg-sky-400" : "bg-gray-800"
+                          } group-hover:bg-sky-400`}
+                        >
+                          <img src={game.gameImage} alt={game.name} />
+                        </span>
+                        <div className="space-y-6 pt-5 text-base leading-7 text-gray-600 transition-all duration-300 group-hover:text-white/90">
+                          <h3 className="text-sm font-bold text-teal-300 truncate">
+                            {game.name}
+                          </h3>
+                          <p className="text-xs text-gray-200 text-center bg-gray-200/30 p-1 rounded-xl">
+                            {game.isActive ? "Active" : "Inactive"}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -234,15 +254,21 @@ export default function LobbyPage() {
             <div className="flex justify-center w-full space-x-5">
               <button
                 className={`mt-4 bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
-hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)] ${userRole === "Staff" ? "bg-gray-400 cursor-not-allowed" : "bg-teal-500 hover:bg-teal-600 text-white"}`}
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)] ${
+                  userRole === "Staff"
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-teal-500 hover:bg-teal-600 text-white"
+                }`}
                 onClick={handleStartGame}
-                disabled={userRole === "Staff"}>
+                disabled={userRole === "Staff"}
+              >
                 Start Game
               </button>
               <button
                 onClick={leaveRoom}
                 className="mt-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md shadow-lg transition-all ease-out p-2 
-hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
+hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]"
+              >
                 Leave Room
               </button>
             </div>
@@ -250,7 +276,9 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
         </div>
         <div className="w-8/12 bg-white/10 p-4">
           <div className="bg-black bg-opacity-10 p-5 rounded-lg h-full flex flex-col">
-            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">Player</h2>
+            <h2 className="text-xl font-bold text-teal-300 mb-4 flex justify-center">
+              Player
+            </h2>
             <div className="grid grid-cols-4 gap-5 rounded-xl w-full overflow-y-auto scrollbar p-1">
               {loading ? (
                 <div className="flex justify-center h-full items-center">
@@ -264,15 +292,18 @@ hover:translate-y-1 hover:shadow-[0_2px_0px_rgb(0,0,0)]">
                   {users.map((user) => (
                     <div
                       key={user.id}
-                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative">
+                      className="w-full h-fit group bg-transparant rounded-full flex flex-col items-center justify-between relative"
+                    >
                       <div className="relative overflow-hidden w-full rounded-full">
                         <img
-                          src={user?.avatar}
+                          src={user.avatar}
                           className="h-full w-full object-cover"
                           alt={user.username}
                         />
                         <div className="absolute h-full w-full bg-black/40 text-white flex items-center justify-center rounded-full -bottom-10 group-hover:bottom-0 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-in-out">
-                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">{user.username}</h2>
+                          <h2 className="mt-3 text-xl capitalize font-silkscreen text-center">
+                            {user.username}
+                          </h2>
                         </div>
                       </div>
                     </div>

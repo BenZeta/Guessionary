@@ -73,7 +73,7 @@ export default function App(): JSX.Element {
                 element={<Game2Page />}
               />
               <Route
-                path="/round_3/:roomId/:gameId"
+                path="/round_3"
                 element={<Game3Page />}
               />
             </Route>
